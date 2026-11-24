@@ -26,6 +26,16 @@ Work happens through an issue-driven factory on Claude Code GitHub Actions. Agen
 
 Agent rules live in [`CLAUDE.md`](CLAUDE.md); the stage prompts in [`.claude/commands/`](.claude/commands/).
 
+### Faster: run the factory from Claude Code
+
+The labels above wait for you at every step. The **`factory` skill** (`.claude/skills/factory/`) runs the same pipeline from a Claude Code session, with the maintainer in the loop by exception:
+
+- **Brainstorm → issues:** talk an idea through with Claude (Opus). It proposes a breakdown, you confirm once, Sonnet subagents draft the issues and Opus checks and creates them with dependency links.
+- **Run:** for each ready issue in dependency order (`python .claude/skills/factory/scripts/queue.py`): Sonnet writes the design PR → an Opus subagent reviews it → Sonnet builds the implementation PR → CI → a fresh Opus subagent reviews it → Opus auto-merges when every gate in `references/gates.md` passes.
+- **Stops and asks** whenever it's genuinely unsure, a gate fails, or a change touches workflows, dependencies, the version or `CLAUDE.md`.
+
+Start it by asking Claude Code to "brainstorm X into issues" or "run the factory". It never adds `factory:design` or `design:approved`, so the Actions workflows don't run the same work twice.
+
 ### Changing the factory itself
 
 - **Workflow changes go in their own PR.** `claude-code-action` refuses to run from a workflow file that differs from `main`'s, so on a PR that edits `.github/workflows/factory-*.yml` the affected agent stage skips itself (the job still shows success). The change takes effect once merged. Don't bundle it with feature work.

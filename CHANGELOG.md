@@ -1,5 +1,10 @@
 # Changelog
 
+- v0.2.0 (2026-11-24): **`factory` skill**: run the factory from a Claude Code session instead of label by label.
+  - Brainstorm mode: Opus brainstorms with the maintainer, proposes an issue breakdown, gets one confirmation, Sonnet subagents draft Factory-task issues and Opus checks and creates them with dependency links.
+  - Run mode: for each ready issue (`scripts/queue.py`, dependency-ordered), Sonnet designs → an Opus subagent reviews the design → Sonnet builds in a worktree → CI → a fresh Opus subagent reviews the code → Opus auto-merges (`--merge --admin`) when every gate in `references/gates.md` passes.
+  - Stops and asks when unsure, on failed gates, or on workflow, dependency, version or `CLAUDE.md` changes. Never adds the Actions trigger labels, so the two modes don't duplicate work.
+  - Template CI checks the skill files and runs `queue.py --self-test`.
 - v0.1.1 (2026-11-24): Fixes from driving the first generated factory (pensieve-traces) end to end.
   - Build and chat agents can run checks on PRs authored by `claude[bot]` (`restrict_untrusted_prs: "false"`), protected by a new build step that refuses design branches touching anything outside `.factory/designs/` (#3).
   - The review agent runs on implementation PRs opened by `claude[bot]` (`allowed_bots: "claude"`) (#5), and verifies "Checks run" against CI with `gh pr checks` instead of trying to run code (#6).
