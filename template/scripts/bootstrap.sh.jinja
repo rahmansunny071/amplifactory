@@ -11,7 +11,7 @@ set -euo pipefail
 
 REPO="[[ maintainer_github ]]/[[ project_name ]]"
 DESCRIPTION="[[ description ]]"
-LABELS=(factory:design factory:designing design:approved factory:building factory:review factory:blocked improvement)
+LABELS=(factory:design factory:designing design:approved factory:building factory:review factory:blocked factory:needs-maintainer improvement)
 CHECKS=([% for v in python_versions %]"Tests (Python [[ v ]])" [% endfor %]"Lint")
 
 visibility=""
@@ -86,7 +86,7 @@ else
         "dismiss_stale_reviews_on_push": true,
         "require_code_owner_review": true,
         "require_last_push_approval": true,
-        "required_review_thread_resolution": false } },
+        "required_review_thread_resolution": true } },
     { "type": "required_status_checks", "parameters": {
         "strict_required_status_checks_policy": false,
         "required_status_checks": $checks_json } }
@@ -95,7 +95,7 @@ else
 JSON
 )
   if echo "$ruleset" | gh api -X POST "repos/$REPO/rulesets" --input - >/dev/null 2>&1; then
-    echo "created: no deletion or force push; PR + 1 approval; checks: ${CHECKS[*]}"
+    echo "created: no deletion or force push; PR + 1 approval; all conversations resolved; checks: ${CHECKS[*]}"
   else
     echo "WARNING: could not create the ruleset (private repos need GitHub Pro). main is NOT protected." >&2
   fi
