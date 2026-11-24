@@ -38,6 +38,7 @@ a PR:
 - the main path breaks on realistic input;
 - private data leaks on realistic input;
 - a hard rule is violated;
+- irreversible loss or overwrite of the user's existing data (source files, history, remote repos) on a plausible invocation, even a mistaken one, when a cheap guard would prevent it;
 - a test falsely passes.
 
 Everything else is collected into **one `improvement` issue** per PR, usually in a hardening lane. Switch the line to

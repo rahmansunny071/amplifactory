@@ -16,6 +16,6 @@ You are the REVIEW agent for PR #$ARGUMENTS. Don't push commits.
      any violation (secrets or private data committed, uploads or credentials,
      paid model calls, workflows touched, unapproved or non-optional
      dependencies, version bump, plus the project-specific rules)
-   - **Bugs / risky code:** specific, with file:line
+   - **Bugs / risky code:** specific, with file:line. Irreversible loss or overwrite of the user's existing data (source files, history, remote repos) on a plausible invocation, even a mistaken one, when a cheap guard would prevent it is must-fix.
    - **Verdict:** Ready for maintainer / Needs changes
 3. Keep it short. No style nits that ruff already enforces.
