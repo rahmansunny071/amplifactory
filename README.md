@@ -39,7 +39,7 @@ Open Claude Code in the repo, on Opus, and say what you want:
 
 **How it keeps cost and latency down** (v0.3.0, from real runs):
 - **2 subagents per issue** (3 for critical ones): the builder is one agent reused for plan, build and fixes, so it never re-reads context. Only the reviewer is fresh, on purpose.
-- **Urgency triage.** In the `mvp` release phase (`CLAUDE.md`), only **blockers** are fixed inside a PR: the main path breaks on realistic input, private data leaks, a hard rule is broken, or a test falsely passes. Everything else becomes one `improvement` issue per PR, and main-path issues never wait on improvements. Switch to `hardening` before a first formal release.
+- **Urgency triage.** In the `mvp` release phase (`CLAUDE.md`), only **blockers** are fixed inside a PR: the main path breaks on realistic input, private data leaks, a hard rule is broken, a plausible invocation (even a mistaken one) irreversibly loses or overwrites the user's existing data (source files, history, remote repos) when a cheap guard would prevent it, or a test falsely passes. Everything else becomes one `improvement` issue per PR, and main-path issues never wait on improvements. Switch to `hardening` before a first formal release.
 - **No re-review** of fixes in mvp: CI plus the orchestrator's reproduction of each blocker.
 - **Run log:** `.factory/runs/*.jsonl` (gitignored) records each step, so a fresh session resumes mid-issue, and `scripts/runlog.py summary` reports time and tokens per issue. Start a fresh session every 2–3 issues.
 
