@@ -28,6 +28,8 @@ changing lint rules, the ruff pin, or skipping tests.
 - Never bump the version, publish a release, or edit release tooling unless the
   approved design says so explicitly.
 - Never touch .github/workflows/ unless the approved design says so explicitly.
+  Such changes go in a PR of their own: agent stages skip on a PR that modifies
+  their workflow, and the change only takes effect after merge.
 - Every user-visible change updates README.md and CHANGELOG.md.
 
 ## Style

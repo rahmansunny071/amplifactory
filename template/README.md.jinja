@@ -26,6 +26,13 @@ Work happens through an issue-driven factory on Claude Code GitHub Actions. Agen
 
 Agent rules live in [`CLAUDE.md`](CLAUDE.md); the stage prompts in [`.claude/commands/`](.claude/commands/).
 
+### Changing the factory itself
+
+- **Workflow changes go in their own PR.** `claude-code-action` refuses to run from a workflow file that differs from `main`'s, so on a PR that edits `.github/workflows/factory-*.yml` the affected agent stage skips itself (the job still shows success). The change takes effect once merged. Don't bundle it with feature work.
+- **After merging a workflow change, update open factory PRs before re-triggering them.** PR-triggered runs use the PR's merge commit, which GitHub doesn't rebuild when `main` moves, so an older design or implementation PR keeps running the old workflow. Click **Update branch** on the PR (or `gh api -X PUT repos/[[ maintainer_github ]]/[[ project_name ]]/pulls/N/update-branch`), then re-add the label or push.
+- **Merging your own PRs:** GitHub never lets an author approve their own PR. Use the ruleset's admin bypass ("Merge without waiting for requirements to be met").
+- **A run that ends without its artifact is a failure,** even if the job is green: a design run must open a draft PR, a build run an implementation PR, otherwise the agent must leave a comment and `factory:blocked`.
+
 ## Development
 
 ```bash
