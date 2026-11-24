@@ -11,7 +11,7 @@ set -euo pipefail
 
 REPO="[[ maintainer_github ]]/[[ project_name ]]"
 DESCRIPTION="[[ description ]]"
-LABELS=(factory:design factory:designing design:approved factory:building factory:review factory:blocked)
+LABELS=(factory:design factory:designing design:approved factory:building factory:review factory:blocked improvement)
 CHECKS=([% for v in python_versions %]"Tests (Python [[ v ]])" [% endfor %]"Lint")
 
 visibility=""
