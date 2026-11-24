@@ -1,5 +1,13 @@
 # Changelog
 
+- v0.3.0 (2026-11-24): **A faster, cheaper factory skill**, from running pensieve-traces #2 and #3 (about 1.4M subagent tokens for two issues).
+  - **Urgency triage** (#17): a `release_phase` question (`mvp` by default) writes a "Release phase" section into `CLAUDE.md`. In mvp, reviewers tag findings `blocker` or `improvement`; only blockers are fixed in-PR; the orchestrator files one batched `improvement` issue per PR, and main-path issues never depend on improvements. `queue.py` lists ready main-path issues before ready improvements.
+  - **2 subagents per issue instead of 10–15:** one Sonnet **builder** plans (phase 1), builds (phase 2) and fixes blockers, each step a `SendMessage` to the same agent, so it never re-reads context (#14). One fresh Opus **code reviewer** runs in parallel with CI. Blocker fixes are verified by CI plus the orchestrator's repro, with no re-review. **Risk tiers:** only critical issues (privacy/security, new dependencies, shared data contracts) get a separate Opus design review. Standard issues get an orchestrator plan skim.
+  - **Run log** (#14): `scripts/runlog.py` (`add`, `status`, `summary`) writes `.factory/runs/*.jsonl` (gitignored). Sessions resume an in-flight issue, and the end-of-run summary reports wall time, fix rounds and tokens by model. The skill suggests a fresh session after 2–3 issues.
+  - **Overlap** (#15): plan an independent ready issue while another builds; at most two in flight; merges one at a time, updating the other branch with `main` afterwards.
+  - **Reality check** (#13): never build on an unverifiable assumption about real data; ask the maintainer, ideally with a local shape-only script. The issue format records what was verified against real data, plus the risk tier.
+  - **Bounded CI waits**: watch the workflow run (`gh run watch <id>`), not PR checks; no `sleep` loops. Rerun to clear a stale pending check.
+  - Template CI checks all of the above, including the `runlog.py` self-test.
 - v0.2.0 (2026-11-24): **`factory` skill**: run the factory from a Claude Code session instead of label by label.
   - Brainstorm mode: Opus brainstorms with the maintainer, proposes an issue breakdown, gets one confirmation, Sonnet subagents draft Factory-task issues and Opus checks and creates them with dependency links.
   - Run mode: for each ready issue (`scripts/queue.py`, dependency-ordered), Sonnet designs → an Opus subagent reviews the design → Sonnet builds in a worktree → CI → a fresh Opus subagent reviews the code → Opus auto-merges (`--merge --admin`) when every gate in `references/gates.md` passes.

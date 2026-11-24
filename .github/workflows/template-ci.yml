@@ -66,13 +66,21 @@ jobs:
           need .claude/commands/review-against-design.md 'gh pr checks $ARGUMENTS'                   # 6
           need README.md 'Changing the factory itself'                                               # 4, 7
           # factory skill (v0.2.0)
-          for f in SKILL.md references/briefs.md references/gates.md references/issue-format.md scripts/queue.py; do
+          for f in SKILL.md references/briefs.md references/gates.md references/issue-format.md scripts/queue.py scripts/runlog.py; do
             test -f ".claude/skills/factory/$f" || { echo "::error::missing .claude/skills/factory/$f"; fail=1; }
           done
           need .claude/skills/factory/SKILL.md 'name: factory'
           need .claude/skills/factory/references/gates.md 'gh pr merge <PR> --merge --admin --delete-branch'
           need .claude/skills/factory/references/briefs.md 'Never add the labels `factory:design` or `design:approved`'
           python3 .claude/skills/factory/scripts/queue.py --self-test || fail=1
+          # v0.3.0: urgency triage, builder reuse, run log
+          need CLAUDE.md '## Release phase'
+          need .claude/skills/factory/references/briefs.md 'blocker'
+          need .claude/skills/factory/references/briefs.md 'SendMessage'
+          need .claude/skills/factory/references/gates.md 'gh run watch'
+          need .gitignore '.factory/runs/'
+          if grep -q 'sleep ' .claude/skills/factory/references/gates.md; then echo "::error::gates.md must not use sleep loops"; fail=1; fi
+          uv run --no-project --python 3.12 python .claude/skills/factory/scripts/runlog.py --self-test || fail=1
           # the review job must stay read-only and restricted
           if grep -q 'restrict_untrusted_prs' .github/workflows/factory-review.yml; then
             echo "::error::factory-review must keep restrict_untrusted_prs at its default"; fail=1

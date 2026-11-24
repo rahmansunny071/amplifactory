@@ -17,6 +17,10 @@ usage example (a command or code snippet) when there is one.
 - Specs or external references, with exact URLs. If something is unverified, say so explicitly
   ("schema not verified — the design must cite the official docs or block").
 - Reuse opportunities and known pitfalls from the brainstorm.
+- Verified against real data? Say which assumptions about external formats or data were confirmed
+  (and how) and which are assumptions. Unverified ones are for the maintainer's reality check.
+- Risk tier: standard | critical (privacy/security code, a new external dependency, a data contract
+  other issues build on).
 
 ### Acceptance criteria
 
@@ -32,6 +36,9 @@ What this issue deliberately doesn't do, and which issue does it instead (`#N`) 
 
 One or more of the options in the issue template's "Areas affected" dropdown.
 ```
+
+Issues that are polish or hardening rather than the main path get the `improvement` label. A
+main-path issue never depends on an `improvement` issue.
 
 ## Quality bar
 
