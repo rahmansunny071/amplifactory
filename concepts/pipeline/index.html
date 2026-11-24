@@ -1372,6 +1372,7 @@ a PR:</p>
 <li>the main path breaks on realistic input;</li>
 <li>private data leaks on realistic input;</li>
 <li>a hard rule is violated;</li>
+<li>irreversible loss or overwrite of the user's existing data (source files, history, remote repos) on a plausible invocation, even a mistaken one, when a cheap guard would prevent it;</li>
 <li>a test falsely passes.</li>
 </ul>
 <p>Everything else is collected into <strong>one <code>improvement</code> issue</strong> per PR, usually in a hardening lane. Switch the line to
