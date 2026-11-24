@@ -79,7 +79,7 @@ jobs:
           need .claude/skills/factory/references/briefs.md 'SendMessage'
           need .claude/skills/factory/references/gates.md 'gh run watch'
           need .gitignore '.factory/runs/'
-          need scripts/bootstrap.sh 'factory:needs-maintainer improvement)'
+          need scripts/bootstrap.sh 'factory:needs-maintainer improvement lane P0 P1 P2 P3)'
           need scripts/bootstrap.sh '"required_review_thread_resolution": true'
           # v0.4.0: flag and continue, resume, handoffs, threads gate
           need .claude/skills/factory/SKILL.md '### Flag and continue'
@@ -89,6 +89,13 @@ jobs:
           need .claude/skills/factory/references/gates.md 'All review threads resolved'
           need .claude/skills/factory/references/gates.md 'resolveReviewThread'
           need CLAUDE.md '## Where knowledge lives'
+          # v0.5.0: lanes
+          need .claude/skills/factory/SKILL.md 'Mode 1: Brainstorm → lanes → issues'
+          need .claude/skills/factory/SKILL.md '### Parallel lanes'
+          need .claude/skills/factory/references/issue-format.md '## Lane issue'
+          need scripts/bootstrap.sh 'gh project field-create'
+          test -f .claude/skills/factory/scripts/lanes.py || { echo "::error::missing lanes.py"; fail=1; }
+          python3 .claude/skills/factory/scripts/lanes.py --self-test || fail=1
           # skill PRs (local/issue-N) must not trigger the Actions review (factory/issue-*)
           need .claude/skills/factory/SKILL.md '-b local/issue-N'
           need .github/workflows/factory-review.yml "startsWith(github.event.pull_request.head.ref, 'factory/issue-')"

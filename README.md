@@ -19,7 +19,7 @@ cd my-project
 
 The repo is private, so Copier needs your GitHub credentials. `gh auth setup-git` lets the `gh:` shortcut (HTTPS) use your `gh` login; or use `git@github.com:rahmansunny071/agent-factory.git`.
 
-`bootstrap.sh` does what a template can't: `uv lock` and the first commit, creating and pushing the GitHub repo, the factory labels (including `improvement`), a ruleset protecting `main` (no deletion or force push, PR with your approval, required checks `Tests (Python X)` and `Lint`, admin bypass for PRs only), and fork-PR approval. Rulesets need a **public** repo or GitHub Pro.
+`bootstrap.sh` does what a template can't: `uv lock` and the first commit, creating and pushing the GitHub repo, the factory labels (including `improvement`, `lane` and `P0`–`P3`), a **GitHub Project board** with a Priority field (needs the `project` scope: `gh auth refresh -h github.com -s project`), a ruleset protecting `main` (no deletion or force push, PR with your approval, required checks `Tests (Python X)` and `Lint`, admin bypass for PRs only), and fork-PR approval. Rulesets need a **public** repo or GitHub Pro.
 
 For the GitHub Actions mode, once per repo in Claude Code: `/install-github-app` → pick the repo → choose your subscription. That saves the `CLAUDE_CODE_OAUTH_TOKEN` secret. If it says the GitHub CLI lacks the `workflow` scope, run `gh auth refresh -h github.com -s repo,workflow` first. **Close the installer's PR** (`claude.yml`, `claude-code-review.yml`): `factory-chat.yml` and `factory-review.yml` already cover those, with the sender and fork checks the installer's versions lack. The skill needs no secret: it runs in your session.
 
@@ -29,9 +29,11 @@ Open Claude Code in the repo, on Opus, and say what you want:
 
 | You say | What happens |
 |---|---|
-| *"brainstorm X into issues"* | Claude brainstorms with you, identifies the **main path** (the smallest chain that makes X work end to end), proposes a breakdown, **you confirm once**, and it creates Factory-task issues with dependency links |
+| *"brainstorm X into issues"* | A two-level conversation with Opus: first **lanes** (features or swim lanes, their priorities `P0`–`P3`, and which lanes depend on which), then the **ordered issues** inside each lane (only the next one or two fully written, the rest as stubs). **You confirm once**, and it creates the lane issues, native **sub-issues** in order, "blocked by" links, priority labels, and Project board items |
 | *"resume the factory"* | Picks up PRs where you've answered its questions: applies your answers (Opus directly for small edits, a Sonnet builder otherwise), checks them, resolves the threads and merges |
 | *"run the factory"* / *"pick up #N"* | For each ready issue (`scripts/queue.py`, main path first): Sonnet **plans** → the plan is checked (by Opus inline, or by an Opus design review for critical issues) → the same Sonnet agent **builds** and opens the PR → a fresh Opus **reviews** in parallel with CI → the same builder fixes **blockers** → Opus checks the gates in `references/gates.md` and **merges** |
+
+**How work is organised: lanes.** A lane is a parent issue (label `lane`) whose native GitHub sub-issues are processed **one at a time, in order**. Lanes are ranked by priority and can depend on each other (native "blocked by" links). `scripts/queue.py` shows each lane's current issue and what to work on now. **One lane at a time by default**; when more lanes are ready, the skill asks you whether to run them in parallel. A question on one lane pauses only that lane. `scripts/lanes.py` creates and reorders lanes, sub-issues, dependencies and priorities.
 
 **How it keeps cost and latency down** (v0.3.0, from real runs):
 - **2 subagents per issue** (3 for critical ones): the builder is one agent reused for plan, build and fixes, so it never re-reads context. Only the reviewer is fresh, on purpose.
@@ -107,7 +109,7 @@ See [`CHANGELOG.md`](CHANGELOG.md) for what each release changed and why.
 | Path | Purpose |
 |---|---|
 | `CLAUDE.md` | Agent guide: project context, release phase, "checks pass" definition (identical to CI), hard rules |
-| `.claude/skills/factory/` | The `factory` skill: `SKILL.md`, `references/` (subagent briefs, merge gates, issue format), `scripts/queue.py` (ready-issue queue), `scripts/runlog.py` (run log) |
+| `.claude/skills/factory/` | The `factory` skill: `SKILL.md`, `references/` (subagent briefs, merge gates, issue and lane format), `scripts/queue.py` (lane-aware queue), `scripts/lanes.py` (lanes, sub-issues, dependencies, priorities, Project board), `scripts/runlog.py` (run log) |
 | `.claude/commands/` | Stage prompts: `design-issue`, `build-from-design`, `review-against-design` (used by both modes) |
 | `.github/workflows/factory-*.yml` | Actions mode: design, build, review, chat (`@claude`) and label guard |
 | `.github/workflows/ci.yml` | Tests on each Python version, pinned ruff format and lint |

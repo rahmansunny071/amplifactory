@@ -11,7 +11,8 @@ set -euo pipefail
 
 REPO="[[ maintainer_github ]]/[[ project_name ]]"
 DESCRIPTION="[[ description ]]"
-LABELS=(factory:design factory:designing design:approved factory:building factory:review factory:blocked factory:needs-maintainer improvement)
+LABELS=(factory:design factory:designing design:approved factory:building factory:review factory:blocked factory:needs-maintainer improvement lane P0 P1 P2 P3)
+PROJECT_TITLE="[[ project_name ]] factory"
 CHECKS=([% for v in python_versions %]"Tests (Python [[ v ]])" [% endfor %]"Lint")
 
 visibility=""
@@ -99,6 +100,28 @@ JSON
   else
     echo "WARNING: could not create the ruleset (private repos need GitHub Pro). main is NOT protected." >&2
   fi
+fi
+
+step "Project board"
+if ! gh auth status 2>&1 | grep -q "'project'"; then
+  echo "skipped: your gh login lacks the 'project' scope. Run: gh auth refresh -h github.com -s project"
+  echo "         then re-run this script (it's safe to re-run)."
+else
+  OWNER="${REPO%%/*}"
+  num=$(gh project list --owner "$OWNER" --format json --jq ".projects[] | select(.title == \"$PROJECT_TITLE\") | .number" | head -1)
+  if [ -z "$num" ]; then
+    num=$(gh project create --owner "$OWNER" --title "$PROJECT_TITLE" --format json --jq .number)
+    echo "created project #$num: $PROJECT_TITLE"
+  else
+    echo "project #$num already exists: $PROJECT_TITLE"
+  fi
+  gh project link "$num" --owner "$OWNER" --repo "$REPO" >/dev/null 2>&1 || true
+  if ! gh project field-list "$num" --owner "$OWNER" --format json --jq '.fields[].name' | grep -qx Priority; then
+    gh project field-create "$num" --owner "$OWNER" --name Priority --data-type SINGLE_SELECT \
+      --single-select-options "P0,P1,P2,P3" >/dev/null
+    echo "added the Priority field (P0–P3)"
+  fi
+  echo "linked to $REPO. Group by Parent issue to see lanes; the factory skill adds issues to it."
 fi
 
 step "Fork pull requests"

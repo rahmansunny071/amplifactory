@@ -1,5 +1,12 @@
 # Changelog
 
+- v0.5.0 (2026-11-24): **Swim lanes** (#23). Work is organised as prioritized lanes of ordered, dependency-linked issues.
+  - **Lanes:** a parent issue labelled `lane` whose **native GitHub sub-issues** are processed one at a time, in order. **Priorities** `P0`–`P3` on lanes and issues. Dependencies between issues or whole lanes use **native "blocked by" links**, with the body's "Depends on #N" line kept as a fallback.
+  - **Brainstorm** is two-level: lanes (priorities, lane dependencies, main path), then ordered issues per lane, with **rolling-wave** detail (only the next one or two issues fully written). One confirmation creates everything.
+  - **Scheduling:** `queue.py` is lane-aware. Each lane's current issue and state, lanes ranked by priority, "Work now" for `--lanes N`. **One lane at a time by default**; the skill asks the maintainer before running more lanes in parallel. A question on a lane pauses only that lane. A collision guard holds a second lane whose plan touches the same files.
+  - New `scripts/lanes.py` (`sub-add`, `order`, `block`, `priority`, `project-add`, `show`) wraps the GitHub sub-issue, dependency and Projects calls.
+  - `bootstrap.sh` creates the `lane` and `P0`–`P3` labels and a **GitHub Project board** with a Priority field (needs the `project` scope).
+  - First real test: pensieve-traces restructured into four lanes.
 - v0.4.0 (2026-11-24): **Flag and continue** (#21). The skill never blocks the session waiting for the maintainer.
   - Questions (a reviewer's `[question]`, a design reviewer's `ASK`, gate failures, unverifiable data assumptions, persistent blockers) are posted as **inline, line-anchored PR review comments** with options and a recommendation. The issue and PR get `factory:needs-maintainer`, and the run moves on to independent work. An in-session question only when nothing else can proceed.
   - **Resume** ("resume the factory") works from GitHub state: `queue.py` shows which waiting PRs have **new maintainer replies**. Answers are applied by Opus directly for small edits, or by a Sonnet **resume builder** otherwise. Then an Opus check scoped to those threads, then the gates. `@claude` on the PR (Actions `factory-chat`) also works.
