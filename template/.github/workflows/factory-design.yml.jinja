@@ -7,7 +7,7 @@ jobs:
   design:
     if: >
       github.event.label.name == 'factory:design' &&
-      github.event.sender.login == 'rahmansunny071'
+      github.event.sender.login == '[[ maintainer_github ]]'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     concurrency:
@@ -22,6 +22,6 @@ jobs:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           prompt: "/design-issue ${{ github.event.issue.number }}"
           claude_args: >-
-            --model sonnet
+            --model [[ agent_model ]]
             --max-turns 40
             --allowedTools "Read,Glob,Grep,Write,Edit,Bash(git:*),Bash(gh issue:*),Bash(gh pr create:*),Bash(gh label:*)"

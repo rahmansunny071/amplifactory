@@ -1,0 +1,67 @@
+name: Template CI
+
+# Renders projects from this Copier template and runs the generated project's own
+# checks, so a broken template is caught before anyone generates a repo from it.
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: template-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  render:
+    name: Render (${{ matrix.variant }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - variant: with-cli
+            data: --data "description=A demo project."
+          - variant: no-cli
+            data: --data "description=A demo project." --data cli_name=
+          - variant: custom-python
+            data: >-
+              --data "description=An extremely long project description that goes well past one hundred characters so formatting is checked."
+              --data 'python_versions=["3.12", "3.13"]' --data python_min=3.12
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: astral-sh/setup-uv@v6
+      - name: Render
+        run: |
+          uvx --from 'copier>=9,<10' copier copy --defaults --vcs-ref HEAD \
+            --data project_name=demo-${{ matrix.variant }} ${{ matrix.data }} . "$RUNNER_TEMP/out"
+      - name: No unrendered template syntax
+        working-directory: ${{ runner.temp }}/out
+        run: |
+          if grep -rnE '\[\[|\]\]|\[%|%\]|\[#' . --exclude=.copier-answers.yml; then
+            echo "unrendered Copier syntax left in the generated project" >&2; exit 1
+          fi
+      - name: Generated YAML parses
+        working-directory: ${{ runner.temp }}/out
+        run: |
+          for f in .github/workflows/*.yml .github/ISSUE_TEMPLATE/*.yml .copier-answers.yml; do
+            uvx --from pyyaml python -c "import sys, yaml; yaml.safe_load(open(sys.argv[1]))" "$f"
+          done
+      - name: bootstrap.sh is executable and parses
+        working-directory: ${{ runner.temp }}/out
+        run: test -x scripts/bootstrap.sh && bash -n scripts/bootstrap.sh
+      - name: Generated project's checks (same as its ci.yml)
+        working-directory: ${{ runner.temp }}/out
+        run: |
+          uv lock
+          for py in $(uvx --from pyyaml python -c "import yaml; print(' '.join(yaml.safe_load(open('.copier-answers.yml'))['python_versions']))"); do
+            uv sync --locked --extra dev --python "$py"
+            uv run --no-sync pytest -q
+          done
+          ruff=$(uvx --from pyyaml python -c "import yaml; print(yaml.safe_load(open('.copier-answers.yml'))['ruff_version'])")
+          uvx "ruff@$ruff" format --check .
+          uvx "ruff@$ruff" check .

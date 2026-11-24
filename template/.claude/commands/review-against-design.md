@@ -9,11 +9,10 @@ You are the REVIEW agent for PR #$ARGUMENTS. Don't push commits.
 2. Post ONE review comment with:
    - **Design conformance:** each "Proposed approach" and "Test plan" item → ✅/⚠️/❌
    - **Undisclosed deviations:** anything not listed under "Deviations"
-   - **CLAUDE.md hard rules:** any violation (real traces or personal data in
-     fixtures, redaction not on by default, uploads or credentials, paid model
-     calls, workflows touched, unapproved or non-optional heavy dependencies,
-     version bump)
-   - **Spec conformance:** for writers, does the output match the cited spec?
+   - **CLAUDE.md hard rules:** check every rule under "Hard rules" and list
+     any violation (secrets or private data committed, uploads or credentials,
+     paid model calls, workflows touched, unapproved or non-optional
+     dependencies, version bump, plus the project-specific rules)
    - **Bugs / risky code:** specific, with file:line
    - **Verdict:** Ready for maintainer / Needs changes
 3. Keep it short. No style nits that ruff already enforces.

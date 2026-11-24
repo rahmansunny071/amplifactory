@@ -1,0 +1,123 @@
+# agent-factory: a Copier template for an issue-driven agent factory on
+# Claude Code GitHub Actions (design → maintainer approval → build → review).
+#
+#   copier copy gh:rahmansunny071/agent-factory my-project
+#   cd my-project && ./scripts/bootstrap.sh --public
+#
+# Copier variables use [[ ... ]] (and [% ... %] for blocks), so GitHub Actions
+# expressions like ${{ github.event.issue.number }} pass through untouched.
+
+_min_copier_version: "9.0"
+_subdirectory: template
+_answers_file: .copier-answers.yml
+_templates_suffix: .jinja
+_envops:
+  block_start_string: "[%"
+  block_end_string: "%]"
+  variable_start_string: "[["
+  variable_end_string: "]]"
+  comment_start_string: "[#"
+  comment_end_string: "#]"
+  keep_trailing_newline: true
+
+# ---------------------------------------------------------------- project
+project_name:
+  type: str
+  help: Repository and distribution name (kebab-case, e.g. pensieve-traces)
+  validator: >-
+    [% if not project_name or project_name != project_name|lower or ' ' in project_name or '_' in project_name %]
+    Use kebab-case: lowercase letters, digits and hyphens
+    [% endif %]
+
+package_name:
+  type: str
+  help: Python import name
+  default: "[[ project_name|replace('-', '_') ]]"
+
+cli_name:
+  type: str
+  help: CLI command name (leave empty for a library with no CLI)
+  default: "[[ project_name ]]"
+
+description:
+  type: str
+  help: One-sentence description (pyproject, GitHub, README tagline)
+
+agent_context:
+  type: str
+  multiline: true
+  help: >-
+    What the project is, for the agents: one or two paragraphs at the top of
+    CLAUDE.md (purpose, architecture, key modules)
+  default: "[[ description ]]"
+
+extra_hard_rules:
+  type: str
+  multiline: true
+  help: >-
+    Project-specific hard rules for CLAUDE.md, one "- " bullet per rule
+    (data, privacy, specs, ...). Generic factory rules are always included.
+  default: ""
+
+design_risks:
+  type: str
+  help: What every design's "Risks" section must cover
+  default: >-
+    privacy and data (no secrets or personal data in the repo), licensing of
+    data and dependencies, new or heavy dependencies (prefer optional extras),
+    docs impact
+
+issue_areas:
+  type: yaml
+  help: Options for the "Areas affected" dropdown in the Factory task issue template
+  default: "[core, cli, docs, tests, none]"
+
+# ---------------------------------------------------------------- people
+maintainer_github:
+  type: str
+  help: GitHub login of the only person who can start, approve or merge factory work
+  default: rahmansunny071
+
+author_name:
+  type: str
+  default: Sajjadur Rahman
+
+author_email:
+  type: str
+  default: rahmansunny071@gmail.com
+
+homepage:
+  type: str
+  default: https://sajjadur.net/
+
+# ---------------------------------------------------------------- toolchain
+python_min:
+  type: str
+  help: Minimum supported Python (requires-python)
+  default: "3.11"
+
+python_versions:
+  type: yaml
+  help: Python versions tested in CI (each becomes a required check "Tests (Python X)")
+  default: '["3.11", "3.12"]'
+
+ruff_version:
+  type: str
+  help: Pinned ruff version (its default rules change between releases)
+  default: "0.17.4"
+
+agent_model:
+  type: str
+  help: Model the factory agents use (sonnet is the sensible default on Pro)
+  choices: [sonnet, opus, haiku]
+  default: sonnet
+
+_message_after_copy: |
+  Generated [[ project_name ]].
+
+  Next steps:
+    cd [[ _copier_conf.dst_path ]]
+    ./scripts/bootstrap.sh --public     # or --private (rulesets need public or GitHub Pro)
+    # then, in Claude Code: /install-github-app → pick [[ maintainer_github ]]/[[ project_name ]]
+    #   → choose your subscription; decline the installer's own claude.yml workflows
+    # dry run: open an issue with the Factory task template and add factory:design

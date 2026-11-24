@@ -1,0 +1,36 @@
+# [[ project_name ]] — agent guide
+
+[[ agent_context | trim ]]
+
+Distribution `[[ project_name ]]` → `import [[ package_name ]]`[% if cli_name %], CLI `[[ cli_name ]]`[% endif %].
+Python ≥[[ python_min ]].
+
+## Setup
+uv sync --locked --extra dev    # same lockfile CI uses
+
+## Definition of "checks pass" (identical to .github/workflows/ci.yml; run all, in order)
+1. uvx ruff@[[ ruff_version ]] format --check .         # ruff pinned to match CI
+2. uvx ruff@[[ ruff_version ]] check .
+3. uv run --no-sync pytest -q               # offline: no network, no model, no real data
+
+If ci.yml changes, update this list to match. Never "fix" a failure by
+changing lint rules, the ruff pin, or skipping tests.
+
+## Hard rules
+[% if extra_hard_rules | trim %][[ extra_hard_rules | trim ]]
+[% endif %]- Never commit secrets, credentials, personal data or private datasets.
+- Never upload anything to an external service (package indexes, dataset hubs,
+  …), and never ask for or use credentials beyond what the workflows provide.
+- Never call paid model endpoints. Code that needs an LLM takes an injectable
+  client, and tests use a fake one.
+- New dependencies only when the approved design lists them. Heavy or optional
+  ones go behind an extra, and the base install must work without them.
+- Never bump the version, publish a release, or edit release tooling unless the
+  approved design says so explicitly.
+- Never touch .github/workflows/ unless the approved design says so explicitly.
+- Every user-visible change updates README.md and CHANGELOG.md.
+
+## Style
+- Match existing code style; ruff is the formatter of record.
+- Small, reviewable diffs. No drive-by refactors.
+- Type hints everywhere.
