@@ -12,7 +12,7 @@ jobs:
     if: >
       (github.event.label.name == 'factory:design' ||
        github.event.label.name == 'design:approved') &&
-      github.event.sender.login != 'rahmansunny071'
+      github.event.sender.login != '[[ maintainer_github ]]'
     runs-on: ubuntu-latest
     permissions: { issues: write, pull-requests: write }
     steps:

@@ -11,7 +11,7 @@ jobs:
   gate:
     if: >
       contains(github.event.comment.body, '@claude') &&
-      github.event.comment.user.login == 'rahmansunny071'
+      github.event.comment.user.login == '[[ maintainer_github ]]'
     runs-on: ubuntu-latest
     permissions: { pull-requests: read, issues: write }
     outputs:
@@ -48,6 +48,6 @@ jobs:
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           claude_args: >-
-            --model sonnet
+            --model [[ agent_model ]]
             --max-turns 40
-            --allowedTools "Read,Glob,Grep,Write,Edit,Bash(git:*),Bash(uv run --no-sync pytest:*),Bash(uvx ruff@0.17.4:*)"
+            --allowedTools "Read,Glob,Grep,Write,Edit,Bash(git:*),Bash(uv run --no-sync pytest:*),Bash(uvx ruff@[[ ruff_version ]]:*)"

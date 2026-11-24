@@ -1,0 +1,15 @@
+"""Smoke tests so the factory's checks have something to run from day one."""
+
+import [[ package_name ]]
+
+
+def test_package_imports_and_has_a_version():
+    assert isinstance([[ package_name ]].__version__, str)
+[% if cli_name %]
+
+def test_cli_prints_help(capsys):
+    from [[ package_name ]].cli import main
+
+    assert main([]) == 0
+    assert "usage" in capsys.readouterr().out
+[% endif %]

@@ -19,6 +19,6 @@ jobs:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           prompt: "/review-against-design ${{ github.event.pull_request.number }}"
           claude_args: >-
-            --model sonnet
+            --model [[ agent_model ]]
             --max-turns 25
             --allowedTools "Read,Glob,Grep,Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr review:*),Bash(gh pr comment:*)"

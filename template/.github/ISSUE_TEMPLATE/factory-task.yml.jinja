@@ -11,12 +11,12 @@ body:
     id: context
     attributes:
       label: Context & pointers
-      description: Relevant modules, formats, specs, prior issues.
+      description: Relevant modules, specs, docs, prior issues.
   - type: textarea
     id: acceptance
     attributes:
       label: Acceptance criteria
-      description: Checkable bullets. Offline-testable with synthetic fixtures.
+      description: Checkable bullets. Offline-testable where possible.
     validations: { required: true }
   - type: textarea
     id: out_of_scope
@@ -27,4 +27,4 @@ body:
     attributes:
       label: Areas affected
       multiple: true
-      options: [canonical model, claude_code reader, redaction, sts writer, openrouter writer, convomem export, convomem builder, cli, none]
+      options: [[ issue_areas | tojson ]]

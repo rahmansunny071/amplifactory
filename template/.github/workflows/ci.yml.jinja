@@ -17,7 +17,7 @@ concurrency:
 
 env:
   # Ruff's default rule set changes between releases; pin it so CI and local runs agree.
-  RUFF_VERSION: "0.17.4"
+  RUFF_VERSION: "[[ ruff_version ]]"
 
 jobs:
   test:
@@ -26,7 +26,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ["3.11", "3.12"]
+        python: [[ python_versions | tojson ]]
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6

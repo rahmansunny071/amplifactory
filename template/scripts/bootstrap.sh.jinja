@@ -1,0 +1,125 @@
+#!/usr/bin/env bash
+# One-time setup for a repo generated from agent-factory. Safe to re-run.
+#
+#   ./scripts/bootstrap.sh --public    # recommended: rulesets work and Actions minutes are free
+#   ./scripts/bootstrap.sh --private   # rulesets need GitHub Pro on private repos
+#
+# Does: uv lock, first commit, create + push the GitHub repo, factory labels,
+# a ruleset protecting main (when the plan allows it), and fork-PR approval.
+# Does NOT: add the Claude token. Run /install-github-app in Claude Code after this.
+set -euo pipefail
+
+REPO="[[ maintainer_github ]]/[[ project_name ]]"
+DESCRIPTION="[[ description ]]"
+LABELS=(factory:design factory:designing design:approved factory:building factory:review factory:blocked)
+CHECKS=([% for v in python_versions %]"Tests (Python [[ v ]])" [% endfor %]"Lint")
+
+visibility=""
+for arg in "$@"; do
+  case "$arg" in
+    --public) visibility=public ;;
+    --private) visibility=private ;;
+    -h|--help) sed -n '2,10p' "$0"; exit 0 ;;
+    *) echo "unknown argument: $arg" >&2; exit 2 ;;
+  esac
+done
+if [ -z "$visibility" ]; then
+  echo "Choose --public or --private." >&2
+  exit 2
+fi
+
+for tool in uv git gh; do
+  command -v "$tool" >/dev/null || { echo "missing required tool: $tool" >&2; exit 1; }
+done
+cd "$(dirname "$0")/.."
+
+step() { printf '\n== %s\n' "$*"; }
+
+step "Lockfile"
+uv lock
+
+step "Local git repository"
+if [ ! -d .git ]; then
+  git init -q -b main
+fi
+if ! git rev-parse -q --verify HEAD >/dev/null; then
+  git add -A
+  git commit -q -m "Scaffold [[ project_name ]] from agent-factory"
+  echo "created the first commit"
+else
+  echo "already has commits"
+fi
+
+step "GitHub repository ($visibility)"
+if gh repo view "$REPO" >/dev/null 2>&1; then
+  echo "$REPO already exists"
+  git remote get-url origin >/dev/null 2>&1 || git remote add origin "git@github.com:$REPO.git"
+  git push -u origin main
+else
+  gh repo create "$REPO" "--$visibility" --source . --remote origin --push --description "$DESCRIPTION"
+fi
+
+step "Factory labels"
+for label in "${LABELS[@]}"; do
+  gh label create "$label" -R "$REPO" --force >/dev/null
+  echo "  $label"
+done
+
+step "Ruleset protecting main"
+if gh api "repos/$REPO/rulesets" --jq '.[].name' 2>/dev/null | grep -qx "Protect main"; then
+  echo "already present"
+else
+  checks_json=$(printf '{"context":"%s"},' "${CHECKS[@]}")
+  checks_json="[${checks_json%,}]"
+  ruleset=$(cat <<JSON
+{
+  "name": "Protect main",
+  "target": "branch",
+  "enforcement": "active",
+  "conditions": { "ref_name": { "include": ["~DEFAULT_BRANCH"], "exclude": [] } },
+  "bypass_actors": [ { "actor_id": 5, "actor_type": "RepositoryRole", "bypass_mode": "pull_request" } ],
+  "rules": [
+    { "type": "deletion" },
+    { "type": "non_fast_forward" },
+    { "type": "pull_request", "parameters": {
+        "required_approving_review_count": 1,
+        "dismiss_stale_reviews_on_push": true,
+        "require_code_owner_review": true,
+        "require_last_push_approval": true,
+        "required_review_thread_resolution": false } },
+    { "type": "required_status_checks", "parameters": {
+        "strict_required_status_checks_policy": false,
+        "required_status_checks": $checks_json } }
+  ]
+}
+JSON
+)
+  if echo "$ruleset" | gh api -X POST "repos/$REPO/rulesets" --input - >/dev/null 2>&1; then
+    echo "created: no deletion or force push; PR + 1 approval; checks: ${CHECKS[*]}"
+  else
+    echo "WARNING: could not create the ruleset (private repos need GitHub Pro). main is NOT protected." >&2
+  fi
+fi
+
+step "Fork pull requests"
+if [ "$visibility" = public ]; then
+  gh api -X PUT "repos/$REPO/actions/permissions/fork-pr-contributor-approval" \
+    -f approval_policy=all_external_contributors >/dev/null
+  echo "workflows from fork PRs need approval for all external contributors"
+else
+  echo "private repo: only collaborators can fork; nothing to set"
+fi
+
+cat <<EOF
+
+Done: https://github.com/$REPO
+
+Remaining (manual):
+  1. In Claude Code, run /install-github-app, pick $REPO and choose your subscription.
+     That saves the CLAUDE_CODE_OAUTH_TOKEN secret. If it needs the workflow scope first:
+       gh auth refresh -h github.com -s repo,workflow
+     Decline (close) the installer's own claude.yml / claude-code-review.yml PR:
+     factory-chat.yml and factory-review.yml already cover those, with sender and fork checks.
+  2. Keep yourself the only collaborator with Triage access or higher.
+  3. Dry run: open an issue with the Factory task template and add factory:design.
+EOF
