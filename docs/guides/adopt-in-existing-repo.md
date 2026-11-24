@@ -26,7 +26,7 @@ Because `.copier-answers.yml` now exists, later releases come in with `uvx copie
 If you only want the Claude Code skill:
 
 ```bash
-git -C /path/to/agent-factory archive v0.5.0 template/.claude/skills/factory \
+git -C /path/to/agent-factory archive v0.5.1 template/.claude/skills/factory \
   | tar -x --strip-components=2 -C .claude/
 ```
 
