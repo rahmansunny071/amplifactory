@@ -106,6 +106,14 @@ ruff_version:
   help: Pinned ruff version (its default rules change between releases)
   default: "0.17.4"
 
+release_phase:
+  type: str
+  help: >-
+    mvp until the first formal release (fix only blockers in-PR; everything else becomes an
+    improvement issue), then hardening (thorough reviews and re-reviews)
+  choices: [mvp, hardening]
+  default: mvp
+
 agent_model:
   type: str
   help: Model the factory agents use (sonnet is the sensible default on Pro)

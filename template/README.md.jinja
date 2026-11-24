@@ -30,11 +30,13 @@ Agent rules live in [`CLAUDE.md`](CLAUDE.md); the stage prompts in [`.claude/com
 
 The labels above wait for you at every step. The **`factory` skill** (`.claude/skills/factory/`) runs the same pipeline from a Claude Code session, with the maintainer in the loop by exception:
 
-- **Brainstorm → issues:** talk an idea through with Claude (Opus). It proposes a breakdown, you confirm once, Sonnet subagents draft the issues and Opus checks and creates them with dependency links.
-- **Run:** for each ready issue in dependency order (`python .claude/skills/factory/scripts/queue.py`): Sonnet writes the design PR → an Opus subagent reviews it → Sonnet builds the implementation PR → CI → a fresh Opus subagent reviews it → Opus auto-merges when every gate in `references/gates.md` passes.
-- **Stops and asks** whenever it's genuinely unsure, a gate fails, or a change touches workflows, dependencies, the version or `CLAUDE.md`.
+- **Brainstorm → issues:** talk an idea through with Claude (Opus). It identifies the main path, proposes a breakdown, you confirm once, and the issues are created with dependency links.
+- **Run:** per ready issue (`python .claude/skills/factory/scripts/queue.py`, main path first): **one Sonnet builder** plans, builds and fixes, and **one fresh Opus reviewer** reviews, in parallel with CI. Critical issues (privacy/security, new dependencies, shared data contracts) also get an Opus design review. Opus merges when the gates in `references/gates.md` pass.
+- **Urgency first:** in the `mvp` release phase (`CLAUDE.md`), only blockers are fixed in-PR; everything else is filed as an `improvement` issue.
+- **Stops and asks** whenever it's genuinely unsure, a gate fails, or it would rely on an unverified assumption about real data.
+- **Run log:** `.factory/runs/` records each step, so a fresh session resumes mid-issue; `scripts/runlog.py summary` reports time and tokens per issue.
 
-Start it by asking Claude Code to "brainstorm X into issues" or "run the factory". It never adds `factory:design` or `design:approved`, so the Actions workflows don't run the same work twice.
+Start it by asking Claude Code to "brainstorm X into issues" or "run the factory". It never adds `factory:design` or `design:approved`, so the Actions workflows don't duplicate the work.
 
 ### Changing the factory itself
 

@@ -1,7 +1,9 @@
 """Factory work queue: which open issues are ready to pick up, in dependency order.
 
 An issue is READY when it is open, every issue on its "Depends on #A, #B" line is closed, and it
-carries none of the in-progress or blocked labels. Reads issues with `gh` (stdlib only).
+carries none of the in-progress or blocked labels. Within each state, issues labelled `improvement` come
+after main-path issues: before a first release, the main path comes first. Reads issues with `gh`
+(stdlib only).
 
     python .claude/skills/factory/scripts/queue.py            # table
     python .claude/skills/factory/scripts/queue.py --json     # machine-readable
@@ -19,6 +21,7 @@ from dataclasses import asdict, dataclass, field
 
 IN_PROGRESS = ("factory:designing", "factory:building", "factory:review")
 BLOCKED = "factory:blocked"
+IMPROVEMENT = "improvement"
 _DEPENDS_LINE = re.compile(r"^\W*depends on\b(?P<rest>.*)$", re.IGNORECASE | re.MULTILINE)
 _ISSUE_REF = re.compile(r"(?<![\w/])#(\d+)\b")
 
@@ -31,6 +34,7 @@ class Item:
     depends_on: list[int] = field(default_factory=list)
     open_dependencies: list[int] = field(default_factory=list)
     labels: list[str] = field(default_factory=list)
+    improvement: bool = False
 
 
 def dependencies(body: str) -> list[int]:
@@ -60,9 +64,11 @@ def build_queue(issues: list[dict]) -> list[Item]:
             state = "waiting"
         else:
             state = "ready"
-        items.append(Item(number, issue["title"], state, deps, waiting_on, labels))
+        items.append(
+            Item(number, issue["title"], state, deps, waiting_on, labels, IMPROVEMENT in labels)
+        )
     order = {"in-progress": 0, "ready": 1, "blocked": 2, "waiting": 3}
-    return sorted(items, key=lambda item: (order[item.state], item.number))
+    return sorted(items, key=lambda item: (order[item.state], item.improvement, item.number))
 
 
 def fetch_issues() -> list[dict]:
@@ -91,10 +97,13 @@ def render(items: list[Item]) -> str:
     lines = [f"{'#':>5}  {'state':<11}  {'waits on':<12}  title"]
     for item in items:
         waits = ", ".join(f"#{d}" for d in item.open_dependencies) or "-"
-        lines.append(f"{item.number:>5}  {item.state:<11}  {waits:<12}  {item.title}")
-    ready = [f"#{i.number}" for i in items if i.state == "ready"]
+        mark = " (improvement)" if item.improvement else ""
+        lines.append(f"{item.number:>5}  {item.state:<11}  {waits:<12}  {item.title}{mark}")
+    main = [f"#{i.number}" for i in items if i.state == "ready" and not i.improvement]
+    extra = [f"#{i.number}" for i in items if i.state == "ready" and i.improvement]
     lines.append("")
-    lines.append(f"Ready, in order: {', '.join(ready) if ready else 'none'}")
+    lines.append(f"Ready, main path first: {', '.join(main) if main else 'none'}")
+    lines.append(f"Ready improvements: {', '.join(extra) if extra else 'none'}")
     return "\n".join(lines)
 
 
@@ -129,6 +138,14 @@ def _self_test() -> None:
             "labels": [{"name": "factory:review"}],
             "body": "",
         },
+        {
+            "number": 6,
+            "title": "edge case",
+            "state": "OPEN",
+            "labels": [{"name": "improvement"}],
+            "body": "- Depends on #1 (model).",
+        },
+        {"number": 7, "title": "writer", "state": "OPEN", "labels": [], "body": "Depends on #1"},
     ]
     assert dependencies(issues[1]["body"]) == [1]
     assert dependencies(issues[2]["body"]) == [1, 2, 3]
@@ -137,7 +154,9 @@ def _self_test() -> None:
     assert queue[3].state == "waiting" and queue[3].open_dependencies == [2], queue[3]
     assert queue[4].state == "blocked", queue[4]
     assert queue[5].state == "in-progress", queue[5]
-    assert [i.number for i in build_queue(issues)] == [5, 2, 4, 3]
+    assert queue[6].state == "ready" and queue[6].improvement, queue[6]
+    # ready main-path issues (2, 7) before the ready improvement (6)
+    assert [i.number for i in build_queue(issues)] == [5, 2, 7, 6, 4, 3]
     print("queue.py self-test: ok")
 
 
