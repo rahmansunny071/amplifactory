@@ -80,6 +80,11 @@ jobs:
           need .claude/skills/factory/references/gates.md 'gh run watch'
           need .gitignore '.factory/runs/'
           need scripts/bootstrap.sh 'factory:blocked improvement)'
+          # skill PRs (local/issue-N) must not trigger the Actions review (factory/issue-*)
+          need .claude/skills/factory/SKILL.md '-b local/issue-N'
+          need .github/workflows/factory-review.yml "startsWith(github.event.pull_request.head.ref, 'factory/issue-')"
+          if grep -q 'factory/issue-' .claude/skills/factory/references/briefs.md; then echo "::error::skill briefs must use local/issue-N branches"; fail=1; fi
+          if grep -q 'ask once whether to' .claude/skills/factory/SKILL.md; then echo "::error::the per-run Actions-review question was removed in v0.3.1"; fail=1; fi
           if grep -q 'sleep ' .claude/skills/factory/references/gates.md; then echo "::error::gates.md must not use sleep loops"; fail=1; fi
           uv run --no-project --python 3.12 python .claude/skills/factory/scripts/runlog.py --self-test || fail=1
           # the review job must stay read-only and restricted

@@ -40,7 +40,7 @@ Open Claude Code in the repo, on Opus, and say what you want:
 
 **It stops and asks** when it's unsure; when a reviewer isn't confident about a blocker; when blockers persist after two fix rounds; when a change touches workflows, unplanned dependencies, the version or `CLAUDE.md`; or when it would rely on an assumption about real data it can't verify. In that last case it asks you to run a shape-only check on your own data.
 
-It never adds the Actions trigger labels (`factory:design`, `design:approved`) or writes `@claude`, so the two modes never duplicate work.
+The two modes never trigger each other: the skill works on **`local/issue-N`** branches (the Actions review only watches `factory/issue-*`), and it never adds the Actions trigger labels (`factory:design`, `design:approved`) or writes `@claude`. If you only ever use the skill, you can also disable the Actions workflows with `gh workflow disable`.
 
 **Using the skill in a repo not generated from this template:** copy `template/.claude/skills/factory/` from a release tag into the repo's `.claude/skills/factory/`, and add a "Release phase" section to its `CLAUDE.md`. The skill expects the stage prompts in `.claude/commands/` and the labels above.
 
