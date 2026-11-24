@@ -1,0 +1,42 @@
+name: Docs
+
+# Builds the MkDocs site on every PR that touches it, and on main publishes it to the gh-pages
+# branch, which GitHub Pages serves at https://rahmansunny071.github.io/agent-factory/.
+on:
+  push:
+    branches: [main]
+    paths: ["docs/**", "mkdocs.yml", "overrides/**", "hooks/**", "CHANGELOG.md", ".github/workflows/docs.yml"]
+  pull_request:
+    paths: ["docs/**", "mkdocs.yml", "overrides/**", "hooks/**", "CHANGELOG.md", ".github/workflows/docs.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: docs-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      NO_MKDOCS_2_WARNING: "1"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install "mkdocs-material>=9.5"
+      - name: Build (strict)
+        if: github.event_name == 'pull_request'
+        run: mkdocs build --strict
+      - name: Deploy to gh-pages
+        if: github.event_name != 'pull_request'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          mkdocs gh-deploy --strict --force

@@ -1,0 +1,96 @@
+site_name: agent-factory
+site_description: An issue-driven agent factory on Claude Code, as a Copier template.
+site_url: https://rahmansunny071.github.io/agent-factory/
+repo_url: https://github.com/rahmansunny071/agent-factory
+repo_name: agent-factory
+docs_dir: docs
+strict: true
+hooks:
+  - hooks/changelog.py
+
+theme:
+  name: material
+  custom_dir: overrides
+  icon:
+    logo: material/factory
+    repo: fontawesome/brands/github
+  favicon: assets/favicon.svg
+  font:
+    text: Inter
+    code: JetBrains Mono
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: white
+      accent: teal
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      accent: teal
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.top
+    - navigation.footer
+    - navigation.instant
+    - toc.follow
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.tabs.link
+
+extra_css:
+  - stylesheets/extra.css
+extra_javascript:
+  - javascripts/lede.js
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      title: On this page
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+nav:
+  - Documentation:
+      - Overview: index.md
+      - Get started:
+          - Create a project: getting-started/create-a-project.md
+          - Your first run: getting-started/first-run.md
+      - Concepts:
+          - Lanes and priorities: concepts/lanes.md
+          - The pipeline: concepts/pipeline.md
+          - Flag and continue: concepts/flag-and-continue.md
+          - Where knowledge lives: concepts/where-knowledge-lives.md
+          - The GitHub Actions mode: concepts/actions-mode.md
+  - Guides:
+      - Day-to-day: guides/day-to-day.md
+      - Adopt in an existing repo: guides/adopt-in-existing-repo.md
+      - Evolving the template: guides/evolving-the-template.md
+  - Reference:
+      - Copier questions: reference/questions.md
+      - Scripts: reference/scripts.md
+      - Merge gates: reference/gates.md
+      - Labels: reference/labels.md
+      - Guardrails: reference/guardrails.md
+      - Troubleshooting: reference/troubleshooting.md
+      - Changelog: reference/changelog.md
