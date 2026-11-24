@@ -51,6 +51,25 @@ jobs:
           for f in .github/workflows/*.yml .github/ISSUE_TEMPLATE/*.yml .copier-answers.yml; do
             uvx --from pyyaml python -c "import sys, yaml; yaml.safe_load(open(sys.argv[1]))" "$f"
           done
+      # Regression guards for lessons learned driving generated factories (agent-factory#3–#7).
+      - name: Factory guardrails present
+        working-directory: ${{ runner.temp }}/out
+        run: |
+          fail=0
+          need() { grep -qF -- "$2" "$1" || { echo "::error file=$1::missing: $2"; fail=1; }; }
+          need .github/workflows/factory-build.yml  'Design branch only changes .factory/designs/'   # 3
+          need .github/workflows/factory-build.yml  'restrict_untrusted_prs: "false"'                # 3
+          need .github/workflows/factory-chat.yml   'restrict_untrusted_prs: "false"'                # 3
+          need .github/workflows/factory-review.yml 'allowed_bots: "claude"'                         # 5
+          need .github/workflows/factory-review.yml 'Bash(gh pr checks:*)'                           # 6
+          need .claude/commands/build-from-design.md 'never exit quietly'                            # 3
+          need .claude/commands/review-against-design.md 'gh pr checks $ARGUMENTS'                   # 6
+          need README.md 'Changing the factory itself'                                               # 4, 7
+          # the review job must stay read-only and restricted
+          if grep -q 'restrict_untrusted_prs' .github/workflows/factory-review.yml; then
+            echo "::error::factory-review must keep restrict_untrusted_prs at its default"; fail=1
+          fi
+          exit $fail
       - name: bootstrap.sh is executable and parses
         working-directory: ${{ runner.temp }}/out
         run: test -x scripts/bootstrap.sh && bash -n scripts/bootstrap.sh

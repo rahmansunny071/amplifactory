@@ -11,6 +11,9 @@ You are the BUILD agent for issue #$ARGUMENTS. The approved spec is
    user-visible changes.
 3. Run every step of "Definition of checks pass" in CLAUDE.md. Fix and re-run
    until all pass. If you can't get them green after a real effort, stop.
+   If a command you need is denied or unavailable, never exit quietly: comment
+   on the design PR with the exact command and the error, add factory:blocked
+   to the issue, and stop. A run that ends without a PR must leave that trail.
 4. If you had to deviate from the design, don't silently diverge. Either:
    - Minor (naming, file placement): proceed and list it under "Deviations".
    - Material (scope, interfaces, new deps, anything under Risks): stop,
@@ -21,5 +24,7 @@ You are the BUILD agent for issue #$ARGUMENTS. The approved spec is
    ## Summary
    ## Checks run (paste the commands and pass/fail)
    ## Deviations from design (or "None")
+   If the change touches .github/workflows/, say so at the top of the body:
+   agent stages whose workflow it modifies will skip on this PR.
 6. Close the draft design PR with a comment linking the new PR (the design
    file ships inside the implementation PR). Set issue label → factory:review.
