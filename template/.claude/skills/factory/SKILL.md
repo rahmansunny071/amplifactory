@@ -32,6 +32,13 @@ every change was made.
    stop: nothing built on it can be trusted.
 3. **Read** `CLAUDE.md` (project context, "Definition of checks pass", hard rules) and the three stage
    prompts in `.claude/commands/`. The subagents follow those prompts; you enforce them.
+4. **Repo slug.** Get it once with `gh repo view --json nameWithOwner -q .nameWithOwner` and paste
+   that exact value into every brief's `<owner/repo>`. Don't type it from memory: a one-character
+   typo sends a subagent's `gh` calls to the wrong repo.
+5. **The Actions review.** If `.github/workflows/factory-review.yml` exists and is enabled, ask the
+   user once whether to disable it for this run (`gh workflow disable factory-review.yml`). It runs a
+   second, weaker review on every push to `factory/issue-*`, and it spends usage. Re-enable it at
+   the end if you disabled it.
 
 ## Mode 1: Brainstorm → issues
 
@@ -88,7 +95,11 @@ succeeded.
 brief. It returns `APPROVE`, `REVISE` (with concrete changes) or `ASK` (questions only the maintainer
 can answer), plus its confidence, and posts its review on the design PR.
 - `REVISE`: send the changes to a Sonnet subagent (the "Design reviser" brief) on the same branch, then
-  review again. Allow two rounds at most; if it still isn't converging, stop and ask.
+  run the **narrow** "Design final check" brief. It verifies the requested changes and checks for
+  regressions without reopening settled points. Allow two rounds at most; if it still isn't
+  converging, stop and ask.
+- Reviewer `notes` (non-blocking) don't go back into the design: collect them and pass them to the
+  Builder in its "Reviewer notes" slot.
 - `ASK`, or confidence below high, or the design leaves real "Open questions": stop and ask the user
   (see "Stopping to ask").
 - `APPROVE`: post a short comment on the design PR saying the orchestrator approved it and why. That is
@@ -108,8 +119,11 @@ intent.
 **5. Code review (Opus).** Spawn a fresh Opus subagent with the "Code reviewer" brief. It follows
 `.claude/commands/review-against-design.md`, verifies "Checks run" with `gh pr checks`, posts one review
 comment and returns `READY`, `NEEDS_CHANGES` (with a list) or `ASK`, plus confidence and the gate
-checklist. For `NEEDS_CHANGES`, run a Sonnet "Fixer" on the branch, then a **new** Opus review. Allow
-two rounds at most.
+checklist. For `NEEDS_CHANGES`, run a Sonnet "Fixer" on the branch, then a **new** Opus review with
+the "Code re-review" brief: verify the fixes, then review afresh. Allow two rounds at most.
+Items the reviewer marks `(optional)` don't block the merge. File them as follow-up issues, with the
+Issue writer brief, linked to this one. If a follow-up must land before another open issue (e.g. it
+fixes something that issue relies on), add it to that issue's "Depends on" line.
 
 **6. Merge (you).** Check every gate in `references/gates.md` yourself. Don't take the reviewer's word
 for the mechanical ones: run the commands. If all pass:
@@ -134,7 +148,10 @@ merge costs much more. Stop when:
 - any merge gate fails, especially changes to `.github/workflows/`, dependencies, the version,
   release tooling or `CLAUDE.md`;
 - the work needs something `CLAUDE.md` forbids, or an external spec or decision you can't verify;
-- a subagent added `factory:blocked`.
+- a subagent added `factory:blocked`;
+- **two consecutive review rounds find new defects in the same feature or area.** Each fix is
+  exposing more of a problem, often a premise nobody verified. Ask whether to keep, simplify or
+  split that part out before spending the remaining rounds on it.
 
 **How to stop:** add `factory:blocked` to the issue, post a comment with the specific question and the
 options you see (with your recommendation), and ask the user in the session with `AskUserQuestion`.
@@ -148,9 +165,10 @@ Both can live in the same repo. To avoid double work:
 - Never add `factory:design` or `design:approved` from this skill; those start the Actions workflows.
   Status labels (`factory:designing`, `factory:building`, `factory:review`, `factory:blocked`) start
   nothing.
-- Branches named `factory/issue-N` also start the Actions **review** job when the PR opens. That gives
-  a second opinion, but it spends usage. If the maintainer prefers, `gh workflow disable
-  factory-review.yml` while running locally.
+- Branches named `factory/issue-N` also start the Actions **review** job on every push. In practice
+  it's a weaker second opinion: on its first real run it called a PR "Ready" that the Opus review
+  then found six reproduced defects in. It also spends usage. That's why "Before you start" asks
+  whether to disable it for the run.
 - Don't write `@claude` in any comment you post: it would start `factory-chat`.
 
 ## When you're done
