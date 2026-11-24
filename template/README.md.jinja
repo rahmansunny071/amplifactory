@@ -33,7 +33,8 @@ The labels above wait for you at every step. The **`factory` skill** (`.claude/s
 - **Brainstorm → issues:** talk an idea through with Claude (Opus). It identifies the main path, proposes a breakdown, you confirm once, and the issues are created with dependency links.
 - **Run:** per ready issue (`python .claude/skills/factory/scripts/queue.py`, main path first): **one Sonnet builder** plans, builds and fixes, and **one fresh Opus reviewer** reviews, in parallel with CI. Critical issues (privacy/security, new dependencies, shared data contracts) also get an Opus design review. Opus merges when the gates in `references/gates.md` pass.
 - **Urgency first:** in the `mvp` release phase (`CLAUDE.md`), only blockers are fixed in-PR; everything else is filed as an `improvement` issue.
-- **Stops and asks** whenever it's genuinely unsure, a gate fails, or it would rely on an unverified assumption about real data.
+- **Flags and continues:** when it needs you (it's unsure, a gate fails, or it would rely on an unverified assumption about real data), it asks **inline on the PR** with options and a recommendation, labels it `factory:needs-maintainer`, and works on other issues. Reply in the threads, then say "resume the factory".
+- **Handoffs:** every PR keeps a "## Handoff" section, so a new session or reviewer starts from it. Its gist is saved to `.factory/designs/` at merge.
 - **Run log:** `.factory/runs/` records each step, so a fresh session resumes mid-issue; `scripts/runlog.py summary` reports time and tokens per issue.
 
 Start it by asking Claude Code to "brainstorm X into issues" or "run the factory". It never adds `factory:design` or `design:approved`, so the Actions workflows don't duplicate the work.

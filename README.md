@@ -4,7 +4,7 @@
 
 Every generated repo gets one process, with two ways to run it:
 
-- **Interactive: the `factory` skill** (recommended). From a Claude Code session, brainstorm with Claude into dependency-linked issues, then let it take each ready issue from plan to merged PR. A Sonnet builder plans, builds and fixes; a fresh Opus reviewer checks the work; Opus merges when the gates pass. You're in the loop **by exception**: it stops and asks whenever it's unsure.
+- **Interactive: the `factory` skill** (recommended). From a Claude Code session, brainstorm with Claude into dependency-linked issues, then let it take each ready issue from plan to merged PR. A Sonnet builder plans, builds and fixes; a fresh Opus reviewer checks the work; Opus merges when the gates pass. When it needs you, it **asks on the PR** (inline comments, with options and a recommendation) and keeps working on other issues; you answer whenever you like, then say "resume".
 - **Async: GitHub Actions.** Label an issue, and agents on GitHub-hosted runners write a design, wait for your approval label, build and review. Slower, because it waits for you at every step, but nothing runs on your machine.
 
 Either way you stay the only one who can start work, approve it, merge to `main` or publish. Every change lands with its plan (`.factory/designs/issue-N.md`), its PR checks and its review on record.
@@ -30,6 +30,7 @@ Open Claude Code in the repo, on Opus, and say what you want:
 | You say | What happens |
 |---|---|
 | *"brainstorm X into issues"* | Claude brainstorms with you, identifies the **main path** (the smallest chain that makes X work end to end), proposes a breakdown, **you confirm once**, and it creates Factory-task issues with dependency links |
+| *"resume the factory"* | Picks up PRs where you've answered its questions: applies your answers (Opus directly for small edits, a Sonnet builder otherwise), checks them, resolves the threads and merges |
 | *"run the factory"* / *"pick up #N"* | For each ready issue (`scripts/queue.py`, main path first): Sonnet **plans** → the plan is checked (by Opus inline, or by an Opus design review for critical issues) → the same Sonnet agent **builds** and opens the PR → a fresh Opus **reviews** in parallel with CI → the same builder fixes **blockers** → Opus checks the gates in `references/gates.md` and **merges** |
 
 **How it keeps cost and latency down** (v0.3.0, from real runs):
@@ -38,7 +39,9 @@ Open Claude Code in the repo, on Opus, and say what you want:
 - **No re-review** of fixes in mvp: CI plus the orchestrator's reproduction of each blocker.
 - **Run log:** `.factory/runs/*.jsonl` (gitignored) records each step, so a fresh session resumes mid-issue, and `scripts/runlog.py summary` reports time and tokens per issue. Start a fresh session every 2–3 issues.
 
-**It stops and asks** when it's unsure; when a reviewer isn't confident about a blocker; when blockers persist after two fix rounds; when a change touches workflows, unplanned dependencies, the version or `CLAUDE.md`; or when it would rely on an assumption about real data it can't verify. In that last case it asks you to run a shape-only check on your own data.
+**It never waits on you in the session. It flags and continues.** When it's unsure, when a reviewer raises a question, when a gate fails (workflows, unplanned dependencies, the version, `CLAUDE.md`), or when it would rely on an assumption about real data it can't verify, it posts the question **inline on the PR** with options and a recommendation, labels the issue and PR `factory:needs-maintainer`, and moves on to independent work. Reply in the threads (or use `@claude` on the PR to have the Actions agent apply it right away), then say "resume the factory". Nothing merges until every review thread is resolved; `bootstrap.sh` also turns on GitHub's "require conversation resolution".
+
+**Where knowledge lives.** GitHub and the repo are the source of truth: issues, PRs, review threads, plans and implementation notes (`.factory/designs/`), `CLAUDE.md`. Each PR keeps a **Handoff** section (what changed and why, decisions, how to test, what's open), so a fresh session or a replacement agent starts from it rather than from scratch, and its gist lands in the design file at merge. The run log is only a local cache and cost ledger that points at GitHub.
 
 The two modes never trigger each other: the skill works on **`local/issue-N`** branches (the Actions review only watches `factory/issue-*`), and it never adds the Actions trigger labels (`factory:design`, `design:approved`) or writes `@claude`. If you only ever use the skill, you can also disable the Actions workflows with `gh workflow disable`.
 
@@ -111,7 +114,7 @@ See [`CHANGELOG.md`](CHANGELOG.md) for what each release changed and why.
 | `.github/ISSUE_TEMPLATE/factory-task.yml` | Factory task template (never auto-applies `factory:design`) |
 | `.github/CODEOWNERS` | You own `.github/` |
 | `.factory/designs/` | Plans, shipped inside each implementation PR |
-| `.factory/runs/` | The skill's run logs (gitignored) |
+| `.factory/runs/` | The skill's run log: a local cache and cost ledger pointing at PRs, commits and threads (gitignored) |
 | `pyproject.toml`, package, `tests/` | Minimal uv/hatchling skeleton so the checks run from day one |
 | `scripts/bootstrap.sh` | One-time GitHub setup (above) |
 
@@ -120,7 +123,7 @@ See [`CHANGELOG.md`](CHANGELOG.md) for what each release changed and why.
 - **Only you advance work.** Every Actions trigger checks the sender is `maintainer_github`, and a label guard strips trigger labels anyone else adds. The skill runs in your session and stops to ask at defined points.
 - **Forks can't run agents.** Build, review and chat refuse PRs from forks, and fork-PR workflows need your approval.
 - **Least privilege per stage.** Reviewers can't push. The build step refuses design branches that touch anything outside `.factory/designs/`. Per-stage tool allowlists apply.
-- **Merge gates** (skill): CI green, no open blockers, no workflow, unplanned dependency, version or `CLAUDE.md` changes, deviations disclosed. Merges use merge commits, so release tags stay on `main`.
+- **Merge gates** (skill): CI green, no open blockers, **all review threads resolved**, Handoff present, no workflow, unplanned dependency, version or `CLAUDE.md` changes, deviations disclosed. Merges use merge commits, so release tags stay on `main`.
 - **Bounded cost.** `timeout-minutes`, `--max-turns` and per-issue `concurrency` on every Actions job; pinned models; the skill's urgency triage and run-log cost report.
 - Agents may not touch `.github/workflows/`, bump versions or publish unless the approved plan says so. Workflow changes go in their own PR.
 

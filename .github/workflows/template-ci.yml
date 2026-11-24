@@ -79,7 +79,16 @@ jobs:
           need .claude/skills/factory/references/briefs.md 'SendMessage'
           need .claude/skills/factory/references/gates.md 'gh run watch'
           need .gitignore '.factory/runs/'
-          need scripts/bootstrap.sh 'factory:blocked improvement)'
+          need scripts/bootstrap.sh 'factory:needs-maintainer improvement)'
+          need scripts/bootstrap.sh '"required_review_thread_resolution": true'
+          # v0.4.0: flag and continue, resume, handoffs, threads gate
+          need .claude/skills/factory/SKILL.md '### Flag and continue'
+          need .claude/skills/factory/SKILL.md '### Resume'
+          need .claude/skills/factory/references/briefs.md '## The Handoff'
+          need .claude/skills/factory/references/briefs.md '## Resume builder'
+          need .claude/skills/factory/references/gates.md 'All review threads resolved'
+          need .claude/skills/factory/references/gates.md 'resolveReviewThread'
+          need CLAUDE.md '## Where knowledge lives'
           # skill PRs (local/issue-N) must not trigger the Actions review (factory/issue-*)
           need .claude/skills/factory/SKILL.md '-b local/issue-N'
           need .github/workflows/factory-review.yml "startsWith(github.event.pull_request.head.ref, 'factory/issue-')"
