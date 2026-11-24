@@ -88,4 +88,4 @@ Template files live in `template/`; files ending in `.jinja` are rendered. Copie
 uvx copier copy --defaults --vcs-ref HEAD --data project_name=demo --data "description=Demo." . /tmp/demo
 ```
 
-Created by **[Sajjadur Rahman](https://sajjadur.net/)**. Factory design adapted from the convomem-arena agent factory.
+Created by **[Sajjadur Rahman](https://sajjadur.net/)**. 
