@@ -1,0 +1,37 @@
+name: factory-build
+# Fires when the maintainer adds design:approved to a design/issue-N PR.
+on:
+  pull_request:
+    types: [labeled]
+
+jobs:
+  build:
+    if: >
+      github.event.label.name == 'design:approved' &&
+      github.event.sender.login == 'rahmansunny071' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      startsWith(github.event.pull_request.head.ref, 'design/issue-')
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    concurrency:
+      group: factory-${{ github.event.pull_request.head.ref }}
+      cancel-in-progress: false
+    permissions: { contents: write, pull-requests: write, issues: write, id-token: write }
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+      - id: issue
+        run: echo "n=${HEAD_REF#design/issue-}" >> "$GITHUB_OUTPUT"
+        env: { HEAD_REF: "${{ github.event.pull_request.head.ref }}" }
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --locked --extra dev
+      - uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: "/build-from-design ${{ steps.issue.outputs.n }}"
+          claude_args: >-
+            --model sonnet
+            --max-turns 80
+            --allowedTools "Read,Glob,Grep,Write,Edit,Bash(git:*),Bash(uv run --no-sync pytest:*),Bash(uvx ruff@0.17.4:*),Bash(gh pr:*),Bash(gh issue:*),Bash(gh label:*)"

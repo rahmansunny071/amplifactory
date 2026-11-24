@@ -1,0 +1,53 @@
+name: factory-chat
+# Revisions via "@claude ..." comments on design and implementation PRs.
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+
+jobs:
+  # Refuse to run on PRs from forks: this workflow has secrets and runs code.
+  gate:
+    if: >
+      contains(github.event.comment.body, '@claude') &&
+      github.event.comment.user.login == 'rahmansunny071'
+    runs-on: ubuntu-latest
+    permissions: { pull-requests: read, issues: write }
+    outputs:
+      ok: ${{ steps.check.outputs.ok }}
+    steps:
+      - id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ (github.event.issue.pull_request && github.event.issue.number) || github.event.pull_request.number }}
+          NUM: ${{ github.event.issue.number || github.event.pull_request.number }}
+        run: |
+          if [ -z "$PR" ]; then echo "ok=true" >> "$GITHUB_OUTPUT"; exit 0; fi
+          cross=$(gh pr view "$PR" -R "$GITHUB_REPOSITORY" --json isCrossRepository -q .isCrossRepository)
+          if [ "$cross" = "true" ]; then
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+            gh issue comment "$NUM" -R "$GITHUB_REPOSITORY" \
+              --body "Factory agents don't run on PRs from forks. Review this one by hand, or open a factory issue from it."
+          else
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  chat:
+    needs: gate
+    if: needs.gate.outputs.ok == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions: { contents: write, pull-requests: write, issues: write, id-token: write }
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --locked --extra dev
+      - uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          claude_args: >-
+            --model sonnet
+            --max-turns 40
+            --allowedTools "Read,Glob,Grep,Write,Edit,Bash(git:*),Bash(uv run --no-sync pytest:*),Bash(uvx ruff@0.17.4:*)"

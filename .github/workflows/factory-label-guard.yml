@@ -1,0 +1,27 @@
+name: factory-label-guard
+# Strips a trigger label added by anyone but the maintainer (defense in depth;
+# the sender checks in the factory workflows are the real enforcement).
+on:
+  issues:
+    types: [labeled]
+  pull_request_target:        # metadata only; never check out PR code here
+    types: [labeled]
+
+jobs:
+  guard:
+    if: >
+      (github.event.label.name == 'factory:design' ||
+       github.event.label.name == 'design:approved') &&
+      github.event.sender.login != 'rahmansunny071'
+    runs-on: ubuntu-latest
+    permissions: { issues: write, pull-requests: write }
+    steps:
+      - env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NUM: ${{ github.event.issue.number || github.event.pull_request.number }}
+          LABEL: ${{ github.event.label.name }}
+          WHO: ${{ github.event.sender.login }}
+        run: |
+          gh issue edit "$NUM" -R "$GITHUB_REPOSITORY" --remove-label "$LABEL"
+          gh issue comment "$NUM" -R "$GITHUB_REPOSITORY" \
+            --body "Removed \`$LABEL\`: only the maintainer can start or approve factory work (added by @$WHO)."

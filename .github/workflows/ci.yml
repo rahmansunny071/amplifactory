@@ -1,0 +1,49 @@
+name: CI
+
+# Tests and lint on every pull request and every push to main.
+# All tests run offline on synthetic fixtures (no network, model or real traces).
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Ruff's default rule set changes between releases; pin it so CI and local runs agree.
+  RUFF_VERSION: "0.17.4"
+
+jobs:
+  test:
+    name: Tests (Python ${{ matrix.python }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - name: Install (locked)
+        run: uv sync --locked --extra dev --python ${{ matrix.python }}
+      - name: Run tests
+        run: uv run --no-sync pytest -q
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - name: ruff check
+        run: uvx ruff@${{ env.RUFF_VERSION }} check .
+      - name: ruff format
+        run: uvx ruff@${{ env.RUFF_VERSION }} format --check .

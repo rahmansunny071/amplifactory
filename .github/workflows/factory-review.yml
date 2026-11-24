@@ -1,0 +1,24 @@
+name: factory-review
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  review:
+    if: >
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      startsWith(github.event.pull_request.head.ref, 'factory/issue-')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions: { contents: read, pull-requests: write, id-token: write }
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: "/review-against-design ${{ github.event.pull_request.number }}"
+          claude_args: >-
+            --model sonnet
+            --max-turns 25
+            --allowedTools "Read,Glob,Grep,Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr review:*),Bash(gh pr comment:*)"
