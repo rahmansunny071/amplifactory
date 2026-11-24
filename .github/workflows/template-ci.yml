@@ -79,6 +79,7 @@ jobs:
           need .claude/skills/factory/references/briefs.md 'SendMessage'
           need .claude/skills/factory/references/gates.md 'gh run watch'
           need .gitignore '.factory/runs/'
+          need scripts/bootstrap.sh 'factory:blocked improvement)'
           if grep -q 'sleep ' .claude/skills/factory/references/gates.md; then echo "::error::gates.md must not use sleep loops"; fail=1; fi
           uv run --no-project --python 3.12 python .claude/skills/factory/scripts/runlog.py --self-test || fail=1
           # the review job must stay read-only and restricted
