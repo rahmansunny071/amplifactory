@@ -12,7 +12,8 @@ You are the DESIGN agent for issue #$ARGUMENTS.
 2. Read CLAUDE.md and the code the issue touches. Don't modify anything
    outside .factory/designs/.
 3. Write .factory/designs/issue-$ARGUMENTS.md using EXACTLY this template.
-   Hard cap: ~400 words, excluding the file list.
+   Length cap, excluding the file list: ~400 words for size S, ~800 for M.
+   An L issue should be split; say so under Open questions instead of designing it.
 
    # Design: <title> (#$ARGUMENTS)
    ## Problem            — 2–4 sentences, in terms of user-visible behavior
@@ -27,8 +28,9 @@ You are the DESIGN agent for issue #$ARGUMENTS.
 
 4. Create branch design/issue-$ARGUMENTS, commit the file, push, and open a DRAFT
    PR titled "design: <title> (#$ARGUMENTS)", whose body links the issue.
-5. Comment on the issue with a link to the PR, swap the label
-   factory:design → factory:designing.
+5. Comment on the issue with a link to the PR. Labels: if the issue has
+   factory:design, swap it for factory:designing; otherwise (the local factory
+   skill) just add factory:designing. Never add factory:design or design:approved.
 
 If the issue is too vague to design, don't guess. Comment with the specific
 questions and add factory:blocked.
