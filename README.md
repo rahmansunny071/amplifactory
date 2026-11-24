@@ -2,9 +2,11 @@
 
 **A [Copier](https://copier.readthedocs.io/) template for an issue-driven agent factory on Claude Code.**
 
+📖 **Documentation:** https://rahmansunny071.github.io/agent-factory/
+
 Every generated repo gets one process, with two ways to run it:
 
-- **Interactive: the `factory` skill** (recommended). From a Claude Code session, brainstorm with Claude into dependency-linked issues, then let it take each ready issue from plan to merged PR. A Sonnet builder plans, builds and fixes; a fresh Opus reviewer checks the work; Opus merges when the gates pass. When it needs you, it **asks on the PR** (inline comments, with options and a recommendation) and keeps working on other issues; you answer whenever you like, then say "resume".
+- **Interactive: the `factory` skill** (recommended). From a Claude Code session, brainstorm with Claude into prioritized lanes of ordered issues, then let it take each issue from plan to merged PR. A Sonnet builder plans, builds and fixes; a fresh Opus reviewer checks the work; Opus merges when the gates pass. When it needs you, it **asks on the PR** (inline comments, with options and a recommendation) and keeps working on other issues; you answer whenever you like, then say "resume".
 - **Async: GitHub Actions.** Label an issue, and agents on GitHub-hosted runners write a design, wait for your approval label, build and review. Slower, because it waits for you at every step, but nothing runs on your machine.
 
 Either way you stay the only one who can start work, approve it, merge to `main` or publish. Every change lands with its plan (`.factory/designs/issue-N.md`), its PR checks and its review on record.
@@ -130,6 +132,9 @@ See [`CHANGELOG.md`](CHANGELOG.md) for what each release changed and why.
 - Agents may not touch `.github/workflows/`, bump versions or publish unless the approved plan says so. Workflow changes go in their own PR.
 
 ## Developing the template
+
+The documentation site is built from `docs/` with MkDocs Material (`uvx --with mkdocs-material mkdocs serve`) and published by `.github/workflows/docs.yml`; its changelog page is generated from `CHANGELOG.md`.
+
 
 Template files live in `template/`; files ending in `.jinja` are rendered. Copier variables use `[[ … ]]` and blocks `[% … %]`, so GitHub Actions expressions (`${{ … }}`) stay untouched. `template-ci.yml` renders three variants and runs each generated project's checks, plus assertions that every guardrail above is present.
 
