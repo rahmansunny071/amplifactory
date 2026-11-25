@@ -48,8 +48,9 @@ cd my-project && uvx copier update
 Copier does a three-way merge and marks conflicts. Or, in Claude Code inside the project, say
 **"sync the factory to the latest release"**: the `sync-root-factory` skill does it on a `local/adopt-<tag>` branch
 and opens a PR (mechanical conflicts resolved, the rest listed for you; it never merges). It also works for a
-project that only carries the skill: it replaces `.claude/skills/factory/` from the tag after checking it matches
-the version it claims, and builds a hand-port checklist from the CHANGELOG entries. See
+project that only carries the skill: it replaces every skill folder the tag ships (`factory/`, `factory-lesson/`,
+`sync-root-factory/`) from the tag after checking each matches the version it claims (a new one is added; a local one
+the old tag lacked is refused), using the target tag's `sync.py` extracted outside the repo, and builds a hand-port checklist from the CHANGELOG entries. See
 [Adopt in an existing repo](adopt-in-existing-repo.md#keeping-the-skill-up-to-date) for the first-time setup.
 
 ## Developing the template

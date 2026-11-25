@@ -26,12 +26,17 @@ Because `.copier-answers.yml` now exists, later releases come in with `uvx copie
 If you only want the Claude Code skill:
 
 ```bash
-git -C /path/to/agent-factory archive <tag> template/.claude/skills/factory \
-  template/.claude/skills/sync-root-factory | tar -x --strip-components=2 -C .claude/
+URL=https://github.com/rahmansunny071/agent-factory.git; TAG=vX.Y.Z   # a release tag
+T=$(mktemp -d)                                  # outside the repo
+git init -q --bare "$T/src"
+git -C "$T/src" fetch -q --depth 1 "$URL" "refs/tags/${TAG}:refs/tags/${TAG}"
+test "$(git -C "$T/src" cat-file -t "refs/tags/$TAG")" = tag || { echo "not annotated: stop"; false; }  # must be tag
+git -C "$T/src" archive "$TAG" template/.claude/skills | tar -x -k --strip-components=2 -C .claude/
 ```
 
 Use a release **tag**, never `main`: the skill itself refuses anything else. Releases up to v0.7.0 have no
-`sync-root-factory` folder, so use the first release that ships it. Commit the result. This is for a repo that has
+`sync-root-factory` folder, so use the first release that ships it. `tar -k` keeps files you already have, so a skill of the
+same name is not overwritten (check `.claude/skills/` for one). Commit the result. This is for a repo that has
 no factory skill yet; if you already have `factory/`, follow
 [Keeping the skill up to date](#keeping-the-skill-up-to-date) instead.
 
@@ -57,30 +62,56 @@ which release the copy came from. Then, in Claude Code in the repo:
 The `sync-root-factory` skill:
 
 - works on a new branch `local/adopt-<tag>` cut from a fresh `origin/<default branch>`, and refuses a dirty tree;
-- replaces `.claude/skills/factory/` and `.claude/skills/sync-root-factory/` byte for byte from the **tag**, only
-  after checking that they match the version the repo claims;
+- replaces **every skill folder the tag ships** (`factory/`, `factory-lesson/`, `sync-root-factory/` and any future
+  one) byte for byte from the **tag**. A folder the old tag had is replaced only after it matches the version the
+  repo claims; a new one is added; a folder the old tag did not have but you already have (your own skill, or a
+  hand copy) is refused, never overwritten; your own other skills are never touched;
 - turns the CHANGELOG entries since your version into a checklist; it edits `CLAUDE.md`, `.claude/commands/*`,
   `README.md` and `CHANGELOG.md` for the ports it can do safely, never sets a policy value (the `Real data:`
   level, the release phase), creates only the labels that are missing, and lists everything else under "Open";
 - opens a PR with a Handoff and never merges it.
 
-**First time, for a repo that has no `VERSION` yet:**
+**Every sync, the first included:** run the **target tag's** `sync.py`, extracted outside the repo, never the copy in
+the repo (which may predate the guards, and does not exist yet the first time). Nothing is committed before the
+adopt branch exists, so this works on a protected `main`:
 
-1. archive **only** the sync skill from the new tag, and do **not** re-copy `factory/` (that would bring its
-   `VERSION`, so the sync would see "up to date" and skip every hand-port):
-   `git -C /path/to/agent-factory archive <new tag> template/.claude/skills/sync-root-factory | tar -x --strip-components=2 -C .claude/`;
-2. commit it, so the working tree is clean;
-3. run the sync with the tag your `factory/` folder was copied from:
-   `python .claude/skills/sync-root-factory/scripts/sync.py status --assume-tag v0.7.0`, then ask Claude to sync.
-   `--assume-tag` only stands in for the missing file: the folder is still checked against that tag.
+```bash
+R=$(git rev-parse --show-toplevel); URL=https://github.com/rahmansunny071/agent-factory.git; TAG=vX.Y.Z  # latest release
+T=$(mktemp -d)                                  # outside the repo
+git init -q --bare "$T/src"
+git -C "$T/src" fetch -q --depth 1 "$URL" "refs/tags/${TAG}:refs/tags/${TAG}"
+git -C "$T/src" cat-file -t "refs/tags/$TAG"    # must print: tag  (annotated)
+mkdir "$T/x" && git -C "$T/src" archive "$TAG" template/.claude/skills/sync-root-factory | tar -x -C "$T/x"
+python3 -I "$T/x/template/.claude/skills/sync-root-factory/scripts/sync.py" --repo "$R" status --assume-tag v0.7.0
+```
+
+`--assume-tag` is needed only while `factory/VERSION` is missing (the first sync): it stands in for the file, and
+the folder is still checked against that tag. Then ask Claude to sync; the skill runs the same extracted script.
+The old way (copy `sync-root-factory/` into the repo and commit it) is no longer needed: the adopt branch is cut
+from `origin/<default>`, which would not contain that commit. If you already committed one and the old tag did not ship it (before v0.8.0), `apply` refuses it; on `local/adopt-<tag>` run `git rm -r .claude/skills/sync-root-factory`, commit, and
+rerun.
 
 **If the check fails** (your copy matches no tag, for example because a `main`-only commit was layered on a tag):
-the sync stops and lists the differing files. There is no override. If the edits are unwanted, restore the tag's
-copy yourself (`git archive <tag> template/.claude/skills/factory | tar -x --strip-components=2 -C .claude/`),
-commit, and rerun; if they are wanted, port them after the sync.
+the sync stops and lists the differing files. There is no override. If the edits are unwanted, restore the copy of the
+**recorded** tag, the one `verify-local` compared against (the version in `factory/VERSION`, or your `--assume-tag`; not
+the target tag, whose `VERSION` would make the repo look synced). Do it on `local/adopt-<target tag>`, because a commit
+on local `main` is not on the adopt branch:
+
+```bash
+OLD=v0.7.0                                      # the recorded tag
+git init -q --bare "$T/old"
+git -C "$T/old" fetch -q --depth 1 "$URL" "refs/tags/${OLD}:refs/tags/${OLD}"
+test "$(git -C "$T/old" cat-file -t "refs/tags/$OLD")" = tag || { echo "not annotated: stop"; false; }
+rm -rf "$R/.claude/skills/factory"
+git -C "$T/old" archive "$OLD" template/.claude/skills/factory | tar -x --strip-components=2 -C "$R/.claude/"
+git -C "$R" add -A .claude/skills/factory && git -C "$R" commit -m "restore factory/ to $OLD"
+```
+
+then rerun the sync. If the edits are wanted, port them after the sync.
 
 A repo generated by Copier doesn't need any of this: it records its version in `.copier-answers.yml`, and the
-sync runs `copier update`.
+sync runs `copier update`, after `sync.py copier-check <tag>` confirms the tag is annotated, `_commit` is a release
+tag and `_src_path` is the GitHub template (not a local clone).
 
 ## Organise existing issues into lanes
 
