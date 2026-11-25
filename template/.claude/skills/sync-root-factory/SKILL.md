@@ -90,7 +90,8 @@ works when the default branch is protected and the repo has no `sync-root-factor
 
 1. `sf copier-check <tag>` first. It refuses unless the tag is annotated, `_commit` is a `vX.Y.Z` tag
    (a describe string such as `v0.6.0-3-gabc` is reported as-is to the maintainer) and `_src_path` is
-   `gh:rahmansunny071/amplifactory` (or its https/ssh GitHub URL; no local clone, no fork). If the
+   `gh:rahmansunny071/amplifactory` or the old `gh:rahmansunny071/agent-factory` (or either one's
+   https/ssh GitHub URL; no local clone, no fork). If the
    source is wrong, its message gives the recipe: on the adopt branch set `_src_path` in
    `.copier-answers.yml`, **commit** (copier update refuses a dirty tree), rerun `copier-check`.
 2. `uvx copier update --vcs-ref <tag> --defaults --conflict inline`.
@@ -128,7 +129,7 @@ works when the default branch is protected and the repo has no `sync-root-factor
 ## Finish
 
 1. Run the repo's own "checks pass" list from `CLAUDE.md`, and the self-tests of the synced skill:
-   `for s in queue lanes runlog; do python .claude/skills/factory/scripts/$s.py --self-test || exit 1; done`.
+   `for s in queue lanes runlog; do python3 .claude/skills/factory/scripts/$s.py --self-test || exit 1; done`.
 2. Commit, `sf push <tag>`, and open a PR titled `Factory: adopt amplifactory <tag>` whose
    body is a Handoff:
    - **Changed**: copied folders (shadowing) or the copier update, the hand-ports, created labels;

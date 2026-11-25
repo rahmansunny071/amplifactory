@@ -12,9 +12,9 @@ The first three live in `.claude/skills/factory/scripts/`, need only Python ≥3
 The lane-aware queue: what to work on now.
 
 ```bash
-python .claude/skills/factory/scripts/queue.py              # table + "Work now"
-python .claude/skills/factory/scripts/queue.py --lanes 2    # two lanes in parallel
-python .claude/skills/factory/scripts/queue.py --json
+python3 .claude/skills/factory/scripts/queue.py              # table + "Work now"
+python3 .claude/skills/factory/scripts/queue.py --lanes 2    # two lanes in parallel
+python3 .claude/skills/factory/scripts/queue.py --json
 ```
 
 | Option | Meaning |
@@ -58,14 +58,16 @@ oldest wins.
 The run log in `.factory/runs/<date>.jsonl`: a local cache and cost ledger that **points at** GitHub.
 
 ```bash
-python .claude/skills/factory/scripts/runlog.py add --issue 4 --step plan --actor builder \
+python3 .claude/skills/factory/scripts/runlog.py add --issue 4 --step plan --actor builder \
     --model sonnet --tokens 41000 --ms 52000 --pr 29 --note "plan pushed"
-python .claude/skills/factory/scripts/runlog.py status     # last step per issue
-python .claude/skills/factory/scripts/runlog.py summary    # wall time, rounds, tokens by model
+python3 .claude/skills/factory/scripts/runlog.py status     # last step per issue
+python3 .claude/skills/factory/scripts/runlog.py summary    # wall time, rounds, tokens by model
 ```
 
-Steps: `plan`, `plan-check`, `design-review`, `build`, `review`, `fix`, `handoff-written`, `needs-maintainer`,
-`resume`, `merge`, `ready-to-merge`, `blocked`, `decision`, `improvement-filed`.
+`--step` is free-form. The factory uses `plan`, `plan-check`, `design-review`, `build`, `review`, `fix`,
+`handoff-written`, `needs-maintainer`, `resume`, `merge`, `ready-to-merge`, `blocked`, `decision` and
+`improvement-filed`. Two options go before the subcommand: `--dir DIR` uses that log directory instead of the
+repo's, for `add`, `status` and `summary` alike (`runlog.py --dir DIR status`), and `--self-test` runs offline checks.
 
 ## sync.py
 
@@ -80,6 +82,11 @@ sf branch vX.Y.Z
 sf verify-local [--assume-tag vX.Y.Z]
 sf apply --to-tag vX.Y.Z [--assume-tag vX.Y.Z]
 sf copier-check vX.Y.Z
+sf latest
+sf check-markers
+sf push vX.Y.Z
+sf changelog --tag vX.Y.Z --from vA.B.C
+sf labels --tag vX.Y.Z [--create]
 ```
 
 | Command | What it does |

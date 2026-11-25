@@ -62,14 +62,14 @@ When the run log or memory disagrees with GitHub, GitHub wins.
    knowledge lives") and the stage prompts in `.claude/commands/`.
 4. **Repo slug.** `gh repo view --json nameWithOwner -q .nameWithOwner`. Paste that exact value into
    every brief; never type it from memory.
-5. **What's waiting.** Run `python .claude/skills/factory/scripts/queue.py`. It shows issues in progress,
+5. **What's waiting.** Run `python3 .claude/skills/factory/scripts/queue.py`. It shows issues in progress,
    **issues waiting on the maintainer and whether they've replied**, and the ready queue.
    `runlog.py status` shows the local log's view. If anything is in progress or has new replies, handle
    that first (see "Resume"). Clear stale labels: `gh issue list --state closed --label
    factory:ready-to-merge`, then `gh issue edit <N> --remove-label factory:ready-to-merge` for each.
    Merged PRs keep it too: `gh pr list --state merged --label factory:ready-to-merge`, then
    `gh pr edit <N> --remove-label factory:ready-to-merge`.
-6. **Documentation tech-debt.** `python .claude/skills/factory/scripts/lanes.py doc-debt find` prints the
+6. **Documentation tech-debt.** `python3 .claude/skills/factory/scripts/lanes.py doc-debt find` prints the
    tracking issue's number (an open issue titled exactly "Documentation tech-debt", labelled
    `documentation`), creating it if it's missing, so repos bootstrapped before v0.6.0 work too. Every
    documentation todo that isn't fixed in the PR at hand becomes a sub-issue of it (`doc-debt add`).
@@ -318,7 +318,7 @@ answer right away; resume handles it.
 
 ## When you're done
 
-`python .claude/skills/factory/scripts/runlog.py summary` prints per-issue wall time, rounds and tokens by
+`python3 .claude/skills/factory/scripts/runlog.py summary` prints per-issue wall time, rounds and tokens by
 model and role. Report:
 - issues merged (PR links);
 - **issues waiting on the maintainer**, with links to their open threads;

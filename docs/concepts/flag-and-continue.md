@@ -11,7 +11,7 @@ The factory never stops the run to wait for you, unless nothing else can proceed
 
 - A plan or review raises a question only you can answer (scope, an interface, a dependency, a data source).
 - A gate fails and the fix isn't mechanical.
-- The orchestrator is **unsure** whether to merge (gate 12).
+- The orchestrator is **unsure** whether to merge (gate 13).
 - More lanes are ready than you've allowed (asked once, in the session).
 
 ## How it asks

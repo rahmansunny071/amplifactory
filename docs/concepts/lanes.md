@@ -55,7 +55,7 @@ Problems in the factory template repo are `lesson` issues (the `factory-lesson` 
 
 ## Seeing it
 
-- `python .claude/skills/factory/scripts/queue.py` prints the lanes, each lane's current issue and state
+- `python3 .claude/skills/factory/scripts/queue.py` prints the lanes, each lane's current issue and state
   (`active`, `replied`, `ready`, `asked`, `blocked`, `waiting`, `done`), and **"Work now"**.
 - The **Project board** created by `bootstrap.sh`: group by **Parent issue** to see each lane with a progress bar,
   and sort by **Priority**.
