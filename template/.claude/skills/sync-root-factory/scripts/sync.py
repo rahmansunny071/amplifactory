@@ -495,7 +495,7 @@ def missing_labels(wanted: list[str], existing: list[str]) -> list[str]:
     return [w for w in wanted if w.lower() not in have]
 
 
-def plan_labels(missing: list[str], shadowing: bool) -> tuple[list[str], list[str]]:
+def plan_labels(missing: Lines, shadowing: bool) -> tuple[Lines, Lines]:
     """Split missing labels into (to create, skipped). A shadowing repo skips Actions-only ones."""
     if not shadowing:
         return list(missing), []
