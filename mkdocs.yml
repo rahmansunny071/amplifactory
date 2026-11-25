@@ -80,11 +80,14 @@ nav:
           - Lanes and priorities: concepts/lanes.md
           - The pipeline: concepts/pipeline.md
           - Flag and continue: concepts/flag-and-continue.md
+          - Real data: concepts/real-data.md
+          - Docs ship with the code: concepts/docs-with-code.md
           - Where knowledge lives: concepts/where-knowledge-lives.md
           - The GitHub Actions mode: concepts/actions-mode.md
   - Guides:
       - Day-to-day: guides/day-to-day.md
       - Adopt in an existing repo: guides/adopt-in-existing-repo.md
+      - Keep up to date: guides/keep-up-to-date.md
       - Evolving the template: guides/evolving-the-template.md
   - Reference:
       - Copier questions: reference/questions.md

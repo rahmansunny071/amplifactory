@@ -36,10 +36,7 @@ verify findings and merge. The heavy lifting goes to two subagents per issue.
 
 ## Real data
 
-`CLAUDE.md` has a **Real data** line: `never` (the default), `with-approval` or `allowed`. The skill reads it from
-`main`; a missing or unrecognised line means `never`. Under `with-approval`, the maintainer approves one named
-source on the issue or PR, for that issue or PR only. At every level, real data is never committed or quoted
-(shapes only) and tests use synthetic fixtures.
+`CLAUDE.md` sets how far agents may read real data (`never` by default): see [Real data](real-data.md).
 
 ## Urgency triage
 
@@ -57,20 +54,8 @@ Everything else is collected into **one `improvement` issue** per PR, usually in
 
 ## Docs ship with the code
 
-A `CLAUDE.md` hard rule: every code change brings its documentation in the same PR, both new docs for new
-behaviour and updates to any README, CHANGELOG, docstring or `.factory/designs/` text it makes wrong or stale.
+Every code change brings its docs in the same PR, and the tracker catches the rest: see [Docs ship with the code](docs-with-code.md).
 
-- A PR whose docs disagree with its code breaks a hard rule, so it's a **blocker**, even in `mvp`.
-- A mismatch that was already there before the PR is tagged **`[doc-debt]`** and isn't fixed in that PR. The
-  orchestrator files it as a sub-issue of the repo's **"Documentation tech-debt"** issue (labels
-  `documentation`, `P2`; each todo `documentation`, `improvement`, `P2`) with `lanes.py doc-debt add`.
-- **Ride-alongs:** the builder is given the open todos. When its PR already touches a file one of them is
-  about, it fixes that too and the PR closes it.
-- Documentation todos that come up while planning also go under the tracking issue.
-
-`bootstrap.sh` creates the tracking issue; in older repos the skill creates it the first time it's needed
-(`lanes.py doc-debt find`). This came from pensieve-traces, whose README still called a built feature
-"planned".
 
 ## Why this shape
 
