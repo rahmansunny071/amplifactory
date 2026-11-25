@@ -5,21 +5,21 @@ Dependencies are native **"blocked by"** links. Priority is exactly one `P0`–`
 wrap the GitHub REST calls (which need internal issue ids, not numbers) so the orchestrator doesn't
 improvise them. Stdlib only; uses `gh`.
 
-    python .claude/skills/factory/scripts/lanes.py sub-add 40 4 6        # lane #40: append #4, #6 (last)
-    python .claude/skills/factory/scripts/lanes.py order 40 6 4          # move #6 to the front
-    python .claude/skills/factory/scripts/lanes.py block 8 --by 5        # #8 blocked by #5
-    python .claude/skills/factory/scripts/lanes.py priority 4 P0         # exactly one P label
-    python .claude/skills/factory/scripts/lanes.py project-add 40 4 6 --project 3   # + Priority
-    python .claude/skills/factory/scripts/lanes.py show 40               # the lane's order
-    python .claude/skills/factory/scripts/lanes.py --self-test
+    python3 .claude/skills/factory/scripts/lanes.py sub-add 40 4 6        # lane #40: append #4, #6 (last)
+    python3 .claude/skills/factory/scripts/lanes.py order 40 6 4          # move #6 to the front
+    python3 .claude/skills/factory/scripts/lanes.py block 8 --by 5        # #8 blocked by #5
+    python3 .claude/skills/factory/scripts/lanes.py priority 4 P0         # exactly one P label
+    python3 .claude/skills/factory/scripts/lanes.py project-add 40 4 6 --project 3   # + Priority
+    python3 .claude/skills/factory/scripts/lanes.py show 40               # the lane's order
+    python3 .claude/skills/factory/scripts/lanes.py --self-test
 
 Documentation debt: one open issue titled exactly "Documentation tech-debt" (labels `documentation`,
 `P2`) tracks doc todos as native sub-issues (labels `documentation`, `improvement`, `P2`).
 
-    python .claude/skills/factory/scripts/lanes.py doc-debt find         # find or create; prints #N
-    python .claude/skills/factory/scripts/lanes.py doc-debt add --title "README: …" --body-file f.md
-    python .claude/skills/factory/scripts/lanes.py doc-debt add --issue 44   # link an existing issue
-    python .claude/skills/factory/scripts/lanes.py doc-debt list         # open todos, for ride-alongs
+    python3 .claude/skills/factory/scripts/lanes.py doc-debt find         # find or create; prints #N
+    python3 .claude/skills/factory/scripts/lanes.py doc-debt add --title "README: …" --body-file f.md
+    python3 .claude/skills/factory/scripts/lanes.py doc-debt add --issue 44   # link an existing issue
+    python3 .claude/skills/factory/scripts/lanes.py doc-debt list         # open todos, for ride-alongs
 """
 
 from __future__ import annotations

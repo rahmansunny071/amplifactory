@@ -13,7 +13,7 @@ description: "Every question Copier asks when generating a project, its default 
 | `description` | — | pyproject, GitHub description, README tagline |
 | `agent_context` | `description` | What the project is, at the top of `CLAUDE.md` |
 | `extra_hard_rules` | none | Project-specific `CLAUDE.md` hard rules (one `- ` bullet each) |
-| `design_risks` | privacy/data, licensing, dependencies, docs | What every plan's Risks section must cover |
+| `design_risks` | privacy/data, licensing, dependencies, docs | What every design's Risks section must cover |
 | `issue_areas` | `[core, cli, docs, tests, none]` | "Areas affected" dropdown in the issue template |
 | `maintainer_github` | the template author | The only login the workflows obey; CODEOWNERS |
 | `author_name`, `author_email`, `homepage` | the template author's | pyproject, README |
