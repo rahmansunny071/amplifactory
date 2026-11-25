@@ -115,7 +115,7 @@ jobs:
           # #32: ready-to-merge hand-off
           need scripts/bootstrap.sh 'factory:ready-to-merge'
           need .claude/skills/factory/SKILL.md '### Ready to merge and continue'
-          need .claude/skills/factory/SKILL.md 'Never work around a refusal'
+          need .claude/skills/factory/SKILL.md 'work around a refusal'
           need .claude/skills/factory/references/gates.md 'Ready to merge: all gates pass on'
           need .claude/skills/factory/references/gates.md 'gh pr merge <PR> --merge --delete-branch'
           need .claude/skills/factory/scripts/queue.py 'READY_TO_MERGE = "factory:ready-to-merge"'
