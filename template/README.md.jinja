@@ -8,7 +8,7 @@
 
 This repo is built by an issue-driven agent factory. Only the maintainer (@[[ maintainer_github ]]) can start or advance work, merge to `main`, or publish anything. The quickest way in is the **`factory` skill** (`.claude/skills/factory/`), which runs the whole pipeline from a Claude Code session:
 
-1. Bootstrap is already done (`scripts/bootstrap.sh`). The skill does **not** need `/install-github-app`.
+1. Run `./scripts/bootstrap.sh` once, if you haven't (it creates the GitHub repo, labels and board). The skill does **not** need `/install-github-app`.
 2. Run `claude` in this repo, on Opus.
 3. Say **"brainstorm X into issues"** or **"run the factory"**. It never adds `factory:design` or `design:approved`, so the Actions workflows don't duplicate the work.
 

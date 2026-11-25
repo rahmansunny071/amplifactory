@@ -13,7 +13,7 @@ description: >-
 
 # Factory
 
-This repo is built by an issue-driven agent factory (see `README.md` → "How this repo is built" and
+This repo is built by an issue-driven agent factory (see `README.md` → "Getting started" and
 `CLAUDE.md`). This skill runs it from a Claude Code session. You (Opus) are the orchestrator: a Sonnet
 **builder** plans and codes, a fresh Opus **reviewer** checks the result, and you merge when the gates
 pass. The maintainer answers questions **asynchronously on the PR**; the run never sits waiting.
