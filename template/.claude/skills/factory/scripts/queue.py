@@ -379,6 +379,20 @@ def waiting_to_merge(lanes: list[Lane], loose: list[Issue]) -> list[Issue]:
     return waiting + [i for i in loose if i.state == "merge"]
 
 
+def payload(lanes: list[Lane], loose: list[Issue], slots: int) -> dict:
+    """What `--json` prints."""
+    now, queued = start_now(lanes, slots)
+    return {
+        "lanes": [asdict(lane) for lane in lanes],
+        "not_in_a_lane": [asdict(i) for i in loose],
+        "waiting_to_merge": [
+            {"issue": i.number, "pr": i.pr} for i in waiting_to_merge(lanes, loose)
+        ],
+        "work_now": [lane.number for lane in now],
+        "ready_waiting_for_slot": [lane.number for lane in queued],
+    }
+
+
 def _self_test() -> None:
     def iss(n, title="t", state="OPEN", labels=(), body=""):
         return {
@@ -467,10 +481,15 @@ def _self_test() -> None:
     out4 = render(lanes4, loose4, 1)
     assert "Waiting for you to merge" in out4 and "PR #70" in out4 and "PR #71" in out4, out4
     assert "Waiting for you to merge" not in render(lanes, loose, 1)
-    # #35: a loose merge issue is listed once (under "Waiting"), and --json lists the PRs
+    # #35: a loose merge issue is listed once (under "Waiting"), and the --json payload lists the PRs
     assert out4.count("#53 ") == 1, out4
     assert [(i.number, i.pr) for i in waiting_to_merge(lanes4, loose4)] == [(51, 70), (53, 71)]
     assert waiting_to_merge(lanes, loose) == []
+    assert payload(lanes4, loose4, 1)["waiting_to_merge"] == [
+        {"issue": 51, "pr": 70},
+        {"issue": 53, "pr": 71},
+    ]
+    assert payload(lanes, loose, 1)["waiting_to_merge"] == []
     print("queue.py self-test: ok")
 
 
@@ -506,21 +525,7 @@ def main(argv: list[str] | None = None) -> int:
         replies.update(fetch_merge_prs(with_label(READY_TO_MERGE)))
     lanes, loose = plan(issues, subs, native, replies)
     if args.json:
-        now, queued = start_now(lanes, args.lanes)
-        print(
-            json.dumps(
-                {
-                    "lanes": [asdict(lane) for lane in lanes],
-                    "not_in_a_lane": [asdict(i) for i in loose],
-                    "waiting_to_merge": [
-                        {"issue": i.number, "pr": i.pr} for i in waiting_to_merge(lanes, loose)
-                    ],
-                    "work_now": [lane.number for lane in now],
-                    "ready_waiting_for_slot": [lane.number for lane in queued],
-                },
-                indent=2,
-            )
-        )
+        print(json.dumps(payload(lanes, loose, args.lanes), indent=2))
     else:
         print(render(lanes, loose, args.lanes))
     return 0
