@@ -336,8 +336,9 @@ def _self_test_sub_add() -> None:
         if len(parts) == 5:  # issue id: id = number + 1000
             return f"{int(parts[4]) + 1000}\n"
         lane = lanes.setdefault(int(parts[4]), [])
-        if "-X" not in args:  # GET with --paginate --jq '.[].number': one number per line
-            return "".join(f"{n}\n" for n in lane)
+        if "-X" not in args:  # GET --jq '.[].number': one number per line, 30 per page
+            shown = lane if "--paginate" in args else lane[:30]  # as GitHub does
+            return "".join(f"{n}\n" for n in shown)
         moved = int(fields["sub_issue_id"]) - 1000
         if parts[-1] == "sub_issues":  # POST: GitHub appends at the end
             lane.insert(0 if prepend else len(lane), moved)
