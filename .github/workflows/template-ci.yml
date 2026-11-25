@@ -149,7 +149,7 @@ jobs:
           need CLAUDE.md '## Real data'
           need CLAUDE.md 'never commit real data'
           need CLAUDE.md 'synthetic fixtures only'
-          need CLAUDE.md 'never copy it into the repo or worktree'
+          need CLAUDE.md 'scratch directory outside the repo'
           if ! grep -qE "^Real data: ${{ matrix.real_data }}\." CLAUDE.md; then
             echo "::error::CLAUDE.md first Real data line is not ${{ matrix.real_data }}"; fail=1
           fi
