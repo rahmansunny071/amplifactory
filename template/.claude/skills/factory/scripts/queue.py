@@ -385,7 +385,9 @@ def payload(lanes: list[Lane], loose: list[Issue], slots: int) -> dict:
     return {
         "lanes": [asdict(lane) for lane in lanes],
         "not_in_a_lane": [asdict(i) for i in loose],
-        "waiting_to_merge": [{"issue": i.number, "pr": i.pr} for i in waiting_to_merge(lanes, loose)],
+        "waiting_to_merge": [
+            {"issue": i.number, "pr": i.pr} for i in waiting_to_merge(lanes, loose)
+        ],
         "work_now": [lane.number for lane in now],
         "ready_waiting_for_slot": [lane.number for lane in queued],
     }
