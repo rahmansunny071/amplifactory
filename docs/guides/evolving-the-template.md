@@ -21,7 +21,7 @@ File it **when it happens**, not at the end of the run.
 
 In a generated repo, ask Claude Code to "file a factory lesson: ..." and the **`factory-lesson` skill** does it:
 
-1. finds the template repo from `.copier-answers.yml` (`_src_path`), falling back to `rahmansunny071/agent-factory`, and confirms it with `gh repo view`; it never files in the current repo;
+1. finds the template repo from `.copier-answers.yml` (`_src_path`), used only when it is a GitHub source (`gh:`, `https://github.com/`, `ssh://git@github.com/`, `git@github.com:`); a local path, an empty value or a missing file falls back to `rahmansunny071/agent-factory`, and confirms it with `gh repo view`; it never files in the current repo;
 2. searches open `lesson` issues for a duplicate and offers to comment there instead;
 3. drafts the body (What happened, Fix applied in the generated repo, Template files to change, Options, Takeaway) and checks it for real data values, secrets and private paths, since the issue goes to another repo;
 4. asks you **once**, then creates it with the `lesson` label and reports the URL;
