@@ -33,6 +33,7 @@ git -C /path/to/agent-factory archive v0.6.0 template/.claude/skills/factory \
 Then add to your `CLAUDE.md`:
 
 - a **Release phase** line (`mvp` or `hardening`) and the blocker definition;
+- a **Real data** section whose first line is `Real data: never.` (or `with-approval` / `allowed`); without it the skill treats the repo as `never`;
 - a **"checks pass"** list identical to your CI;
 - the **hard rules** you want enforced (see the template's `CLAUDE.md.jinja`), including "every code change
   ships its docs in the same PR";

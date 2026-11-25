@@ -1,5 +1,12 @@
 # Changelog
 
+- Unreleased: **Real-data access is a per-repo choice (#33).** The skill no longer hard-codes "agents may not read real user data".
+  - **Question:** `real_data_access` (`never`, `with-approval`, `allowed`; default `never`, so `copier update` changes behaviour for no one). It renders a `## Real data` section in `CLAUDE.md` whose first line is `Real data: <level>.`.
+  - **Always on:** never commit real data; never quote values from it (field names, counts and shapes only); tests use synthetic fixtures only; read data where it lives and never copy it into the repo or worktree; a stricter hard rule overrides the level.
+  - **`with-approval`:** the maintainer approves one named source on the issue or PR, for that issue or PR only. Standing access means `allowed`.
+  - **Skill:** "Reality check" reads the line from `CLAUDE.md` on `main`. A missing or unrecognised line means `never`. Briefs carry the rule to every subagent; reviewers tag real-data values in the diff or text as a blocker.
+  - **Repos that adopted the skill by hand** (such as pensieve-traces) must add a `Real data: <level>.` line, or run `copier update --data real_data_access=<level>`; until then they read as `never`.
+  - Template CI renders `with-approval` and `allowed` and guards the rendered text.
 - v0.6.0 (2026-11-25): Two lessons from pensieve-traces. **Docs ship with the code** (#30), whose README still called a built feature "planned", and a **ready-to-merge hand-off** (#32), because Claude Code's auto mode refused the skill's `--admin` merge.
   - **Docs ship with the code (#30).**
   - **Hard rule** in `CLAUDE.md`, replacing "every user-visible change updates README.md and CHANGELOG.md": every code change ships its docs in the same PR, both new docs and updates to any README, CHANGELOG, docstring or `.factory/designs/` text it makes wrong or stale. Docs that disagree with the PR's code break a hard rule, so they're a **blocker even in `mvp`**. Mismatches outside the PR's diff are filed, not fixed.
