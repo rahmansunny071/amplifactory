@@ -83,8 +83,7 @@ python3 -I "$T/x/template/.claude/skills/sync-root-factory/scripts/sync.py" --re
 `--assume-tag` is needed only while `factory/VERSION` is missing (the first sync): it stands in for the file, and
 the folder is still checked against that tag. Then ask Claude to sync; the skill runs the same extracted script.
 The old way (copy `sync-root-factory/` into the repo and commit it) is no longer needed: the adopt branch is cut
-from `origin/<default>`, which would not contain that commit. If you already committed one, `apply` refuses it
-(the old tag did not ship it); on `local/adopt-<tag>` run `git rm -r .claude/skills/sync-root-factory`, commit, and
+from `origin/<default>`, which would not contain that commit. If you already committed one and the old tag did not ship it (before v0.8.0), `apply` refuses it; on `local/adopt-<tag>` run `git rm -r .claude/skills/sync-root-factory`, commit, and
 rerun.
 
 **If the check fails** (your copy matches no tag, for example because a `main`-only commit was layered on a tag):
