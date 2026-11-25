@@ -1,6 +1,6 @@
 # Changelog
 
-- Unreleased: **Renamed to amplifactory** (#67): the repo is `rahmansunny071/amplifactory`; the name changes in URLs, prose and generated text.
+- v0.13.0 (2026-11-25): **Renamed to amplifactory** (#67): the repo is `rahmansunny071/amplifactory`; the name changes in URLs, prose and generated text.
   - **#67: rename agent-factory to amplifactory.** `sync.py` accepts the old and new names (gh, https, ssh) as the official `_src_path`, still refuses local clones and forks, and `is_template_repo` detects the template repo under either name; `factory-lesson` files into the new repo when the answers file names the old one; `site_url`, `repo_url` and `repo_name` follow. The skill folder names stay. Existing repos may update `_src_path` (optional; GitHub redirects the old URL).
 - v0.12.0 (2026-11-25): **Skill scripts run on Python 3.9; `lanes.py` reads every page** (#63): macOS's system `python3` works, template CI runs every self-test under 3.9, and lanes with more than 30 sub-issues work.
   - **#63: pagination, fallback test, Python 3.9.** `lanes.py` reads every page of a lane's sub-issues (`gh api --paginate`), so `sub-add`/`order` work in lanes of more than 30. `--self-test` now covers `sub-add`'s `order` fallback (a fake whose POST prepends) and a multi-page lane. Every skill script runs on Python 3.9 (`lanes.py` used `itertools.pairwise`); Template CI runs all four self-tests under 3.9 as well, and the docs state 3.9 as the minimum. The `sub-add` line in the `factory` SKILL.md is rewrapped.
