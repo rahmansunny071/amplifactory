@@ -69,7 +69,7 @@ uvx ruff@[[ ruff_version ]] format --check . && uvx ruff@[[ ruff_version ]] chec
 uv run --no-sync pytest -q
 ```
 
-This repo was generated from [agent-factory](https://github.com/rahmansunny071/agent-factory). Pull in later factory improvements with `copier update`.
+This repo was generated from [agent-factory](https://github.com/rahmansunny071/agent-factory). Pull in later factory improvements with `copier update`, or tell Claude Code **"sync the factory to the latest release"**: the `sync-root-factory` skill (`.claude/skills/sync-root-factory/`) does the update on a `local/adopt-<tag>` branch and opens a PR for you to merge.
 
 ## Author
 

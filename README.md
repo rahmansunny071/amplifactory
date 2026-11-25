@@ -55,6 +55,8 @@ The two modes never trigger each other: the skill works on **`local/issue-N`** b
 
 **Using the skill in a repo not generated from this template:** copy `template/.claude/skills/factory/` from a release tag into the repo's `.claude/skills/factory/`, and add a "Release phase" section, a "Real data" section whose first line is `Real data: never.` (or `with-approval` / `allowed`; without it the skill treats the repo as `never`) and the docs-with-code hard rule to its `CLAUDE.md`. The skill expects the stage prompts in `.claude/commands/` and the labels above.
 
+**Keeping such a repo up to date:** copy **only** `template/.claude/skills/sync-root-factory/` from the new release tag (do not re-copy `factory/`: that would bring its `VERSION` and skip every hand-port). The first time, your existing `factory/` has no `VERSION`, so commit the new folder and run the sync with `--assume-tag <the tag your existing factory/ came from>`; after the first sync, `factory/VERSION` records the version. Then say "sync the factory to the latest release". The skill replaces `.claude/skills/factory/` only if it still matches the tag it claims (any local edit stops it and is listed), ports the CHANGELOG's "must do" lines into `CLAUDE.md`, `.claude/commands/` and `README.md` by editing them, leaves policy values (such as the `Real data:` level) for you under "Open", and opens a PR for you to merge. Its files come only from the release tag, never from `main`. Details: [Adopt in an existing repo](docs/guides/adopt-in-existing-repo.md).
+
 ## Run the factory on GitHub Actions (async)
 
 ```
@@ -80,6 +82,8 @@ cd my-project && uvx copier update      # three-way merge; conflicts are marked 
 ```
 
 Copier updates to the latest **tag** of this repo, so every template change is released as a tag.
+
+You can also ask Claude Code in the project: **"sync the factory to the latest release"**. The `sync-root-factory` skill (shipped in every generated repo) works on a new `local/adopt-<tag>` branch, runs `copier update --vcs-ref <tag> --conflict inline`, resolves only mechanical conflicts, lists the rest in the PR's Handoff and never merges. It works for repos that only carry a copy of the skill too (see below).
 
 ## How the template evolves
 
