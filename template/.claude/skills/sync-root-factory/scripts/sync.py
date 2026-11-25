@@ -54,6 +54,9 @@ FETCH_PATHS = [f"template/{t}" for t in TARGETS] + [
 ]
 
 
+Entry = tuple[str, list[str]]  # (version, lines); an alias keeps two brackets from touching
+
+
 class Refuse(Exception):
     """A guard fired: nothing has been written."""
 
@@ -375,7 +378,7 @@ def post_diff(root: Path, tree: Path) -> list[str]:
                 have[rel] = p.read_bytes()
         if VERSION_FILE not in want:
             have.pop(VERSION_FILE, None)
-        bad += [f"differs: {r}" for r in want if have.get(r) != want[r]]
+        bad += [f"differs: {r}" for r, data in want.items() if have.get(r) != data]
         bad += [f"extra: {r}" for r in have if r not in want]
     return bad
 
@@ -472,7 +475,7 @@ def missing_labels(wanted: list[str], existing: list[str]) -> list[str]:
 
 def changelog_entries(text: str, frm: str, to: str) -> list[str]:
     lo, hi = parse_tag(frm), parse_tag(to)
-    entries: list[tuple[str, list[str]]] = []
+    entries: list[Entry] = []
     for line in text.splitlines():
         m = re.match(r"^- (v\d+\.\d+\.\d+|Unreleased)\b", line)
         if m:
