@@ -325,7 +325,7 @@ def doc_debt_list(r: str) -> list[dict]:
 def _self_test_sub_add() -> None:
     """sub-add appends; the fake `_gh` models GitHub: POST appends, PATCH priority moves."""
     global _gh
-    lanes: dict[int, list[int]] = {}
+    lanes: dict = {}  # lane number to its ordered issue numbers
 
     def fake(*args: str) -> str:
         path = next(a for a in args if a.startswith("repos/"))
