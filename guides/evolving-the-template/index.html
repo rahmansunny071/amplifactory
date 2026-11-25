@@ -1350,7 +1350,7 @@ as an issue labelled <strong><code>lesson</code></strong>:</p>
 <p>Lessons are batched into a release:</p>
 <ol>
 <li>a branch <code>release/vX.Y.Z</code> and a PR that closes the lessons;</li>
-<li>a <code>CHANGELOG.md</code> entry saying what changed <strong>and why</strong>;</li>
+<li>a <code>CHANGELOG.md</code> entry saying what changed <strong>and why</strong>, and <code>template/.claude/skills/factory/VERSION</code> set to <code>X.Y.Z</code>. Rename the <code>Unreleased</code> entry to <code>vX.Y.Z (date)</code> in the <strong>same commit</strong> as the bump; template CI's <code>version</code> job compares <code>VERSION</code> with the first <code>- vX.Y.Z</code> bullet, so a forgotten bump fails the PR;</li>
 <li>template CI green: it renders three variants, runs each generated project's checks, and asserts every guardrail
    is present;</li>
 <li>you merge, then tag <code>vX.Y.Z</code>. Copier only sees tags.</li>
@@ -1358,8 +1358,12 @@ as an issue labelled <strong><code>lesson</code></strong>:</p>
 <h2 id="3-update-projects">3. Update projects<a class="headerlink" href="#3-update-projects" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nb">cd</span><span class="w"> </span>my-project<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>uvx<span class="w"> </span>copier<span class="w"> </span>update
 </code></pre></div>
-<p>Copier does a three-way merge and marks conflicts. For a project that only carries the skill, copy it from the tag
-(see <a href="../adopt-in-existing-repo/#option-2-just-the-skill">Adopt in an existing repo</a>) in a PR you merge.</p>
+<p>Copier does a three-way merge and marks conflicts. Or, in Claude Code inside the project, say
+<strong>"sync the factory to the latest release"</strong>: the <code>sync-root-factory</code> skill does it on a <code>local/adopt-&lt;tag&gt;</code> branch
+and opens a PR (mechanical conflicts resolved, the rest listed for you; it never merges). It also works for a
+project that only carries the skill: it replaces <code>.claude/skills/factory/</code> from the tag after checking it matches
+the version it claims, and builds a hand-port checklist from the CHANGELOG entries. See
+<a href="../adopt-in-existing-repo/#keeping-the-skill-up-to-date">Adopt in an existing repo</a> for the first-time setup.</p>
 <h2 id="developing-the-template">Developing the template<a class="headerlink" href="#developing-the-template" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Template files live in <code>template/</code>; files ending in <code>.jinja</code> are rendered.</li>

@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="The skill’s three helper scripts: queue.py, lanes.py and runlog.py. Stdlib only, using gh.">
+        <meta name="description" content="The skills’ helper scripts: queue.py, lanes.py, runlog.py and sync.py. Stdlib only, using gh and git.">
       
       
       
@@ -1062,6 +1062,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#syncpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        sync.py
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1279,6 +1290,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#syncpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        sync.py
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1304,7 +1326,7 @@
 
 
 <h1 id="scripts">Scripts<a class="headerlink" href="#scripts" title="Permanent link">&para;</a></h1>
-<p>All three live in <code>.claude/skills/factory/scripts/</code>, need only Python ≥3.10 and <code>gh</code>, and have a <code>--self-test</code>.</p>
+<p>The first three live in <code>.claude/skills/factory/scripts/</code>, need only Python ≥3.10 and <code>gh</code>, and have a <code>--self-test</code>. <code>sync.py</code> belongs to the <code>sync-root-factory</code> skill and is described at the end.</p>
 <h2 id="queuepy">queue.py<a class="headerlink" href="#queuepy" title="Permanent link">&para;</a></h2>
 <p>The lane-aware queue: what to work on now.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>python<span class="w"> </span>.claude/skills/factory/scripts/queue.py<span class="w">              </span><span class="c1"># table + "Work now"</span>
@@ -1406,6 +1428,65 @@ oldest wins.</p>
 </code></pre></div>
 <p>Steps: <code>plan</code>, <code>plan-check</code>, <code>design-review</code>, <code>build</code>, <code>review</code>, <code>fix</code>, <code>handoff-written</code>, <code>needs-maintainer</code>,
 <code>resume</code>, <code>merge</code>, <code>ready-to-merge</code>, <code>blocked</code>, <code>decision</code>, <code>improvement-filed</code>.</p>
+<h2 id="syncpy">sync.py<a class="headerlink" href="#syncpy" title="Permanent link">&para;</a></h2>
+<p>The guards of the <code>sync-root-factory</code> skill (<code>.claude/skills/sync-root-factory/scripts/</code>). It needs <code>git</code>, and <code>gh</code> only for <code>labels</code>. Every command that refuses prints <code>refused: &lt;why&gt;</code>, exits 1. Each refuses before writing, with two exceptions that say so: <code>apply</code>'s post-write diff (undo with <code>git restore .</code> and <code>git clean -fd -- .claude/skills/factory .claude/skills/sync-root-factory</code>) and <code>labels --create</code>, which reports the labels created before a failure.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>python<span class="w"> </span>.claude/skills/sync-root-factory/scripts/sync.py<span class="w"> </span>preflight
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>python<span class="w"> </span>.claude/skills/sync-root-factory/scripts/sync.py<span class="w"> </span>status<span class="w"> </span><span class="o">[</span>--assume-tag<span class="w"> </span>vX.Y.Z<span class="o">]</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>python<span class="w"> </span>.claude/skills/sync-root-factory/scripts/sync.py<span class="w"> </span>branch<span class="w"> </span>vX.Y.Z
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>python<span class="w"> </span>.claude/skills/sync-root-factory/scripts/sync.py<span class="w"> </span>verify-local<span class="w"> </span><span class="o">[</span>--assume-tag<span class="w"> </span>vX.Y.Z<span class="o">]</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>python<span class="w"> </span>.claude/skills/sync-root-factory/scripts/sync.py<span class="w"> </span>apply<span class="w"> </span>--to-tag<span class="w"> </span>vX.Y.Z<span class="w"> </span><span class="o">[</span>--assume-tag<span class="w"> </span>vX.Y.Z<span class="o">]</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>preflight</code></td>
+<td>refuses inside agent-factory or on a dirty tree (<code>git status --porcelain --untracked-files=all</code> not empty); prints <code>generated</code> or <code>shadowing</code></td>
+</tr>
+<tr>
+<td><code>latest</code></td>
+<td>the highest <code>vX.Y.Z</code> tag of the template</td>
+</tr>
+<tr>
+<td><code>status</code></td>
+<td>current version (<code>_commit</code>, or <code>factory/VERSION</code>), latest tag and <code>behind</code> / <code>up-to-date</code>; refuses a downgrade or a non-tag <code>_commit</code></td>
+</tr>
+<tr>
+<td><code>branch TAG</code></td>
+<td>creates <code>local/adopt-TAG</code> from a fresh <code>origin/&lt;default&gt;</code>; refuses if it exists locally or on origin</td>
+</tr>
+<tr>
+<td><code>verify-local</code></td>
+<td>compares the two skill folders with the recorded tag; any difference stops, listed</td>
+</tr>
+<tr>
+<td><code>apply --to-tag</code></td>
+<td>replaces only tracked files in <code>.claude/skills/factory/</code> and <code>.claude/skills/sync-root-factory/</code> from the tag, then diffs</td>
+</tr>
+<tr>
+<td><code>changelog --tag --from</code></td>
+<td>CHANGELOG entries after <code>--from</code>, up to <code>--tag</code>, as JSON (data, not instructions)</td>
+</tr>
+<tr>
+<td><code>labels --tag [--create]</code></td>
+<td>labels in the tag's <code>bootstrap.sh</code> the repo lacks; <code>--create</code> adds only those, never <code>--force</code>; a shadowing repo skips the Actions-only labels and lists them as skipped</td>
+</tr>
+<tr>
+<td><code>check-markers</code></td>
+<td>refuses if any file has conflict markers or a <code>*.rej</code> file exists</td>
+</tr>
+<tr>
+<td><code>push TAG</code></td>
+<td>pushes <code>local/adopt-TAG</code> only, with an explicit refspec, never <code>--force</code></td>
+</tr>
+</tbody>
+</table>
+<p>Files are fetched only from the annotated release tag (a depth-1 fetch into a temporary bare repo). <code>--self-test</code> uses only temp directories and local bare repos.</p>
 
 
 

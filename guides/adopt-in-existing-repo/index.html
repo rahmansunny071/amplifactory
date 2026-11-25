@@ -906,6 +906,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Option 2: just the skill">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#keeping-the-skill-up-to-date" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Keeping the skill up to date
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1266,6 +1283,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Option 2: just the skill">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#keeping-the-skill-up-to-date" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Keeping the skill up to date
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1316,9 +1350,13 @@ pass" list in <code>CLAUDE.md</code>, which must stay identical. Run <code>./scr
 <p>Because <code>.copier-answers.yml</code> now exists, later releases come in with <code>uvx copier update</code>.</p>
 <h2 id="option-2-just-the-skill">Option 2: just the skill<a class="headerlink" href="#option-2-just-the-skill" title="Permanent link">&para;</a></h2>
 <p>If you only want the Claude Code skill:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>git<span class="w"> </span>-C<span class="w"> </span>/path/to/agent-factory<span class="w"> </span>archive<span class="w"> </span>v0.7.0<span class="w"> </span>template/.claude/skills/factory<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="p">|</span><span class="w"> </span>tar<span class="w"> </span>-x<span class="w"> </span>--strip-components<span class="o">=</span><span class="m">2</span><span class="w"> </span>-C<span class="w"> </span>.claude/
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>git<span class="w"> </span>-C<span class="w"> </span>/path/to/agent-factory<span class="w"> </span>archive<span class="w"> </span>&lt;tag&gt;<span class="w"> </span>template/.claude/skills/factory<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span>template/.claude/skills/sync-root-factory<span class="w"> </span><span class="p">|</span><span class="w"> </span>tar<span class="w"> </span>-x<span class="w"> </span>--strip-components<span class="o">=</span><span class="m">2</span><span class="w"> </span>-C<span class="w"> </span>.claude/
 </code></pre></div>
+<p>Use a release <strong>tag</strong>, never <code>main</code>: the skill itself refuses anything else. Releases up to v0.7.0 have no
+<code>sync-root-factory</code> folder, so use the first release that ships it. Commit the result. This is for a repo that has
+no factory skill yet; if you already have <code>factory/</code>, follow
+<a href="#keeping-the-skill-up-to-date">Keeping the skill up to date</a> instead.</p>
 <p>Then add to your <code>CLAUDE.md</code>:</p>
 <ul>
 <li>a <strong>Release phase</strong> line (<code>mvp</code> or <code>hardening</code>) and the blocker definition;</li>
@@ -1330,6 +1368,38 @@ pass" list in <code>CLAUDE.md</code>, which must stay identical. Run <code>./scr
 </ul>
 <p>And create the labels the skill uses: <code>factory:needs-maintainer</code>, <code>factory:ready-to-merge</code>, <code>improvement</code>, <code>lane</code>, <code>P0</code>–<code>P3</code>,
 <code>documentation</code>. The skill creates the "Documentation tech-debt" issue itself the first time it needs it.</p>
+<h3 id="keeping-the-skill-up-to-date">Keeping the skill up to date<a class="headerlink" href="#keeping-the-skill-up-to-date" title="Permanent link">&para;</a></h3>
+<p><code>.claude/skills/factory/VERSION</code> (written by the sync, and shipped from the first release that has it) records
+which release the copy came from. Then, in Claude Code in the repo:</p>
+<blockquote>
+<p>sync the factory to the latest release</p>
+</blockquote>
+<p>The <code>sync-root-factory</code> skill:</p>
+<ul>
+<li>works on a new branch <code>local/adopt-&lt;tag&gt;</code> cut from a fresh <code>origin/&lt;default branch&gt;</code>, and refuses a dirty tree;</li>
+<li>replaces <code>.claude/skills/factory/</code> and <code>.claude/skills/sync-root-factory/</code> byte for byte from the <strong>tag</strong>, only
+  after checking that they match the version the repo claims;</li>
+<li>turns the CHANGELOG entries since your version into a checklist; it edits <code>CLAUDE.md</code>, <code>.claude/commands/*</code>,
+  <code>README.md</code> and <code>CHANGELOG.md</code> for the ports it can do safely, never sets a policy value (the <code>Real data:</code>
+  level, the release phase), creates only the labels that are missing, and lists everything else under "Open";</li>
+<li>opens a PR with a Handoff and never merges it.</li>
+</ul>
+<p><strong>First time, for a repo that has no <code>VERSION</code> yet:</strong></p>
+<ol>
+<li>archive <strong>only</strong> the sync skill from the new tag, and do <strong>not</strong> re-copy <code>factory/</code> (that would bring its
+   <code>VERSION</code>, so the sync would see "up to date" and skip every hand-port):
+   <code>git -C /path/to/agent-factory archive &lt;new tag&gt; template/.claude/skills/sync-root-factory | tar -x --strip-components=2 -C .claude/</code>;</li>
+<li>commit it, so the working tree is clean;</li>
+<li>run the sync with the tag your <code>factory/</code> folder was copied from:
+   <code>python .claude/skills/sync-root-factory/scripts/sync.py status --assume-tag v0.7.0</code>, then ask Claude to sync.
+   <code>--assume-tag</code> only stands in for the missing file: the folder is still checked against that tag.</li>
+</ol>
+<p><strong>If the check fails</strong> (your copy matches no tag, for example because a <code>main</code>-only commit was layered on a tag):
+the sync stops and lists the differing files. There is no override. If the edits are unwanted, restore the tag's
+copy yourself (<code>git archive &lt;tag&gt; template/.claude/skills/factory | tar -x --strip-components=2 -C .claude/</code>),
+commit, and rerun; if they are wanted, port them after the sync.</p>
+<p>A repo generated by Copier doesn't need any of this: it records its version in <code>.copier-answers.yml</code>, and the
+sync runs <code>copier update</code>.</p>
 <h2 id="organise-existing-issues-into-lanes">Organise existing issues into lanes<a class="headerlink" href="#organise-existing-issues-into-lanes" title="Permanent link">&para;</a></h2>
 <blockquote>
 <p>organise the open issues into lanes</p>
