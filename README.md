@@ -53,7 +53,7 @@ Open Claude Code in the repo, on Opus, and say what you want:
 
 The two modes never trigger each other: the skill works on **`local/issue-N`** branches (the Actions review only watches `factory/issue-*`), and it never adds the Actions trigger labels (`factory:design`, `design:approved`) or writes `@claude`. If you only ever use the skill, you can also disable the Actions workflows with `gh workflow disable`.
 
-**Using the skill in a repo not generated from this template:** copy `template/.claude/skills/factory/` from a release tag into the repo's `.claude/skills/factory/`, and add a "Release phase" section and the docs-with-code hard rule to its `CLAUDE.md`. The skill expects the stage prompts in `.claude/commands/` and the labels above.
+**Using the skill in a repo not generated from this template:** copy `template/.claude/skills/factory/` from a release tag into the repo's `.claude/skills/factory/`, and add a "Release phase" section, a "Real data" section whose first line is `Real data: never.` (or `with-approval` / `allowed`; without it the skill treats the repo as `never`) and the docs-with-code hard rule to its `CLAUDE.md`. The skill expects the stage prompts in `.claude/commands/` and the labels above.
 
 ## Run the factory on GitHub Actions (async)
 
@@ -108,13 +108,14 @@ See [`CHANGELOG.md`](CHANGELOG.md) for what each release changed and why.
 | `python_min`, `python_versions` | `3.11`, `["3.11", "3.12"]` | `requires-python`, CI matrix, required checks |
 | `ruff_version` | `0.17.4` | Pinned ruff in CI, `CLAUDE.md` and the agents' tool allowlists |
 | `release_phase` | `mvp` | `CLAUDE.md` "Release phase": `mvp` fixes only blockers in-PR; `hardening` reviews thoroughly before a release |
+| `real_data_access` | `never` | `CLAUDE.md` "Real data": `never` (you run shapes-only scripts), `with-approval` (agents ask per issue, then read locally) or `allowed`. Real data is never committed or quoted at any level |
 | `agent_model` | `sonnet` | `--model` for the GitHub Actions agents (the skill picks its own models) |
 
 ## What a generated repo contains
 
 | Path | Purpose |
 |---|---|
-| `CLAUDE.md` | Agent guide: project context, release phase, "checks pass" definition (identical to CI), hard rules |
+| `CLAUDE.md` | Agent guide: project context, release phase, real-data access, "checks pass" definition (identical to CI), hard rules |
 | `.claude/skills/factory/` | The `factory` skill: `SKILL.md`, `references/` (subagent briefs, merge gates, issue and lane format), `scripts/queue.py` (lane-aware queue), `scripts/lanes.py` (lanes, sub-issues, dependencies, priorities, Project board, the Documentation tech-debt issue), `scripts/runlog.py` (run log) |
 | `.claude/commands/` | Stage prompts: `design-issue`, `build-from-design`, `review-against-design` (used by both modes) |
 | `.github/workflows/factory-*.yml` | Actions mode: design, build, review, chat (`@claude`) and label guard |

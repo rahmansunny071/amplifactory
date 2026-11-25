@@ -10,7 +10,7 @@ description: "GitHub and the repo are the source of truth; the run log and Claud
 | **Issues** | goals, acceptance criteria, lane structure, priorities, dependencies | everyone |
 | **PRs** | the diff, the **Handoff**, review threads, questions and answers | everyone |
 | **`.factory/designs/issue-N.md`** | the plan, shipped inside the PR | reviewers, future agents |
-| **`CLAUDE.md`** | project context, release phase, checks, hard rules | every agent, every session |
+| **`CLAUDE.md`** | project context, release phase, real-data access, checks, hard rules | every agent, every session |
 | **`lesson` issues** in agent-factory | factory problems found while driving a project | the template's next release |
 | **`.factory/runs/`** (gitignored) | run log: events, timings, token costs, **pointers** to PRs, commits and threads | the orchestrator, for resume and cost |
 | **Claude's memory** (`~/.claude/projects/…`) | your preferences, how you like to work | your Claude sessions on this machine |

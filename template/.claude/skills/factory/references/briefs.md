@@ -15,6 +15,10 @@ Rules that apply to every brief (already included below; keep them if you edit):
 - Packages may be installed only into a throwaway environment **outside** the repo, only to inspect them
   or run them on synthetic data, and the subagent must report it. Nothing is added to the repo's
   dependencies unless the approved plan names it.
+- Real data: follow the `Real data` line in `CLAUDE.md` (see SKILL.md "Reality check"). Under
+  `with-approval`, read only the sources this brief names as approved, with a link to the approval, and
+  never treat your own judgement as approval. Never copy real data into the repo or worktree. Shapes only
+  (field names, counts, types) in any GitHub text, commit, fixture or RESULT block.
 - **Read what you need, not everything.** Each brief names the files to start from.
 
 ## The Handoff (PR body section)
@@ -160,7 +164,8 @@ draft PR <PR>), BEFORE any code is written. You didn't write it. Pass `-R <owner
 Read: the issue (`gh issue view <N> -R <owner/repo> --comments`), .factory/designs/issue-<N>.md,
 CLAUDE.md, and <the files the plan touches>. Judge: acceptance criteria met and nothing out of scope; the
 approach fits this codebase and the issues that depend on it; the test plan proves the criteria offline
-given what CI installs; hard rules respected and dependency changes named exactly; if the code it plans
+given what CI installs; hard rules respected (real-data values in the plan, fixtures or text are a [blocker]) and dependency
+changes named exactly; if the code it plans
 writes, moves or deletes files at runtime where it could hit the user's existing data (source files,
 history, remote repos), the plan names its overwrite rules, so a plausible invocation, even a mistaken
 one, can't cause irreversible loss that a cheap guard would prevent (a plan that doesn't is a [change]);
@@ -195,7 +200,8 @@ check `gh pr checks` at the end. Test the behavior yourself with synthetic input
 maintainer answer implemented correctly, and did anything regress? Don't re-review the rest.">
 
 Release phase: <mvp | hardening>. Tag EVERY finding:
-- [blocker]: the main path breaks on realistic input; private data leaks on realistic input; a hard-rule
+- [blocker]: the main path breaks on realistic input; private data leaks on realistic input (this includes values from real data in the diff, fixtures, PR
+  text or commit messages); a hard-rule
   violation; irreversible loss or overwrite of the user's existing data (source files, history, remote
   repos) on a plausible invocation, even a mistaken one, when a cheap guard would prevent it; or a test
   that claims to prove something it doesn't. Give an exact reproduction.

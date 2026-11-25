@@ -15,7 +15,7 @@ description: "What every generated repo enforces, and what the template CI check
   checks, no force push or deletion.
 - **Bounded cost.** `timeout-minutes`, `--max-turns` and per-issue `concurrency` on every Actions job; pinned
   models; urgency triage; the run log's cost report.
-- **Hard rules in `CLAUDE.md`:** no secrets or personal data, no uploads, no paid model endpoints, dependencies
+- **Hard rules in `CLAUDE.md`:** no secrets or personal data, a per-repo real-data level (`never` by default; real data is never committed or quoted, tests use synthetic fixtures), no uploads, no paid model endpoints, dependencies
   only as planned, no version bumps or releases, no workflow changes unless planned (and then in their own PR).
 - **You merge the factory itself.** PRs touching `.github/`, `CLAUDE.md` or `.claude/` are never merged by the skill.
 

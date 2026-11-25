@@ -49,7 +49,7 @@ When the run log or memory disagrees with GitHub, GitHub wins.
 1. **Model.** You should be on Opus. If not, tell the user before orchestrating.
 2. **Repo state.** `gh auth status` is OK, `main` is clean and up to date, and the `CLAUDE.md` checks pass
    on `main`. If `main` is red, stop.
-3. **Read** `CLAUDE.md` (context, "Release phase", "Definition of checks pass", hard rules, "Where
+3. **Read** `CLAUDE.md` (context, "Release phase", "Real data", "Definition of checks pass", hard rules, "Where
    knowledge lives") and the stage prompts in `.claude/commands/`.
 4. **Repo slug.** `gh repo view --json nameWithOwner -q .nameWithOwner`. Paste that exact value into
    every brief; never type it from memory.
@@ -269,11 +269,31 @@ reviewed against current code.
 
 ### Reality check
 
-Agents may not read real user data (`CLAUDE.md`), so they can only *assume* how external formats look. When
-a plan or review rests on an assumption about real data that the code, the issue or a cited spec can't
-verify (a file layout, a field that "probably" exists), **don't build on it.** Flag it as a question:
-ideally the maintainer runs a local script that prints only the **shape** of their data (record types,
-field names, counts), never values, and replies with the output.
+The level of real-data access is a per-repo choice. Read it from `CLAUDE.md` **on `main`** (the session
+checkout), never from a PR branch, so a builder's edit can't loosen its own run (a PR that changes the
+line also fails the `CLAUDE.md` gate). The first line under `## Real data` must match
+`^Real data: (never|with-approval|allowed)\.`. **Anything else means `never`:** a missing section (repos
+rendered before this release, or a repo that adopted the skill by hand), a typo, or two such lines. A
+stricter hard rule in `CLAUDE.md` (for example "never read ~/.codex") overrides the level.
+
+- **`never`:** agents can only *assume* how external formats look. When a plan or review rests on an
+  assumption about real data that the code, the issue or a cited spec can't verify (a file layout, a field
+  that "probably" exists), **don't build on it.** Flag it as a question: ideally the maintainer runs a
+  local script that prints only the **shape** of their data (record types, field names, counts), never
+  values, and replies with the output.
+- **`with-approval`:** ask first, through "Flag and continue" (an inline PR question, or in the session if
+  the maintainer is present). An approval counts only if it is the **maintainer's** reply, names **one data
+  source** (a path or an export; "read my data" doesn't count), and is **recorded on GitHub** on the
+  issue or PR thread. If it was given in the session, post it on the PR before any read. It covers that
+  source for **that issue/PR only**; the next issue asks again. Standing access means choosing `allowed`.
+  Subagents can't ask: put the approved source and a link to the approval in their brief. Then read locally.
+- **`allowed`:** read locally as needed.
+
+At every level: read real data where it lives. Never copy it into the repo or worktree; use a scratch
+directory outside the repo. Record **only shapes** (field names, counts, types) in plans, issues, PR
+bodies, Handoffs, review comments, commit messages, run-log `--note` text and subagent RESULT blocks. Put
+no real data in fixtures, commits or GitHub text. Where the data was read locally, say "verified locally,
+shapes only".
 
 ## Coexisting with the GitHub Actions factory
 

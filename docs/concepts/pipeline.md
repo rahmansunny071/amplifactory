@@ -34,6 +34,13 @@ verify findings and merge. The heavy lifting goes to two subagents per issue.
    moves on. If the merge is refused, it hands the PR to you instead (see [Ready to
    merge](flag-and-continue.md#ready-to-merge)).
 
+## Real data
+
+`CLAUDE.md` has a **Real data** line: `never` (the default), `with-approval` or `allowed`. The skill reads it from
+`main`; a missing or unrecognised line means `never`. Under `with-approval`, the maintainer approves one named
+source on the issue or PR, for that issue or PR only. At every level, real data is never committed or quoted
+(shapes only) and tests use synthetic fixtures.
+
 ## Urgency triage
 
 `CLAUDE.md` has a **Release phase** line. In **`mvp`** (until a first formal release), only **blockers** are fixed in

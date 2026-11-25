@@ -24,13 +24,23 @@ jobs:
       matrix:
         include:
           - variant: with-cli
+            real_data: never
             data: --data "description=A demo project."
           - variant: no-cli
+            real_data: never
             data: --data "description=A demo project." --data cli_name=
           - variant: custom-python
+            real_data: never
             data: >-
               --data "description=An extremely long project description that goes well past one hundred characters so formatting is checked."
               --data 'python_versions=["3.12", "3.13"]' --data python_min=3.12
+          # #33: real-data access
+          - variant: real-data-with-approval
+            real_data: with-approval
+            data: --data "description=A demo project." --data real_data_access=with-approval
+          - variant: real-data-allowed
+            real_data: allowed
+            data: --data "description=A demo project." --data real_data_access=allowed
     steps:
       - uses: actions/checkout@v4
         with: { fetch-depth: 0 }
@@ -134,6 +144,21 @@ jobs:
           # the review job must stay read-only and restricted
           if grep -q 'restrict_untrusted_prs' .github/workflows/factory-review.yml; then
             echo "::error::factory-review must keep restrict_untrusted_prs at its default"; fail=1
+          fi
+          # #33: real-data access (the level for this variant is matrix.real_data)
+          need CLAUDE.md '## Real data'
+          need CLAUDE.md 'never commit real data'
+          need CLAUDE.md 'synthetic fixtures only'
+          need CLAUDE.md 'never copy it into the repo or worktree'
+          if ! grep -qE "^Real data: ${{ matrix.real_data }}\." CLAUDE.md; then
+            echo "::error::CLAUDE.md first Real data line is not ${{ matrix.real_data }}"; fail=1
+          fi
+          test "$(grep -cE '^Real data: ' CLAUDE.md)" = 1 || { echo "::error::expected exactly one Real data line"; fail=1; }
+          need .claude/skills/factory/SKILL.md 'Real data: (never|with-approval|allowed)'
+          need .claude/skills/factory/SKILL.md 'Anything else means `never`'
+          need .claude/skills/factory/references/briefs.md 'follow the `Real data` line'
+          if grep -qF 'Agents may not read real user data' .claude/skills/factory/SKILL.md; then
+            echo "::error::SKILL.md still hard-codes the real-data ban (#33)"; fail=1
           fi
           exit $fail
       - name: bootstrap.sh is executable and parses

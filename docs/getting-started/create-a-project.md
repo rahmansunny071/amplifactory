@@ -15,7 +15,7 @@ uvx copier copy gh:rahmansunny071/agent-factory my-project
 ```
 
 Copier asks a few [questions](../reference/questions.md): the project and package names, a description, what the
-agents should know about the project, project-specific hard rules, Python versions and the release phase. Defaults
+agents should know about the project, project-specific hard rules, Python versions, the release phase and whether agents may read your real data (`never` by default). Defaults
 are filled in.
 
 !!! note "Private template"

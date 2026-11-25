@@ -114,6 +114,15 @@ release_phase:
   choices: [mvp, hardening]
   default: mvp
 
+real_data_access:
+  type: str
+  help: >-
+    Whether agents may read your real data. never: you run shapes-only scripts and reply with the
+    output. with-approval: agents ask first, per issue, then read locally. allowed: agents read
+    locally when a task needs it. Real data is never committed or quoted at any level.
+  choices: [never, with-approval, allowed]
+  default: never
+
 agent_model:
   type: str
   help: Model the factory agents use (sonnet is the sensible default on Pro)
