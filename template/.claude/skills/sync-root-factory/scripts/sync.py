@@ -59,7 +59,7 @@ SKILL_NAME_RE = re.compile(r"^[a-z0-9][a-z0-9-]*$")
 # `_src_path` forms copier-check accepts, after quotes, comment, `.git` and `/` are stripped
 SRC_PREFIXES = ("gh:", "https://github.com/", "git@github.com:", "ssh://git@github.com/")
 # labels only the GitHub Actions factory uses; a repo that only runs the skill doesn't need them
-ACTIONS_ONLY_LABELS = {"factory:design", "factory:designing", "design:approved", "factory:building"}
+ACTIONS_ONLY_LABELS = {"factory:design", "design:approved"}
 VERSION_FILE = f"{FACTORY}/VERSION"
 BRANCH_PREFIX = "local/adopt-"
 # what `fetch` takes from a tag: every skill folder, plus data we only read
@@ -1005,9 +1005,14 @@ def _self_test(tmp: Path) -> None:
     _refuses(parse_labels, "LABELS=(ok $(rm) P0)\n")
     _refuses(parse_labels, "LABELS=(-rf)\n")
     assert missing_labels(["a", "P0", "b"], ["A", "p0", "zzz"]) == ["b"]
-    assert plan_labels(["P0", "factory:design", "factory:building"], True) == (
+    assert plan_labels(["P0", "factory:design", "design:approved"], True) == (
         ["P0"],
-        ["factory:design", "factory:building"],
+        ["factory:design", "design:approved"],
+    )
+    # #77: the progress labels the skill sets are created, never skipped
+    assert plan_labels(["factory:designing", "factory:design", "factory:building"], True) == (
+        ["factory:designing", "factory:building"],
+        ["factory:design"],
     )
     assert plan_labels(["P0", "factory:design"], False) == (["P0", "factory:design"], [])
     assert "--force" not in " ".join(push_args("local/adopt-v0.2.0"))

@@ -15,7 +15,7 @@ description: "Every label bootstrap.sh creates, and who may add it."
 | `factory:ready-to-merge` | Every gate passed but the merge was refused: you merge it (the command is in the PR comment) | the skill |
 | `factory:design` | **Actions mode:** start the design agent | **you only** |
 | `design:approved` | **Actions mode:** start the build agent | **you only** |
-| `factory:designing`, `factory:building`, `factory:review` | Actions-mode progress | workflows |
+| `factory:designing`, `factory:building`, `factory:review` | Progress: design started, build started, in review | the skill, workflows |
 | `factory:blocked` | An agent stopped and needs you | workflows, the skill |
 | `lesson` | (amplifactory only) a factory problem found in a project | you, the skill |
 
