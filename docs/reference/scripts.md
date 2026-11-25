@@ -66,7 +66,8 @@ python3 .claude/skills/factory/scripts/runlog.py summary    # wall time, rounds,
 
 `--step` is free-form. The factory uses `plan`, `plan-check`, `design-review`, `build`, `review`, `fix`,
 `handoff-written`, `needs-maintainer`, `resume`, `merge`, `ready-to-merge`, `blocked`, `decision` and
-`improvement-filed`. `--dir DIR` writes the log there instead of the repo's, and `--self-test` runs offline checks.
+`improvement-filed`. Two options go before the subcommand: `--dir DIR` uses that log directory instead of the
+repo's, for `add`, `status` and `summary` alike (`runlog.py --dir DIR status`), and `--self-test` runs offline checks.
 
 ## sync.py
 
