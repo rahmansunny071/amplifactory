@@ -35,11 +35,11 @@ A few details turned out to matter more than I expected:
 - **`bootstrap.sh`.** One script sets up the labels, the `main` branch ruleset and the fork-PR approval setting. If that is a checklist in a README, it will be done wrong, so it is a script.
 - **A template CI that renders real projects.** Every change to the template renders three variants of a project and runs their checks. A template that you cannot test is a template that quietly rots.
 
-That was v0.1.0, generalized from the project I had been using. And then I did the obvious thing: I used it.
+That was v0.1.0. The path there was not direct: I built the label-by-label factory for convomem-arena first, copied and adapted it into pensieve-traces, and only then generalized what had worked in pensieve-traces into the template. And then I did the obvious thing: I used it.
 
 ## A proving ground
 
-You cannot design a factory in the abstract. I picked a real project, pensieve-traces (a tool that turns agent traces into datasets), and drove it through the template. It is public: you can read its issues and PRs [link if public].
+You cannot design a factory in the abstract. I picked a real project, pensieve-traces (a tool that turns agent traces into datasets), and drove it through the template. It is public: you can read its issues and PRs at https://github.com/rahmansunny071/pensieve-traces.
 
 The rule I set was simple. **Every factory problem becomes a `lesson` issue in the template repo, immediately.** Not a note in my head, not a fix in the project only. Then I batch the lessons into a tagged release, and projects pick the release up with `copier update`. That produced v0.1.1 through v0.5.0, and the lesson issues are still there as a record of what went wrong.
 
@@ -51,7 +51,7 @@ Here is a sample of the early failures. Each one is now a guardrail.
 
 **Bot-authored PRs were blocked, and the run still said "success".** The agent opens PRs as `claude[bot]`, and the action's `restrict_untrusted_prs` default blocked its own build step on them. The job went green. There was no artifact. Nothing had happened. The lesson was twofold: configure the bot allowlists on purpose, and treat "green but no artifact" as a failure, not a pass. The fix also needed a safety net, a build step that refuses design branches touching anything outside the designs folder, because relaxing a restriction should come with a guard.
 
-**Stale merge refs.** A design PR opened before I changed a workflow kept running the *old* workflow, because GitHub tests the merge ref that existed when the PR was opened. And the reverse trap: a PR that changes a factory workflow skips that agent stage entirely, and still reports success. Both are now documented in the generated README under "Changing the factory itself": workflow changes go in their own PR, and open factory PRs get updated after one lands.
+**Stale merge refs.** A design PR opened before I changed a workflow kept running the *old* workflow, because its merge ref was not recomputed after main moved. And the reverse trap: a PR that changes a factory workflow skips that agent stage entirely, and still reports success. Both are now documented in the generated README under "Changing the factory itself": workflow changes go in their own PR, and open factory PRs get updated after one lands.
 
 **A reviewer that invented scope.** This one taught me the most about agents. A reviewer suggested a cross-file merge, a plausible improvement nobody had asked for. The builder implemented it. It then broke in every following round, and each round's review found a new defect in it. Speculative scope from a reviewer is a bug factory. Now reviewers may not add scope they cannot verify; it becomes a question to me instead. And if two rounds find defects in the same area, the run stops and asks rather than looping.
 
@@ -63,7 +63,7 @@ The common thread: agents are good at following a process and bad at noticing th
 
 The Actions factory used a Sonnet reviewer on every PR. For the first two pensieve issues I also ran an Opus reviewer from inside a Claude Code session, partly to compare.
 
-Opus reproduced six defects that the Actions Sonnet review had called "Ready". Two of them were privacy leaks. They were caught before merge, on pensieve-traces issue #3, and I will not describe them further: the point is that the cheaper reviewer waved through exactly the kind of defect I most needed caught.
+Across the first two pensieve issues (#2 via PR #16, #3 via PR #22), Opus reproduced six defects, two of them privacy leaks, that the Actions Sonnet review had called "Ready". On #3 the Sonnet review said "Ready for maintainer" ([PR #22](https://github.com/rahmansunny071/pensieve-traces/pull/22)). They were caught before merge, and I will not describe them further: the point is that the cheaper reviewer waved through exactly the kind of defect I most needed caught.
 
 I do not want to turn this into "big model good, small model bad". I use Sonnet to build, because building is the high-volume step and it is good at it. But the reviewer is the one station where I want the strongest model, and where independence matters: a *fresh* reviewer that has not seen the builder's reasoning catches things the builder rationalized away. After that run, the weaker Actions review became redundant noise for the session-driven path, so the skill works on `local/issue-N` branches that the Actions review does not watch (v0.3.1).
 
@@ -73,7 +73,7 @@ That same early run is where I looked at the bill. Two pensieve issues cost abou
 
 Looking at why, it was three self-inflicted problems:
 
-1. **Every finding was a blocker.** Reviewers raised a dozen small points, and every one was fixed and re-reviewed.
+1. **Every finding was a blocker.** Reviewers raised a pile of small points, and every one was fixed and re-reviewed.
 2. **Cold subagents.** Each step spun up a new agent that re-read the whole context. Ten to fifteen subagents per issue.
 3. **Too many stages.** Design review, design re-review, code review, code re-review.
 
@@ -90,7 +90,7 @@ That took an issue from 10-15 subagents to 2 or 3. A run log records cost and ti
 
 The label-driven version asked for me constantly. The goal now is the opposite: the factory asks only when it genuinely cannot proceed, and *never blocks while waiting*.
 
-**Flag and continue** (v0.4.0). When a reviewer has a question, or a gate fails, or a data assumption cannot be verified, the agent posts it as an inline, line-anchored comment on the PR, with options and a recommendation. The issue gets a `needs-maintainer` label, and the run moves on to other work. When I come back I say "resume the factory", and it picks up from GitHub state: which waiting PRs have new replies from me.
+**Flag and continue** (v0.4.0). When a reviewer has a question, or a gate fails, or a data assumption cannot be verified, the agent posts it as an inline, line-anchored comment on the PR, with options and a recommendation. The issue gets a `factory:needs-maintainer` label, and the run moves on to other work. When I come back I say "resume the factory", and it picks up from GitHub state: which waiting PRs have new replies from me.
 
 **Handoffs in the PR.** The builder keeps a "Handoff" section in the PR body after each phase: what changed, key decisions, how to test, what is open. A replacement agent, or a fresh reviewer, starts from that instead of from nothing.
 
@@ -114,7 +114,7 @@ flowchart TD
     C --> F
     F --> M[Merge gates, then merge]
     M --> N[Next sub-issue]
-    P -.question.-> Q[Flag on PR: needs-maintainer]
+    P -.question.-> Q[Flag on PR: factory:needs-maintainer]
     R -.question.-> Q
     Q -.-> O[Continue other lanes]
     O -.-> RS[Resume when I reply]
@@ -127,24 +127,24 @@ _Export as an image for Substack._
 
 Here is the whole arc, one row per release. The pattern is that each row exists because something hurt.
 
-| Release | Before | After |
-|---|---|---|
-| v0.1.0 | One project's Actions factory | A Copier template with bootstrap and template CI |
-| v0.1.1 | Bot PRs blocked; green but no artifact | Allowlists, a design-branch guard, failures reported |
-| v0.2.0 | Label by label, me at every step | `factory` skill: brainstorm, then run issues end to end |
-| v0.3.0 | About 1.4M tokens for two issues | Urgency triage, one builder, one fresh reviewer |
-| v0.3.1 | Actions review duplicated the skill's review | Skill uses `local/issue-N` branches |
-| v0.4.0 | Agent waits on me; context lost between agents | Flag and continue, resume, PR handoffs |
-| v0.5.0 | Flat backlog | Swim lanes, priorities, native dependencies, board |
-| v0.5.1 | Data-loss risk only an "improvement" | Irreversible data loss is a blocker |
-| v0.6.0 | Docs lagging code; merge refused by auto mode | Docs ship with the code; ready-to-merge hand-off |
-| v0.7.0 | "Never read real data" hard-coded | Per-repo real-data level |
-| v0.8.0 | Updating a repo was manual | `sync-root-factory` and `factory-lesson` skills |
-| v0.9.0 | First real sync hit gaps | Sync runs the tag's own script; new skills arrive |
+| Release | Before | After | Source |
+|---|---|---|---|
+| v0.1.0 | One project's Actions factory | A Copier template with bootstrap and template CI | pensieve-traces |
+| v0.1.1 | Bot PRs blocked; green but no artifact | Allowlists, a design-branch guard, failures reported | #3, #4, #5, #6, #7 |
+| v0.2.0 | Label by label, me at every step | `factory` skill: brainstorm, then run issues end to end | #10-#12, #16 |
+| v0.3.0 | About 1.4M tokens for two issues | Urgency triage, one builder, one fresh reviewer | #13-#15, #17 |
+| v0.3.1 | Actions review duplicated the skill's review | Skill uses `local/issue-N` branches | #12 |
+| v0.4.0 | Agent waits on me; context lost between agents | Flag and continue, resume, PR handoffs | #21 |
+| v0.5.0 | Flat backlog | Swim lanes, priorities, native dependencies, board | #23 |
+| v0.5.1 | Data-loss risk only an "improvement" | Irreversible data loss is a blocker | #27 |
+| v0.6.0 | Docs lagging code; merge refused by auto mode | Docs ship with the code; ready-to-merge hand-off | #30, #32 |
+| v0.7.0 | "Never read real data" hard-coded | Per-repo real-data level | #33 |
+| v0.8.0 | Updating a repo was manual | `sync-root-factory` and `factory-lesson` skills | #40, #41 |
+| v0.9.0 | First real sync hit gaps | Sync runs the tag's own script; new skills arrive | #48, #50 |
 
 ## The recent stretch, briefly
 
-v0.6.0 through v0.9.0 were smaller but telling. A README on pensieve-traces still called a built feature "planned", so docs now ship in the same PR as the code, and a mismatch is a blocker even in MVP. Real-data access became a per-repo choice (`never`, `with-approval`, `allowed`) instead of a hard-coded ban, with a few rules that stay on regardless: never commit real data, never quote values from it. Two new skills close the loop on the template itself: `sync-root-factory` brings a repo up to the latest release, and `factory-lesson` files a factory problem as a lesson issue straight from the project that hit it. And the orchestrator now merges, and tags releases, on its own when the gates pass. I still read the PRs. I just no longer have to be the one clicking.
+v0.6.0 through v0.9.0 were smaller but telling. A README on pensieve-traces still called a built feature "planned", so docs now ship in the same PR as the code, and a mismatch is a blocker even in MVP. Real-data access became a per-repo choice (`never`, `with-approval`, `allowed`) instead of a hard-coded ban, with a few rules that stay on regardless: never commit real data, never quote values from it. Two new skills close the loop on the template itself: `sync-root-factory` brings a repo up to the latest release, and `factory-lesson` files a factory problem as a lesson issue straight from the project that hit it. On merging: the template's default hands the merge to the maintainer (a `factory:ready-to-merge` label plus the exact merge command). On agent-factory itself I have since let the orchestrator merge and cut releases when every gate passes. That is a choice each maintainer makes, not a template feature.
 
 ## What's next
 
