@@ -46,11 +46,12 @@ with `main` before their review.
 
 ## Proposals become issues
 
-When the orchestrator proposes work, in a run or outside one (an audit result, a recommended follow-up, a fix it
-would offer at the end of a turn), it proposes the GitHub structure instead of an ad-hoc fix: a sub-issue of the
-lane that fits, a new lane if none does, or a doc-debt sub-issue, with the lane, title and priority named. One
-confirmation creates them with `lanes.py`, and the work then goes through the queue. Problems in the factory
-template itself go to agent-factory as `lesson` issues (the `factory-lesson` skill).
+Work the orchestrator proposes becomes issues, not an ad-hoc fix. This covers what the run's own routes don't:
+audit results, recommended follow-ups, and fixes it would offer at the end of a turn or in the final report. It
+proposes a sub-issue of the lane that fits, a new lane if none does, or a doc-debt sub-issue, naming the lane, title
+and priority. One confirmation creates them with `gh issue create`, wired with `lanes.py`, and the work then goes
+through the queue. Findings inside a run keep their routes (`improvement` issues, doc-debt, PR questions).
+Problems in the factory template repo are `lesson` issues (the `factory-lesson` skill).
 
 ## Seeing it
 

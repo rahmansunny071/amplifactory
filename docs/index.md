@@ -56,7 +56,7 @@ idea ──► brainstorm with Opus ──► lanes (P0–P3) of ordered issues 
 | [**Lanes and priorities**](concepts/lanes.md) | Features become lanes, each a parent issue whose native sub-issues run in order. `P0`–`P3` priorities and "blocked by" links drive the schedule. One lane at a time unless you say otherwise. |
 | [**The pipeline**](concepts/pipeline.md) | Two subagents per issue: one Sonnet builder reused for plan, build and fixes, and one fresh Opus reviewer. Only blockers are fixed in-PR before a first release; everything else becomes an `improvement` issue. |
 | [**Flag and continue**](concepts/flag-and-continue.md) | Questions go on the PR as inline comments with options and a recommendation. You answer whenever you like, then say "resume". |
-| [**Proposals become issues**](concepts/lanes.md#proposals-become-issues) | Anything the orchestrator proposes, in a run or not, is proposed as a sub-issue, lane or doc-debt issue, never as an ad-hoc fix. One confirmation creates it. |
+| [**Proposals become issues**](concepts/lanes.md#proposals-become-issues) | Follow-ups and audit results the orchestrator proposes are proposed as a sub-issue, lane or doc-debt issue, never as an ad-hoc fix. One confirmation creates it. |
 | [**Where knowledge lives**](concepts/where-knowledge-lives.md) | GitHub and the repo are the source of truth: issues, PRs, review threads, plans, Handoffs. The run log and Claude's memory only point at them. |
 
 ## Where it came from
