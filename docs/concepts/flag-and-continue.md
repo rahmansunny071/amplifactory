@@ -52,7 +52,7 @@ report lists them so you can merge in one batch.
 ```
 
 The syntax follows the [Claude Code permissions docs](https://code.claude.com/docs/en/permissions). The rule lets
-the agent use your ruleset bypass, so it is your choice and the template doesn't ship it. A project rule applies only
+the agent use your ruleset bypass, so it is your choice and the template doesn't ship it. The rule matches only commands that end in `--delete-branch`, which is how the skill runs the merge (gates.md "Merge"); variants with `-R` or other trailing flags aren't covered. A project rule applies only
 after you accept the workspace trust prompt. How allow rules interact with auto mode is described in the [permission modes docs](https://code.claude.com/docs/en/permission-modes); check it, and try it in your own session.
 
 ## What never happens

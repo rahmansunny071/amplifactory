@@ -83,6 +83,8 @@ jobs:
           done
           need .claude/skills/factory/SKILL.md 'name: factory'
           need .claude/skills/factory/references/gates.md 'gh pr merge <PR> --merge --admin --delete-branch'
+          # #35
+          need .claude/skills/factory/scripts/queue.py '"waiting_to_merge"'
           need .claude/skills/factory/references/briefs.md 'Never add the labels `factory:design` or `design:approved`'
           python3 .claude/skills/factory/scripts/queue.py --self-test || fail=1
           # v0.3.0: urgency triage, builder reuse, run log

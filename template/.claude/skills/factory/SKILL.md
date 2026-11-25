@@ -56,7 +56,8 @@ When the run log or memory disagrees with GitHub, GitHub wins.
 5. **What's waiting.** Run `python .claude/skills/factory/scripts/queue.py`. It shows issues in progress,
    **issues waiting on the maintainer and whether they've replied**, and the ready queue.
    `runlog.py status` shows the local log's view. If anything is in progress or has new replies, handle
-   that first (see "Resume").
+   that first (see "Resume"). Clear stale labels: `gh issue list --state closed --label
+   factory:ready-to-merge`, then `gh issue edit <N> --remove-label factory:ready-to-merge` for each.
 6. **Documentation tech-debt.** `python .claude/skills/factory/scripts/lanes.py doc-debt find` prints the
    tracking issue's number (an open issue titled exactly "Documentation tech-debt", labelled
    `documentation`), creating it if it's missing, so repos bootstrapped before v0.6.0 work too. Every
@@ -229,10 +230,12 @@ When every gate passes but the merge itself is refused, the maintainer merges it
 5. **Move on.** The issue stays open, so its lane's later issues wait; other lanes carry on.
    `queue.py` lists these under "Waiting for you to merge", and "When you're done" reports them so the
    maintainer can merge them in one batch. Once the PR is merged the issue closes and the lane advances;
-   if the label is still on a closed issue, remove it.
+   a label left on a closed issue is cleared in "Before you start" (step 5).
 
 The maintainer can let the skill merge itself by opting in to a permission rule (README → "Letting the
-factory merge for you"). The template never ships it.
+factory merge for you"). The template never ships it. That rule matches only commands that end in
+`--delete-branch`, which is how you run the merge (`references/gates.md` → "Merge"); variants with `-R` or
+other trailing flags aren't covered, so don't add any.
 
 ### Resume
 
