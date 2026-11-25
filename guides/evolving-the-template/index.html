@@ -1337,6 +1337,15 @@ as an issue labelled <strong><code>lesson</code></strong>:</p>
 <li>the template files to change.</li>
 </ul>
 <p>File it <strong>when it happens</strong>, not at the end of the run.</p>
+<p>In a generated repo, ask Claude Code to "file a factory lesson: ..." and the <strong><code>factory-lesson</code> skill</strong> does it:</p>
+<ol>
+<li>finds the template repo from <code>.copier-answers.yml</code> (<code>_src_path</code>), used only when it is a GitHub source (<code>gh:</code>, <code>https://github.com/</code>, <code>ssh://git@github.com/</code>, <code>git@github.com:</code>); a local path, an empty value or a missing file falls back to <code>rahmansunny071/agent-factory</code>, and confirms it with <code>gh repo view</code>; it never files in the current repo;</li>
+<li>searches open <code>lesson</code> issues for a duplicate and offers to comment there instead;</li>
+<li>drafts the body (What happened, Fix applied in the generated repo, Template files to change, Options, Takeaway) and checks it for real data values, secrets and private paths, since the issue goes to another repo;</li>
+<li>asks you <strong>once</strong>, then creates it with the <code>lesson</code> label and reports the URL;</li>
+<li>offers a comment on the downstream PR or issue linking the lesson, only if you agree.</li>
+</ol>
+<p>It needs a <code>gh</code> login with access to the template repo (private repos need one).</p>
 <h2 id="2-release">2. Release<a class="headerlink" href="#2-release" title="Permanent link">&para;</a></h2>
 <p>Lessons are batched into a release:</p>
 <ol>
