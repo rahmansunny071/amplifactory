@@ -17,7 +17,7 @@ description: "Every label bootstrap.sh creates, and who may add it."
 | `design:approved` | **Actions mode:** start the build agent | **you only** |
 | `factory:designing`, `factory:building`, `factory:review` | Actions-mode progress | workflows |
 | `factory:blocked` | An agent stopped and needs you | workflows, the skill |
-| `lesson` | (agent-factory only) a factory problem found in a project | you, the skill |
+| `lesson` | (amplifactory only) a factory problem found in a project | you, the skill |
 
 The label guard removes `factory:design` and `design:approved` when anyone but you adds them, and the skill never
 adds them.

@@ -1,7 +1,7 @@
 name: Docs
 
 # Builds the MkDocs site on every PR that touches it, and on main publishes it to the gh-pages
-# branch, which GitHub Pages serves at https://rahmansunny071.github.io/agent-factory/.
+# branch, which GitHub Pages serves at https://rahmansunny071.github.io/amplifactory/.
 on:
   push:
     branches: [main]

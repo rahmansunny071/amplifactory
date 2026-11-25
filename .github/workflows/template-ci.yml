@@ -61,7 +61,7 @@ jobs:
           for f in .github/workflows/*.yml .github/ISSUE_TEMPLATE/*.yml .copier-answers.yml; do
             uvx --from pyyaml python -c "import sys, yaml; yaml.safe_load(open(sys.argv[1]))" "$f"
           done
-      # Regression guards for lessons learned driving generated factories (agent-factory#3–#7).
+      # Regression guards for lessons learned driving generated factories (amplifactory#3–#7).
       - name: Factory guardrails present
         working-directory: ${{ runner.temp }}/out
         env:

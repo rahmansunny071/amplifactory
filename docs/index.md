@@ -1,13 +1,13 @@
 ---
-title: "agent-factory"
+title: "amplifactory"
 description: "An issue-driven agent factory on Claude Code, packaged as a Copier template. You plan with Claude; agents design, build and review; you stay in the loop by exception."
 hide:
   - toc
 ---
 
-# agent-factory
+# amplifactory
 
-agent-factory turns a repository into an **issue-driven agent factory**. You and Claude (Opus) turn an idea into
+amplifactory turns a repository into an **issue-driven agent factory**. You and Claude (Opus) turn an idea into
 prioritized **lanes** of ordered GitHub issues. Then the factory takes each issue from plan to merged pull request:
 a Sonnet **builder** plans, builds and fixes, a fresh Opus **reviewer** checks the work, and Opus **merges** when every
 gate passes. When it needs a decision from you, it asks **on the pull request** and keeps working on other lanes.

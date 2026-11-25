@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# One-time setup for a repo generated from agent-factory. Safe to re-run.
+# One-time setup for a repo generated from amplifactory. Safe to re-run.
 #
 #   ./scripts/bootstrap.sh --public    # recommended: rulesets work and Actions minutes are free
 #   ./scripts/bootstrap.sh --private   # rulesets need GitHub Pro on private repos
@@ -47,7 +47,7 @@ if [ ! -d .git ]; then
 fi
 if ! git rev-parse -q --verify HEAD >/dev/null; then
   git add -A
-  git commit -q -m "Scaffold [[ project_name ]] from agent-factory"
+  git commit -q -m "Scaffold [[ project_name ]] from amplifactory"
   echo "created the first commit"
 else
   echo "already has commits"
