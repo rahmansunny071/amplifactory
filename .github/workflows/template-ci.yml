@@ -24,22 +24,17 @@ jobs:
       matrix:
         include:
           - variant: with-cli
-            real_data: never
             data: --data "description=A demo project."
           - variant: no-cli
-            real_data: never
             data: --data "description=A demo project." --data cli_name=
           - variant: custom-python
-            real_data: never
             data: >-
               --data "description=An extremely long project description that goes well past one hundred characters so formatting is checked."
               --data 'python_versions=["3.12", "3.13"]' --data python_min=3.12
           # #33: real-data access
           - variant: real-data-with-approval
-            real_data: with-approval
             data: --data "description=A demo project." --data real_data_access=with-approval
           - variant: real-data-allowed
-            real_data: allowed
             data: --data "description=A demo project." --data real_data_access=allowed
     steps:
       - uses: actions/checkout@v4
@@ -145,13 +140,15 @@ jobs:
           if grep -q 'restrict_untrusted_prs' .github/workflows/factory-review.yml; then
             echo "::error::factory-review must keep restrict_untrusted_prs at its default"; fail=1
           fi
-          # #33: real-data access (the level for this variant is matrix.real_data)
+          # #33: real-data access (the expected level comes from .copier-answers.yml)
+          want=$(sed -n 's/^real_data_access: *//p' .copier-answers.yml)
+          case "$want" in never|with-approval|allowed) ;; *) echo "::error::bad real_data_access answer: $want"; fail=1;; esac
           need CLAUDE.md '## Real data'
           need CLAUDE.md 'never commit real data'
           need CLAUDE.md 'synthetic fixtures only'
           need CLAUDE.md 'scratch directory outside the repo'
-          if ! grep -qE "^Real data: ${{ matrix.real_data }}\." CLAUDE.md; then
-            echo "::error::CLAUDE.md first Real data line is not ${{ matrix.real_data }}"; fail=1
+          if ! grep -qE "^Real data: $want\." CLAUDE.md; then
+            echo "::error::CLAUDE.md first Real data line is not $want"; fail=1
           fi
           test "$(grep -cE '^Real data: ' CLAUDE.md)" = 1 || { echo "::error::expected exactly one Real data line"; fail=1; }
           need .claude/skills/factory/SKILL.md 'Real data: (never|with-approval|allowed)'
