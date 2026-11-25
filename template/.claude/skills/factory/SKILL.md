@@ -233,7 +233,8 @@ When every gate passes but the merge itself is refused, the maintainer merges it
    a label left on a closed issue is cleared in "Before you start" (step 5).
 
 The maintainer can let the skill merge itself by opting in to a permission rule (README → "Letting the
-factory merge for you"). The template never ships it.
+factory merge for you"). The template never ships it. That rule matches only commands that end in
+`--delete-branch`, which is how you run the merge; the maintainer's hand-off command (with `-R`) is not covered.
 
 ### Resume
 

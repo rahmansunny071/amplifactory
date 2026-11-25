@@ -50,7 +50,7 @@ Start it by asking Claude Code to "brainstorm X into issues" or "run the factory
 { "permissions": { "allow": ["Bash(gh pr merge * --merge --admin --delete-branch)"] } }
 ```
 
-This uses the wildcard syntax from the [Claude Code permissions docs](https://code.claude.com/docs/en/permissions). The rule lets the agent use your ruleset bypass (`--admin`), so it is your choice and the template does not ship it. A project rule applies only after you accept the workspace trust prompt. How allow rules interact with auto mode is described in the [permission modes docs](https://code.claude.com/docs/en/permission-modes); check it, and try it in your own session. Even with the rule, a merge GitHub itself refuses is still handed off.
+This uses the wildcard syntax from the [Claude Code permissions docs](https://code.claude.com/docs/en/permissions). The rule lets the agent use your ruleset bypass (`--admin`), so it is your choice and the template does not ship it. The rule matches only commands that end in `--delete-branch`, which is how the skill runs the merge (`references/gates.md` → "Merge"); variants with `-R` or other trailing flags aren't covered. A project rule applies only after you accept the workspace trust prompt. How allow rules interact with auto mode is described in the [permission modes docs](https://code.claude.com/docs/en/permission-modes); check it, and try it in your own session. Even with the rule, a merge GitHub itself refuses is still handed off.
 
 ### Changing the factory itself
 

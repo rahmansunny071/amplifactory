@@ -27,7 +27,7 @@ python .claude/skills/factory/scripts/queue.py --json
 Lane states, from the lane's current issue: `active` (a PR in progress), `replied` (you answered a question),
 `merge` (every gate passed but the merge was refused, so you merge it; uses no slot, and the lane's later issues wait), `ready`, `asked` (waiting on you; uses no slot), `blocked`, `waiting` (on another lane or issue), `done`.
 
-PRs labelled `factory:ready-to-merge` are also listed under "Waiting for you to merge".
+*Issues* labelled `factory:ready-to-merge` are also listed under "Waiting for you to merge", each with its PR. A loose one appears only there, not under "Not in a lane". `--json` has the same list as `waiting_to_merge`: `[{"issue": N, "pr": M}]` (`pr` is `null` when no open PR is found).
 
 The "Documentation tech-debt" tracking issue is never listed as work; its open sub-issues appear under "Not in a
 lane" as improvements.
