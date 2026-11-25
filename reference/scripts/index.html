@@ -1339,7 +1339,7 @@
 </table>
 <p>Lane states, from the lane's current issue: <code>active</code> (a PR in progress), <code>replied</code> (you answered a question),
 <code>merge</code> (every gate passed but the merge was refused, so you merge it; uses no slot, and the lane's later issues wait), <code>ready</code>, <code>asked</code> (waiting on you; uses no slot), <code>blocked</code>, <code>waiting</code> (on another lane or issue), <code>done</code>.</p>
-<p>PRs labelled <code>factory:ready-to-merge</code> are also listed under "Waiting for you to merge".</p>
+<p><em>Issues</em> labelled <code>factory:ready-to-merge</code> are also listed under "Waiting for you to merge", each with its PR. A loose one appears only there, not under "Not in a lane". <code>--json</code> has the same list as <code>waiting_to_merge</code>: <code>[{"issue": N, "pr": M}]</code> (<code>pr</code> is <code>null</code> when no open PR is found).</p>
 <p>The "Documentation tech-debt" tracking issue is never listed as work; its open sub-issues appear under "Not in a
 lane" as improvements.</p>
 <h2 id="lanespy">lanes.py<a class="headerlink" href="#lanespy" title="Permanent link">&para;</a></h2>

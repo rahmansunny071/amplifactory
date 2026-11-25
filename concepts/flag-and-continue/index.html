@@ -1395,7 +1395,7 @@ report lists them so you can merge in one batch.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="p">{</span><span class="w"> </span><span class="nt">"permissions"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"allow"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"Bash(gh pr merge * --merge --admin --delete-branch)"</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
 </code></pre></div>
 <p>The syntax follows the <a href="https://code.claude.com/docs/en/permissions">Claude Code permissions docs</a>. The rule lets
-the agent use your ruleset bypass, so it is your choice and the template doesn't ship it. A project rule applies only
+the agent use your ruleset bypass, so it is your choice and the template doesn't ship it. The rule matches only commands that end in <code>--delete-branch</code>, which is how the skill runs the merge (gates.md "Merge"); variants with <code>-R</code> or other trailing flags aren't covered. A project rule applies only
 after you accept the workspace trust prompt. How allow rules interact with auto mode is described in the <a href="https://code.claude.com/docs/en/permission-modes">permission modes docs</a>; check it, and try it in your own session.</p>
 <h2 id="what-never-happens">What never happens<a class="headerlink" href="#what-never-happens" title="Permanent link">&para;</a></h2>
 <ul>
