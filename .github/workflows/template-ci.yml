@@ -133,6 +133,14 @@ jobs:
           need .claude/skills/factory/references/gates.md 'Ready to merge: all gates pass on'
           need .claude/skills/factory/references/gates.md 'gh pr merge <PR> --merge --delete-branch'
           need .claude/skills/factory/scripts/queue.py 'READY_TO_MERGE = "factory:ready-to-merge"'
+          # #41: factory-lesson
+          test -f .claude/skills/factory-lesson/SKILL.md || { echo "::error::missing factory-lesson/SKILL.md"; fail=1; }
+          need .claude/skills/factory-lesson/SKILL.md 'name: factory-lesson'
+          need .claude/skills/factory-lesson/SKILL.md 'gh repo view'
+          need .claude/skills/factory-lesson/SKILL.md '--label lesson'
+          need .claude/skills/factory-lesson/SKILL.md 'no real data values'
+          need .claude/skills/factory-lesson/SKILL.md 'Create nothing until the user says yes'
+          need .claude/skills/factory/SKILL.md '`factory-lesson` skill'
           need README.md 'Letting the factory merge for you'
           need README.md 'Bash(gh pr merge * --merge --admin --delete-branch)'
           if grep -rq 'gh pr merge' .claude/settings.json .claude/settings.local.json 2>/dev/null; then

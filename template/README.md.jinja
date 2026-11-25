@@ -44,6 +44,8 @@ The labels above wait for you at every step. The **`factory` skill** (`.claude/s
 
 Start it by asking Claude Code to "brainstorm X into issues" or "run the factory". It never adds `factory:design` or `design:approved`, so the Actions workflows don't duplicate the work.
 
+**Reporting a factory problem.** If the factory itself got in the way (not this project's code), say "file a factory lesson: ...". The **`factory-lesson` skill** (`.claude/skills/factory-lesson/`) finds the template repo from `.copier-answers.yml`, checks for a duplicate `lesson` issue, drafts the issue without real data values, secrets or private paths, and files it there after one confirmation from you. It can then link the lesson on the PR or issue where you hit it, if you agree. It needs a `gh` login with access to the template repo.
+
 **Letting the factory merge for you (opt-in).** By default, when every gate passes and the merge is refused, the skill labels the PR `factory:ready-to-merge`, comments the exact merge command and moves on; you merge them in one batch. If you would rather it merged itself, you can add a Claude Code permission rule yourself, in `.claude/settings.json` or your user `~/.claude/settings.json`:
 
 ```json
