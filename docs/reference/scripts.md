@@ -39,8 +39,8 @@ Creates and maintains lanes with native GitHub features. The sub-issue and depen
 
 | Command | Does |
 |---|---|
-| `sub-add LANE ISSUE…` | add issues to a lane, in this order (skips ones already there) |
-| `order LANE ISSUE…` | reorder: these first, in this order |
+| `sub-add LANE ISSUE…` | append issues to the end of a lane, in this order (keeps the existing order; skips ones already there) |
+| `order LANE ISSUE…` | move these issues to the front, in this order (`sub-add` never does this) |
 | `block ISSUE --by ISSUE…` | add "blocked by" links (safe to re-run) |
 | `priority ISSUE P0…P3` | set exactly one priority label |
 | `project-add ISSUE… --project N` | add to the Project board and set its Priority field from the label |
