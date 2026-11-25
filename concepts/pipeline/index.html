@@ -1387,8 +1387,9 @@ verify findings and merge. The heavy lifting goes to two subagents per issue.</p
    code</a>).</li>
 <li><strong>Fix.</strong> The builder fixes blockers. You verify each with its reproduction on the new commit and resolve the
    thread. There is no second full review.</li>
-<li><strong>Gates and merge.</strong> When all <a href="../../reference/gates/">thirteen gates</a> pass, you merge (merge commit) and the lane
-   moves on.</li>
+<li><strong>Gates and merge.</strong> When all <a href="../../reference/gates/">thirteen gates</a> pass, the factory merges (merge commit) and the lane
+   moves on. If the merge is refused, it hands the PR to you instead (see <a href="../flag-and-continue/#ready-to-merge">Ready to
+   merge</a>).</li>
 </ol>
 <h2 id="urgency-triage">Urgency triage<a class="headerlink" href="#urgency-triage" title="Permanent link">&para;</a></h2>
 <p><code>CLAUDE.md</code> has a <strong>Release phase</strong> line. In <strong><code>mvp</code></strong> (until a first formal release), only <strong>blockers</strong> are fixed in

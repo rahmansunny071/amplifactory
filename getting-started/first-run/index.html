@@ -1397,7 +1397,8 @@ and the Project board items. See <a href="../../concepts/lanes/">Lanes and prior
 <li>The builder fixes blockers. Improvements become one <code>improvement</code> issue; <code>doc-debt</code> findings become
    sub-issues of the "Documentation tech-debt" issue.</li>
 <li>When every <a href="../../reference/gates/">gate</a> passes, including <strong>all review threads resolved</strong>, Opus merges. The
-   lane moves to its next issue.</li>
+   lane moves to its next issue. If the merge is refused, the PR is labelled <code>factory:ready-to-merge</code> with the
+   merge command in a comment, and you merge it (<a href="../../concepts/flag-and-continue/#ready-to-merge">details</a>).</li>
 </ol>
 <h2 id="3-when-it-needs-you">3. When it needs you<a class="headerlink" href="#3-when-it-needs-you" title="Permanent link">&para;</a></h2>
 <p>You'll see a question on the PR with options and a recommendation, and the label <code>factory:needs-maintainer</code>. Only

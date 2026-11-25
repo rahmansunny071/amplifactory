@@ -1005,6 +1005,24 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Merge gates
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -1021,6 +1039,49 @@
   
 
       </a>
+      
+        
+
+  
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-merge-command" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The merge command
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#when-the-merge-is-refused" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When the merge is refused
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1168,6 +1229,36 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-merge-command" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The merge command
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#when-the-merge-is-refused" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When the merge is refused
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1210,7 +1301,7 @@ evidence, not proof. If a gate fails and the fix isn't mechanical, the factory <
 <tr>
 <td>2</td>
 <td><strong>Up to date with <code>main</code></strong></td>
-<td><code>mergeStateStatus</code> isn't <code>BEHIND</code> or <code>DIRTY</code>; if behind, update the branch and re-check gate 1</td>
+<td><code>mergeStateStatus</code> isn't <code>BEHIND</code> or <code>DIRTY</code>; if behind, update the branch and re-check gate 1. <code>BLOCKED</code> alone means the merge needs your bypass or approval</td>
 </tr>
 <tr>
 <td>3</td>
@@ -1270,6 +1361,30 @@ evidence, not proof. If a gate fails and the fix isn't mechanical, the factory <
 </tbody>
 </table>
 <p>Merges use <strong>merge commits</strong>, so release tags stay on <code>main</code>, and happen <strong>one at a time</strong>.</p>
+<h2 id="the-merge-command">The merge command<a class="headerlink" href="#the-merge-command" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th><code>mergeStateStatus</code></th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CLEAN</code></td>
+<td><code>gh pr merge &lt;PR&gt; --merge --delete-branch</code></td>
+</tr>
+<tr>
+<td><code>BLOCKED</code> only by the required review</td>
+<td><code>gh pr merge &lt;PR&gt; --merge --admin --delete-branch</code> (your ruleset bypass)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="when-the-merge-is-refused">When the merge is refused<a class="headerlink" href="#when-the-merge-is-refused" title="Permanent link">&para;</a></h2>
+<p>If the harness denies the command or GitHub rejects it, the factory stops there. It never retries through
+<code>gh api</code>, other flags or another tool. Instead it labels the PR and issue <code>factory:ready-to-merge</code>, removes the
+in-progress label, posts one comment (<code>Ready to merge: all gates pass on &lt;sha&gt;.</code>, the merge command that fits,
+the gate summary) and moves on. See <a href="../../concepts/flag-and-continue/#ready-to-merge">Flag and continue</a>.</p>
 
 
 

@@ -1338,7 +1338,8 @@
 </tbody>
 </table>
 <p>Lane states, from the lane's current issue: <code>active</code> (a PR in progress), <code>replied</code> (you answered a question),
-<code>ready</code>, <code>asked</code> (waiting on you; uses no slot), <code>blocked</code>, <code>waiting</code> (on another lane or issue), <code>done</code>.</p>
+<code>merge</code> (every gate passed but the merge was refused, so you merge it; uses no slot, and the lane's later issues wait), <code>ready</code>, <code>asked</code> (waiting on you; uses no slot), <code>blocked</code>, <code>waiting</code> (on another lane or issue), <code>done</code>.</p>
+<p>PRs labelled <code>factory:ready-to-merge</code> are also listed under "Waiting for you to merge".</p>
 <p>The "Documentation tech-debt" tracking issue is never listed as work; its open sub-issues appear under "Not in a
 lane" as improvements.</p>
 <h2 id="lanespy">lanes.py<a class="headerlink" href="#lanespy" title="Permanent link">&para;</a></h2>
@@ -1404,7 +1405,7 @@ oldest wins.</p>
 <a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>python<span class="w"> </span>.claude/skills/factory/scripts/runlog.py<span class="w"> </span>summary<span class="w">    </span><span class="c1"># wall time, rounds, tokens by model</span>
 </code></pre></div>
 <p>Steps: <code>plan</code>, <code>plan-check</code>, <code>design-review</code>, <code>build</code>, <code>review</code>, <code>fix</code>, <code>handoff-written</code>, <code>needs-maintainer</code>,
-<code>resume</code>, <code>merge</code>, <code>blocked</code>, <code>decision</code>, <code>improvement-filed</code>.</p>
+<code>resume</code>, <code>merge</code>, <code>ready-to-merge</code>, <code>blocked</code>, <code>decision</code>, <code>improvement-filed</code>.</p>
 
 
 
