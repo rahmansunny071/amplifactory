@@ -1190,7 +1190,7 @@
 
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
 <ul>
-<li>Unreleased: <strong><code>lanes.py</code> follow-ups</strong> (#63).</li>
+<li>v0.12.0 (2026-11-25): <strong>Skill scripts run on Python 3.9; <code>lanes.py</code> reads every page</strong> (#63): macOS's system <code>python3</code> works, template CI runs every self-test under 3.9, and lanes with more than 30 sub-issues work.</li>
 <li><strong>#63: pagination, fallback test, Python 3.9.</strong> <code>lanes.py</code> reads every page of a lane's sub-issues (<code>gh api --paginate</code>), so <code>sub-add</code>/<code>order</code> work in lanes of more than 30. <code>--self-test</code> now covers <code>sub-add</code>'s <code>order</code> fallback (a fake whose POST prepends) and a multi-page lane. Every skill script runs on Python 3.9 (<code>lanes.py</code> used <code>itertools.pairwise</code>); Template CI runs all four self-tests under 3.9 as well, and the docs state 3.9 as the minimum. The <code>sub-add</code> line in the <code>factory</code> SKILL.md is rewrapped.</li>
 <li>v0.11.0 (2026-11-25): <strong><code>lanes.py sub-add</code> appends</strong> (#60): adding an issue to a lane no longer jumps it ahead of the lane's next step.</li>
 <li><strong>#60: <code>lanes.py sub-add</code> appends.</strong> It used to put the newly added issues first in the lane (via <code>order</code>); it now keeps the lane's order and puts new issues last, in the order given. Issues already in the lane stay put. <code>order</code> is still how to move issues to the front. <code>--self-test</code> covers it with a fake <code>_gh</code> that models GitHub.</li>
