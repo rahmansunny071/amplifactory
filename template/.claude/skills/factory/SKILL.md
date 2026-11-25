@@ -234,7 +234,8 @@ When every gate passes but the merge itself is refused, the maintainer merges it
 
 The maintainer can let the skill merge itself by opting in to a permission rule (README → "Letting the
 factory merge for you"). The template never ships it. That rule matches only commands that end in
-`--delete-branch`, which is how you run the merge; the maintainer's hand-off command (with `-R`) is not covered.
+`--delete-branch`, which is how you run the merge (`references/gates.md` → "Merge"); variants with `-R` or
+other trailing flags aren't covered, so don't add any.
 
 ### Resume
 
