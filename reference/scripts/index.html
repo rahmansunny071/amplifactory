@@ -1429,12 +1429,15 @@ oldest wins.</p>
 <p>Steps: <code>plan</code>, <code>plan-check</code>, <code>design-review</code>, <code>build</code>, <code>review</code>, <code>fix</code>, <code>handoff-written</code>, <code>needs-maintainer</code>,
 <code>resume</code>, <code>merge</code>, <code>ready-to-merge</code>, <code>blocked</code>, <code>decision</code>, <code>improvement-filed</code>.</p>
 <h2 id="syncpy">sync.py<a class="headerlink" href="#syncpy" title="Permanent link">&para;</a></h2>
-<p>The guards of the <code>sync-root-factory</code> skill (<code>.claude/skills/sync-root-factory/scripts/</code>). It needs <code>git</code>, and <code>gh</code> only for <code>labels</code>. Every command that refuses prints <code>refused: &lt;why&gt;</code>, exits 1. Each refuses before writing, with two exceptions that say so: <code>apply</code>'s post-write diff (undo with <code>git restore .</code> and <code>git clean -fd -- .claude/skills/factory .claude/skills/sync-root-factory</code>) and <code>labels --create</code>, which reports the labels created before a failure.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>python<span class="w"> </span>.claude/skills/sync-root-factory/scripts/sync.py<span class="w"> </span>preflight
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>python<span class="w"> </span>.claude/skills/sync-root-factory/scripts/sync.py<span class="w"> </span>status<span class="w"> </span><span class="o">[</span>--assume-tag<span class="w"> </span>vX.Y.Z<span class="o">]</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>python<span class="w"> </span>.claude/skills/sync-root-factory/scripts/sync.py<span class="w"> </span>branch<span class="w"> </span>vX.Y.Z
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>python<span class="w"> </span>.claude/skills/sync-root-factory/scripts/sync.py<span class="w"> </span>verify-local<span class="w"> </span><span class="o">[</span>--assume-tag<span class="w"> </span>vX.Y.Z<span class="o">]</span>
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>python<span class="w"> </span>.claude/skills/sync-root-factory/scripts/sync.py<span class="w"> </span>apply<span class="w"> </span>--to-tag<span class="w"> </span>vX.Y.Z<span class="w"> </span><span class="o">[</span>--assume-tag<span class="w"> </span>vX.Y.Z<span class="o">]</span>
+<p>The guards of the <code>sync-root-factory</code> skill (<code>.claude/skills/sync-root-factory/scripts/</code>). It needs <code>git</code>, and <code>gh</code> only for <code>labels</code>. Run the <strong>target tag's</strong> copy, extracted outside the repo, with <code>--repo &lt;repo root&gt;</code> (see the adopt guide), not the one in the repo. Every command that refuses prints <code>refused: &lt;why&gt;</code>, exits 1. Each refuses before writing, with two exceptions that say so: <code>apply</code>'s post-write diff (undo with <code>git restore .</code> and <code>git clean -fd</code> on the folders it names) and <code>labels --create</code>, which reports the labels created before a failure.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># sf = python3 -I "$T/x/template/.claude/skills/sync-root-factory/scripts/sync.py" --repo "$R"</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="c1"># (the target tag's copy, extracted outside the repo: see the adopt guide)</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>sf<span class="w"> </span>preflight
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>sf<span class="w"> </span>status<span class="w"> </span><span class="o">[</span>--assume-tag<span class="w"> </span>vX.Y.Z<span class="o">]</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>sf<span class="w"> </span>branch<span class="w"> </span>vX.Y.Z
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>sf<span class="w"> </span>verify-local<span class="w"> </span><span class="o">[</span>--assume-tag<span class="w"> </span>vX.Y.Z<span class="o">]</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>sf<span class="w"> </span>apply<span class="w"> </span>--to-tag<span class="w"> </span>vX.Y.Z<span class="w"> </span><span class="o">[</span>--assume-tag<span class="w"> </span>vX.Y.Z<span class="o">]</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>sf<span class="w"> </span>copier-check<span class="w"> </span>vX.Y.Z
 </code></pre></div>
 <table>
 <thead>
@@ -1462,11 +1465,15 @@ oldest wins.</p>
 </tr>
 <tr>
 <td><code>verify-local</code></td>
-<td>compares the two skill folders with the recorded tag; any difference stops, listed</td>
+<td>compares every skill folder the recorded tag had with your copy; any difference stops, listed; a folder wholly absent is reported as <code>would re-add</code>; a tag that ships no skill folders is refused (nothing to compare)</td>
 </tr>
 <tr>
 <td><code>apply --to-tag</code></td>
-<td>replaces only tracked files in <code>.claude/skills/factory/</code> and <code>.claude/skills/sync-root-factory/</code> from the tag, then diffs</td>
+<td>syncs every skill folder the tag ships: replaces tracked files of folders both tags have (after <code>verify-local</code> of those), adds new ones, re-adds ones wholly absent locally (<code>re-adding (absent locally)</code>), refuses a folder the old tag lacked that exists locally in any form (tracked, untracked, ignored, symlink, case variant), leaves folders the tag dropped alone (<code>no longer shipped ... left alone</code>); all checks run for every folder before the first write; then diffs</td>
+</tr>
+<tr>
+<td><code>copier-check TAG</code></td>
+<td>generated repos, before <code>copier update</code>: refuses unless TAG is an annotated release tag, <code>_commit</code> is a <code>vX.Y.Z</code> tag and <code>_src_path</code> is <code>gh:rahmansunny071/agent-factory</code> (or its https/ssh GitHub URL; quotes, one <code>.git</code>, one <code>/</code> and a trailing comment allowed; the scheme or alias is case-sensitive, as in Copier, the owner/repo part is not); a local clone or a fork is refused with the fix. A <code>_src_path</code> or <code>_commit</code> line that appears more than once is refused (Copier keeps the last one); edit the existing line, never add a second. <code>status</code> also prints <code>src_ok</code> for generated repos</td>
 </tr>
 <tr>
 <td><code>changelog --tag --from</code></td>
@@ -1474,7 +1481,7 @@ oldest wins.</p>
 </tr>
 <tr>
 <td><code>labels --tag [--create]</code></td>
-<td>labels in the tag's <code>bootstrap.sh</code> the repo lacks; <code>--create</code> adds only those, never <code>--force</code>; a shadowing repo skips the Actions-only labels and lists them as skipped</td>
+<td>labels in the tag's <code>bootstrap.sh</code> the repo lacks; <code>--create</code> adds only those, never <code>--force</code>; prints <code>none missing</code> when there is nothing to create; a shadowing repo skips the Actions-only labels and lists them as skipped</td>
 </tr>
 <tr>
 <td><code>check-markers</code></td>

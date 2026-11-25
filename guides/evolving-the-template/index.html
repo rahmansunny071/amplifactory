@@ -1361,8 +1361,9 @@ as an issue labelled <strong><code>lesson</code></strong>:</p>
 <p>Copier does a three-way merge and marks conflicts. Or, in Claude Code inside the project, say
 <strong>"sync the factory to the latest release"</strong>: the <code>sync-root-factory</code> skill does it on a <code>local/adopt-&lt;tag&gt;</code> branch
 and opens a PR (mechanical conflicts resolved, the rest listed for you; it never merges). It also works for a
-project that only carries the skill: it replaces <code>.claude/skills/factory/</code> from the tag after checking it matches
-the version it claims, and builds a hand-port checklist from the CHANGELOG entries. See
+project that only carries the skill: it replaces every skill folder the tag ships (<code>factory/</code>, <code>factory-lesson/</code>,
+<code>sync-root-factory/</code>) from the tag after checking each matches the version it claims (a new one is added; a local one
+the old tag lacked is refused), using the target tag's <code>sync.py</code> extracted outside the repo, and builds a hand-port checklist from the CHANGELOG entries. See
 <a href="../adopt-in-existing-repo/#keeping-the-skill-up-to-date">Adopt in an existing repo</a> for the first-time setup.</p>
 <h2 id="developing-the-template">Developing the template<a class="headerlink" href="#developing-the-template" title="Permanent link">&para;</a></h2>
 <ul>
