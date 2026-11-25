@@ -1,5 +1,7 @@
 # Changelog
 
+- Unreleased: follow-ups.
+  - #42: the `queue.py` self-test asserts on the `--json` payload (now built by `payload()`); the skill's stale-label step also clears `factory:ready-to-merge` from merged PRs.
 - v0.7.0 (2026-11-25): **Real-data access is a per-repo choice** (#33, from pensieve-traces, which allows reading real data shapes), plus ready-to-merge follow-ups (#35).
   - The skill no longer hard-codes "agents may not read real user data".
   - **Question:** `real_data_access` (`never`, `with-approval`, `allowed`; default `never`, so `copier update` changes behaviour for no one). It renders a `## Real data` section in `CLAUDE.md` whose first line is `Real data: <level>.`.

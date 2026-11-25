@@ -57,7 +57,8 @@ When the run log or memory disagrees with GitHub, GitHub wins.
    **issues waiting on the maintainer and whether they've replied**, and the ready queue.
    `runlog.py status` shows the local log's view. If anything is in progress or has new replies, handle
    that first (see "Resume"). Clear stale labels: `gh issue list --state closed --label
-   factory:ready-to-merge`, then `gh issue edit <N> --remove-label factory:ready-to-merge` for each.
+   factory:ready-to-merge`, then `gh issue edit <N> --remove-label factory:ready-to-merge` for each. Merged PRs keep it too: `gh pr list
+   --state merged --label factory:ready-to-merge`, then `gh pr edit <N> --remove-label factory:ready-to-merge`.
 6. **Documentation tech-debt.** `python .claude/skills/factory/scripts/lanes.py doc-debt find` prints the
    tracking issue's number (an open issue titled exactly "Documentation tech-debt", labelled
    `documentation`), creating it if it's missing, so repos bootstrapped before v0.6.0 work too. Every
