@@ -12,8 +12,6 @@ template changes.
 
 File it **when it happens**, not at the end of the run. In a generated repo, ask Claude Code to "file a factory lesson: ..." and the `factory-lesson` skill does it; see [Keep up to date](keep-up-to-date.md#file-a-factory-problem-upstream).
 
-The issue says what happened (with links), the fix applied in the project if any, and the template files to change.
-
 ## 2. Release
 
 Lessons are batched into a release:

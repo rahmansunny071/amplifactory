@@ -59,11 +59,12 @@ git init -q --bare "$T/src"
 git -C "$T/src" fetch -q --depth 1 "$URL" "refs/tags/${TAG}:refs/tags/${TAG}"
 git -C "$T/src" cat-file -t "refs/tags/$TAG"    # must print: tag  (annotated)
 mkdir "$T/x" && git -C "$T/src" archive "$TAG" template/.claude/skills/sync-root-factory | tar -x -C "$T/x"
-python3 -I "$T/x/template/.claude/skills/sync-root-factory/scripts/sync.py" --repo "$R" status --assume-tag v0.7.0
+python3 -I "$T/x/template/.claude/skills/sync-root-factory/scripts/sync.py" --repo "$R" status
+# first sync only, while factory/VERSION is missing: add --assume-tag <tag the folder was copied from>
 ```
 
 `--assume-tag` is needed only while `factory/VERSION` is missing (the first sync): it stands in for the file, and
-the folder is still checked against that tag. Then ask Claude to sync; the skill runs the same extracted script.
+the folder is still checked against that tag. Later syncs leave it out; `sync.py` refuses one that disagrees with `VERSION`. Then ask Claude to sync; the skill runs the same extracted script.
 The old way (copy `sync-root-factory/` into the repo and commit it) is no longer needed: the adopt branch is cut
 from `origin/<default>`, which would not contain that commit. If you already committed one and the old tag did not ship it (before v0.8.0), `apply` refuses it; on `local/adopt-<tag>` run `git rm -r .claude/skills/sync-root-factory`, commit, and
 rerun.

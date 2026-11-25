@@ -36,8 +36,8 @@ as `never`. A repo that [adopted just the skill](../guides/adopt-in-existing-rep
 ## Changing the level
 
 - **Copier answer:** `uvx copier update --data real_data_access=<level>`, in a PR of its own.
-- **By hand:** edit the `Real data:` line in `CLAUDE.md`. Then `.copier-answers.yml` disagrees with it, and the next
-  `copier update` asks again.
+- **By hand:** edit the `Real data:` line in `CLAUDE.md`. Then `.copier-answers.yml` still records the old level, and
+  a later `copier update` can render the old line back, so prefer the Copier answer.
 
 [`sync-root-factory`](../guides/keep-up-to-date.md) never changes this value for you; it lists it under "Open".
 See also [`real_data_access`](../reference/questions.md) in the Copier questions.
