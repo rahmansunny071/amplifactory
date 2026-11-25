@@ -79,7 +79,7 @@ jobs:
           need .claude/skills/factory/references/briefs.md 'SendMessage'
           need .claude/skills/factory/references/gates.md 'gh run watch'
           need .gitignore '.factory/runs/'
-          need scripts/bootstrap.sh 'factory:needs-maintainer improvement lane P0 P1 P2 P3)'
+          need scripts/bootstrap.sh 'factory:needs-maintainer improvement lane P0 P1 P2 P3 '
           need scripts/bootstrap.sh '"required_review_thread_resolution": true'
           # v0.4.0: flag and continue, resume, handoffs, threads gate
           need .claude/skills/factory/SKILL.md '### Flag and continue'
@@ -96,6 +96,22 @@ jobs:
           need scripts/bootstrap.sh 'gh project field-create'
           test -f .claude/skills/factory/scripts/lanes.py || { echo "::error::missing lanes.py"; fail=1; }
           python3 .claude/skills/factory/scripts/lanes.py --self-test || fail=1
+          # v0.6.0: docs ship with the code; Documentation tech-debt tracker (#30)
+          need CLAUDE.md 'Every code change ships its docs in the same PR'
+          need CLAUDE.md 'sub-issues of the "Documentation'
+          need scripts/bootstrap.sh 'DOC_DEBT_TITLE="Documentation tech-debt"'
+          need scripts/bootstrap.sh 'P0 P1 P2 P3 documentation)'
+          need .claude/skills/factory/scripts/lanes.py 'DOC_DEBT_TITLE = "Documentation tech-debt"'
+          need .claude/skills/factory/scripts/queue.py 'DOC_DEBT_TITLE = "Documentation tech-debt"'
+          need .claude/skills/factory/SKILL.md 'lanes.py doc-debt find'
+          need .claude/skills/factory/references/briefs.md '**Docs:**'
+          need .claude/skills/factory/references/briefs.md '[doc-debt]'
+          need .claude/skills/factory/references/gates.md 'Docs ship with the code'
+          need .claude/commands/build-from-design.md '## Docs'
+          need .claude/commands/review-against-design.md 'Docs vs code'
+          if grep -q 'Every user-visible change updates README.md and CHANGELOG.md' CLAUDE.md; then
+            echo "::error::the old docs rule was replaced in v0.6.0"; fail=1
+          fi
           # skill PRs (local/issue-N) must not trigger the Actions review (factory/issue-*)
           need .claude/skills/factory/SKILL.md '-b local/issue-N'
           need .github/workflows/factory-review.yml "startsWith(github.event.pull_request.head.ref, 'factory/issue-')"

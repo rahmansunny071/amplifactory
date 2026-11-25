@@ -26,7 +26,7 @@ Because `.copier-answers.yml` now exists, later releases come in with `uvx copie
 If you only want the Claude Code skill:
 
 ```bash
-git -C /path/to/agent-factory archive v0.5.1 template/.claude/skills/factory \
+git -C /path/to/agent-factory archive v0.6.0 template/.claude/skills/factory \
   | tar -x --strip-components=2 -C .claude/
 ```
 
@@ -34,10 +34,12 @@ Then add to your `CLAUDE.md`:
 
 - a **Release phase** line (`mvp` or `hardening`) and the blocker definition;
 - a **"checks pass"** list identical to your CI;
-- the **hard rules** you want enforced (see the template's `CLAUDE.md.jinja`);
+- the **hard rules** you want enforced (see the template's `CLAUDE.md.jinja`), including "every code change
+  ships its docs in the same PR";
 - **Where knowledge lives**.
 
-And create the labels the skill uses: `factory:needs-maintainer`, `improvement`, `lane`, `P0`–`P3`.
+And create the labels the skill uses: `factory:needs-maintainer`, `improvement`, `lane`, `P0`–`P3`,
+`documentation`. The skill creates the "Documentation tech-debt" issue itself the first time it needs it.
 
 ## Organise existing issues into lanes
 

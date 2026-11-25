@@ -41,10 +41,12 @@ and the Project board items. See [Lanes and priorities](../concepts/lanes.md).
    `local/issue-N` branch.
 3. Opus checks the plan. For a critical issue (privacy or security code, a new dependency, a shared data contract),
    a fresh Opus design reviewer does it.
-4. The same builder builds, fills in the PR's **Handoff**, and marks the PR ready.
-5. A fresh Opus reviewer posts **inline comments** tagged `[blocker]`, `[improvement]` or `[question]`, while CI
-   runs.
-6. The builder fixes blockers. Improvements become one `improvement` issue.
+4. The same builder builds, updates the docs the change affects, fills in the PR's **Handoff** (with its
+   **Docs** line), and marks the PR ready.
+5. A fresh Opus reviewer posts **inline comments** tagged `[blocker]`, `[improvement]`, `[doc-debt]` or
+   `[question]`, while CI runs. Docs that disagree with the PR's code are a blocker.
+6. The builder fixes blockers. Improvements become one `improvement` issue; `doc-debt` findings become
+   sub-issues of the "Documentation tech-debt" issue.
 7. When every [gate](../reference/gates.md) passes, including **all review threads resolved**, Opus merges. The
    lane moves to its next issue.
 

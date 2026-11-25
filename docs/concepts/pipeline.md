@@ -1,6 +1,6 @@
 ---
 title: "The pipeline"
-description: "What happens to one issue: a Sonnet builder reused for plan, build and fixes, a fresh Opus reviewer, urgency triage and twelve merge gates."
+description: "What happens to one issue: a Sonnet builder reused for plan, build and fixes, a fresh Opus reviewer, urgency triage and thirteen merge gates."
 ---
 
 # The pipeline
@@ -21,13 +21,16 @@ verify findings and merge. The heavy lifting goes to two subagents per issue.
    dependencies, risks, tests) and opens a **draft PR** from `local/issue-N`.
 2. **Plan check.** Standard issues: you read the plan. **Critical** issues (privacy or security code, a new
    dependency, a shared data contract, a public interface others build on) get a fresh Opus design reviewer.
-3. **Build.** The same builder implements, runs the checks from `CLAUDE.md` until green, fills in the PR's
-   **Handoff** and marks it ready.
+3. **Build.** The same builder implements, **updates the docs the change affects**, runs the checks from
+   `CLAUDE.md` until green, fills in the PR's **Handoff** (including a **Docs** line: what was updated, or
+   "none needed" and why) and marks it ready.
 4. **Review ∥ CI.** A fresh Opus reviewer reads the diff against the plan and `CLAUDE.md` and posts **inline
-   comments** tagged `[blocker]`, `[improvement]` or `[question]`. Every blocker comes with a reproduction.
+   comments** tagged `[blocker]`, `[improvement]`, `[doc-debt]` or `[question]`. Every blocker comes with a
+   reproduction. It also checks that docs and code agree in the changed area (see [Docs ship with the
+   code](#docs-ship-with-the-code)).
 5. **Fix.** The builder fixes blockers. You verify each with its reproduction on the new commit and resolve the
    thread. There is no second full review.
-6. **Gates and merge.** When all [twelve gates](../reference/gates.md) pass, you merge (merge commit) and the lane
+6. **Gates and merge.** When all [thirteen gates](../reference/gates.md) pass, you merge (merge commit) and the lane
    moves on.
 
 ## Urgency triage
@@ -43,6 +46,23 @@ a PR:
 
 Everything else is collected into **one `improvement` issue** per PR, usually in a hardening lane. Switch the line to
 **`hardening`** before a release, and reviews become thorough again.
+
+## Docs ship with the code
+
+A `CLAUDE.md` hard rule: every code change brings its documentation in the same PR, both new docs for new
+behaviour and updates to any README, CHANGELOG, docstring or `.factory/designs/` text it makes wrong or stale.
+
+- A PR whose docs disagree with its code breaks a hard rule, so it's a **blocker**, even in `mvp`.
+- A mismatch that was already there before the PR is tagged **`[doc-debt]`** and isn't fixed in that PR. The
+  orchestrator files it as a sub-issue of the repo's **"Documentation tech-debt"** issue (labels
+  `documentation`, `P2`; each todo `documentation`, `improvement`, `P2`) with `lanes.py doc-debt add`.
+- **Ride-alongs:** the builder is given the open todos. When its PR already touches a file one of them is
+  about, it fixes that too and the PR closes it.
+- Documentation todos that come up while planning also go under the tracking issue.
+
+`bootstrap.sh` creates the tracking issue; in older repos the skill creates it the first time it's needed
+(`lanes.py doc-debt find`). This came from pensieve-traces, whose README still called a built feature
+"planned".
 
 ## Why this shape
 

@@ -44,7 +44,8 @@ cd my-project
 |---|---|
 | Lockfile and first commit | `uv lock`, then `git init` and the first commit |
 | GitHub repo | creates and pushes it (`--public` or `--private`) |
-| Labels | the factory labels, `improvement`, `lane`, and `P0`–`P3` |
+| Labels | the factory labels, `improvement`, `lane`, `P0`–`P3` and `documentation` |
+| Documentation tech-debt issue | the tracking issue whose sub-issues are documentation todos (labels `documentation`, `P2`) |
 | Ruleset protecting `main` | no deletion or force push; PRs need 1 approval and code-owner review; **all conversations resolved**; required checks `Tests (Python X)` and `Lint`; admins can bypass for PRs only |
 | Fork PRs | workflows from outside contributors need your approval |
 | Project board | "&lt;project&gt; factory", linked to the repo, with a **Priority** field |
