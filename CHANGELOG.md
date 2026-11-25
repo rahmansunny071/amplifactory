@@ -1,6 +1,6 @@
 # Changelog
 
-- Unreleased: **sync.py creates the progress labels** (#77).
+- v0.15.0 (2026-11-25): **sync.py creates the progress labels** (#77).
   - **#77: `sync.py labels` no longer skips `factory:designing` and `factory:building`.** In a shadowing repo it skipped them as Actions-only, but the factory skill sets both; only `factory:design` and `design:approved` (which the skill never sets) are skipped now. `sync-root-factory/SKILL.md`, `docs/reference/labels.md` and the self-test follow.
 - v0.14.0 (2026-11-25): **Docs state the right facts** (#69); **generated README leads with the skill** (#70); **one getting-started path** (#71); **pages for real data, docs-with-code, keeping up to date** (#72); **slim README, troubleshooting entries** (#73).
   - **#69: wrong facts fixed.** Gate 13 (not 12) is "Not unsure"; every documented skill-script command uses `python3` (stock macOS has no `python`); `questions.md` says the design's Risks section; `scripts.md` lists all 11 `sync.py` subcommands and calls runlog steps free-form, with `--dir` and `--self-test`; `sync-root-factory` names the old `_src_path` that `copier-check` accepts; a repeated `gh repo view` and an over-long line in `factory-lesson` are tidied.
