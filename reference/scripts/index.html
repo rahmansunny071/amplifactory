@@ -1377,11 +1377,11 @@ lane" as improvements.</p>
 <tbody>
 <tr>
 <td><code>sub-add LANE ISSUE…</code></td>
-<td>add issues to a lane, in this order (skips ones already there)</td>
+<td>append issues to the end of a lane, in this order (keeps the existing order; skips ones already there)</td>
 </tr>
 <tr>
 <td><code>order LANE ISSUE…</code></td>
-<td>reorder: these first, in this order</td>
+<td>move these issues to the front, in this order (<code>sub-add</code> never does this)</td>
 </tr>
 <tr>
 <td><code>block ISSUE --by ISSUE…</code></td>
