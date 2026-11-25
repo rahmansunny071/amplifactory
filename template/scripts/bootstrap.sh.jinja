@@ -7,7 +7,7 @@
 # Does: uv lock, first commit, create + push the GitHub repo, factory labels, the
 # "Documentation tech-debt" tracking issue, a ruleset protecting main (when the
 # plan allows it), a Project board, and fork-PR approval.
-# Does NOT: add the Claude token. Run /install-github-app in Claude Code after this.
+# Does NOT: add the Claude token. That's only for Actions mode (/install-github-app in Claude Code).
 set -euo pipefail
 
 REPO="[[ maintainer_github ]]/[[ project_name ]]"

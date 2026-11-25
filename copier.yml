@@ -136,7 +136,7 @@ _message_after_copy: |
     cd [[ _copier_conf.dst_path ]]
     gh auth refresh -h github.com -s repo,workflow,project
         # repo: create and push the repo; workflow: push the Actions workflows;
-        # project: the Project board and queue.py
+        # project: the Project board (bootstrap and lanes.py project-add)
     ./scripts/bootstrap.sh --public     # or --private (rulesets need public or GitHub Pro)
     claude                              # on Opus; then say "brainstorm X into issues" or "run the factory"
   The factory skill works from there and needs no secret.

@@ -37,7 +37,7 @@ gh auth refresh -h github.com -s repo,workflow,project
 
 - `repo`: creating the repo and pushing to it.
 - `workflow`: pushing a repo that contains GitHub Actions workflows.
-- `project`: the factory's Project board, and `queue.py`.
+- `project`: the factory's Project board (bootstrap and `lanes.py project-add`).
 
 ## 3. Run the bootstrap
 

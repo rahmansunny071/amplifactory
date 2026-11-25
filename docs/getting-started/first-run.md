@@ -18,7 +18,7 @@ claude          # then /model to confirm Opus
 Before you start, confirm `./scripts/bootstrap.sh` finished cleanly (it's safe to re-run):
 
 - The factory labels exist in the repo, including `improvement`, `lane`, `P0`–`P3` and `documentation`.
-- The Project board "&lt;project&gt; factory" exists and is linked to the repo. If bootstrap said the board was skipped,
+- The Project board "&lt;project&gt; factory" exists, is linked to the repo and has a **Priority** field (P0–P3). If bootstrap said the board was skipped,
   run `gh auth refresh -h github.com -s project` and re-run it.
 - The "Documentation tech-debt" tracking issue exists.
 - On a private repo, look for the ruleset warning: on GitHub Free, rulesets aren't enforced on private repos, so

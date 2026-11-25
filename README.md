@@ -23,9 +23,9 @@ gh auth refresh -h github.com -s repo,workflow,project       # 2. gh scopes
 claude                                                       # 4. on Opus, then the factory skill
 ```
 
-The repo is private, so Copier needs your GitHub credentials. `gh auth setup-git` lets the `gh:` shortcut (HTTPS) use your `gh` login; or use `git@github.com:rahmansunny071/amplifactory.git`.
+The template repo is public, so Copier needs no credentials to read it.
 
-The scopes: `repo` creates and pushes the repo, `workflow` lets that push include the Actions workflows, and `project` is for the Project board and `queue.py`.
+The scopes: `repo` creates and pushes the repo, `workflow` lets that push include the Actions workflows, and `project` is for the Project board (bootstrap and `lanes.py project-add`).
 
 `bootstrap.sh` does what a template can't: `uv lock` and the first commit, creating and pushing the GitHub repo, the factory labels (including `improvement`, `lane`, `P0`–`P3` and `documentation`), the **"Documentation tech-debt"** tracking issue, a **GitHub Project board** with a Priority field, a ruleset protecting `main` (no deletion or force push, PR with your approval, required checks `Tests (Python X)` and `Lint`, admin bypass for PRs only), and fork-PR approval. Rulesets need a **public** repo or GitHub Pro.
 
