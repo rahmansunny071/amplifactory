@@ -7,7 +7,7 @@ it if it's mechanical, otherwise **flag and continue** (SKILL.md).
 | # | Gate | How to check |
 |---|---|---|
 | 1 | **CI green** | Run-level watch (below): every required check `pass`, none pending |
-| 2 | **Up to date with `main`** | `gh pr view <PR> --json mergeStateStatus` isn't `BEHIND` or `DIRTY`. If it's `BEHIND`: `gh api -X PUT repos/<owner/repo>/pulls/<PR>/update-branch`, then re-check gate 1. `BLOCKED` alone just means "needs approval" and is covered by `--admin` |
+| 2 | **Up to date with `main`** | `gh pr view <PR> --json mergeStateStatus` isn't `BEHIND` or `DIRTY`. If it's `BEHIND`: `gh api -X PUT repos/<owner/repo>/pulls/<PR>/update-branch`, then re-check gate 1. `BLOCKED` alone just means "needs approval": the merge needs the maintainer's bypass or approval (see "Merge") |
 | 3 | **No open blockers** | The Opus code review returned `READY`, or every blocker was fixed by the builder **and** you verified each one with its reproduction on the current commit. Improvements don't block in the mvp phase |
 | 4 | **Deviations disclosed and minor** | The PR body's "Deviations" plus the review's `undisclosed_deviations`. Scope, interface or dependency changes aren't minor |
 | 5 | **No hard-rule violations** | Your own read of the diff against `CLAUDE.md`'s hard rules |
@@ -85,14 +85,32 @@ Before merging, append the Handoff's gist to `.factory/designs/issue-<N>.md` und
 "## Implementation notes" heading (what was built and why, decisions from review threads, follow-up
 issues), commit it on the branch ("docs: implementation notes (#<N>)"), push, and let CI pass. Then:
 
+Pick the command from `gh pr view <PR> --json mergeStateStatus`:
+
 ```bash
-gh pr merge <PR> --merge --admin --delete-branch
+gh pr merge <PR> --merge --delete-branch           # CLEAN
+gh pr merge <PR> --merge --admin --delete-branch   # BLOCKED only by the required review
 ```
 
-- `--admin` uses the maintainer's ruleset bypass (a PR's author can't approve their own PR).
+- `--admin` uses the maintainer's ruleset bypass (a PR's author can't approve their own PR). Add it only
+  when the PR is blocked solely by the required review.
 - Use `--merge`, never `--squash` or `--rebase`, so release tags stay on `main`'s history.
+- **If the merge is refused** (the harness denies the command, or GitHub rejects it), **stop**. Never retry
+  through `gh api .../pulls/<PR>/merge`, other flags or another tool. Hand it off (SKILL.md → "Ready to
+  merge and continue"): add `factory:ready-to-merge` to the PR and issue, remove the in-progress label, and
+  post one PR comment in this shape, with the command that fits the PR's state:
 
-Then post one comment on the PR: `Merged by the factory orchestrator: CI green; review READY (or N blockers
+  ````
+  Ready to merge: all gates pass on <sha>.
+
+  ```bash
+  gh pr merge <PR> --merge [--admin] --delete-branch -R <owner/repo>
+  ```
+
+  CI green; review READY …; all threads resolved; docs updated (…); improvements → #M; doc-debt → #D…
+  ````
+
+Once it has merged, post one comment on the PR: `Merged by the factory orchestrator: CI green; review READY (or N blockers
 fixed and verified); all threads resolved; docs updated (<list> or "none needed: <reason>"); no
 workflow/dependency/CLAUDE.md surprises; improvements → #M; doc-debt → #D… (or "none").`
 Log it, `git -C <repo> pull --ff-only`, and `git worktree remove <worktree>`.

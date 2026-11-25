@@ -38,7 +38,7 @@ Then add to your `CLAUDE.md`:
   ships its docs in the same PR";
 - **Where knowledge lives**.
 
-And create the labels the skill uses: `factory:needs-maintainer`, `improvement`, `lane`, `P0`–`P3`,
+And create the labels the skill uses: `factory:needs-maintainer`, `factory:ready-to-merge`, `improvement`, `lane`, `P0`–`P3`,
 `documentation`. The skill creates the "Documentation tech-debt" issue itself the first time it needs it.
 
 ## Organise existing issues into lanes

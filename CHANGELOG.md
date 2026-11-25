@@ -1,5 +1,11 @@
 # Changelog
 
+- Unreleased: **Ready-to-merge hand-off** (#32). When every gate passes but the merge is refused (the harness denies `gh pr merge`, or GitHub rejects it), that is no longer a dead end.
+  - **Skill:** step 8 tries the merge; if it is refused, the skill never works around it (no `gh api`, other flags or other tools). It labels the PR and issue `factory:ready-to-merge`, posts one PR comment with the exact merge command and the gate summary, removes the in-progress label and moves on, like flag-and-continue. The end-of-run report lists these PRs so you can merge in one batch.
+  - **Merge command:** plain `gh pr merge <PR> --merge --delete-branch` when `mergeStateStatus` is `CLEAN`; `--admin` only when the PR is blocked solely by the required review. Gate 2 no longer presents `--admin` as the only path.
+  - **`queue.py`:** new state `merge` (uses no slot; the lane's later issues wait) and a "Waiting for you to merge" list. `bootstrap.sh` creates the `factory:ready-to-merge` label.
+  - **Opt-in:** the generated README and the docs explain how to add a Claude Code permission rule for `gh pr merge * --merge --admin --delete-branch` so the skill can merge itself. The template ships no such rule, and the ruleset is unchanged.
+  - Template CI guards check the new label, state, hand-off text and opt-in docs.
 - v0.6.0 (unreleased): **Docs ship with the code** (#30, from pensieve-traces, whose README still called a built feature "planned").
   - **Hard rule** in `CLAUDE.md`, replacing "every user-visible change updates README.md and CHANGELOG.md": every code change ships its docs in the same PR, both new docs and updates to any README, CHANGELOG, docstring or `.factory/designs/` text it makes wrong or stale. Docs that disagree with the PR's code break a hard rule, so they're a **blocker even in `mvp`**. Mismatches outside the PR's diff are filed, not fixed.
   - **Documentation tech-debt issue:** one open issue titled exactly "Documentation tech-debt" (`documentation`, `P2`) whose native sub-issues (`documentation`, `improvement`, `P2`) are the doc todos. `bootstrap.sh` creates it and the `documentation` label; the skill finds it by title and creates it if missing, so existing repos need no re-bootstrap. New `lanes.py doc-debt find|add|list`. `queue.py` never lists the tracking issue as work.

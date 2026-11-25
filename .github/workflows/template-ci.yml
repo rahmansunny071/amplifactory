@@ -79,7 +79,7 @@ jobs:
           need .claude/skills/factory/references/briefs.md 'SendMessage'
           need .claude/skills/factory/references/gates.md 'gh run watch'
           need .gitignore '.factory/runs/'
-          need scripts/bootstrap.sh 'factory:needs-maintainer improvement lane P0 P1 P2 P3 '
+          need scripts/bootstrap.sh 'factory:needs-maintainer factory:ready-to-merge improvement lane P0 P1 P2 P3 '
           need scripts/bootstrap.sh '"required_review_thread_resolution": true'
           # v0.4.0: flag and continue, resume, handoffs, threads gate
           need .claude/skills/factory/SKILL.md '### Flag and continue'
@@ -111,6 +111,18 @@ jobs:
           need .claude/commands/review-against-design.md 'Docs vs code'
           if grep -q 'Every user-visible change updates README.md and CHANGELOG.md' CLAUDE.md; then
             echo "::error::the old docs rule was replaced in v0.6.0"; fail=1
+          fi
+          # #32: ready-to-merge hand-off
+          need scripts/bootstrap.sh 'factory:ready-to-merge'
+          need .claude/skills/factory/SKILL.md '### Ready to merge and continue'
+          need .claude/skills/factory/SKILL.md 'work around a refusal'
+          need .claude/skills/factory/references/gates.md 'Ready to merge: all gates pass on'
+          need .claude/skills/factory/references/gates.md 'gh pr merge <PR> --merge --delete-branch'
+          need .claude/skills/factory/scripts/queue.py 'READY_TO_MERGE = "factory:ready-to-merge"'
+          need README.md 'Letting the factory merge for you'
+          need README.md 'Bash(gh pr merge * --merge --admin --delete-branch)'
+          if grep -rq 'gh pr merge' .claude/settings.json .claude/settings.local.json 2>/dev/null; then
+            echo "::error::the template must not ship a gh pr merge allow rule (opt-in only)"; fail=1
           fi
           # skill PRs (local/issue-N) must not trigger the Actions review (factory/issue-*)
           need .claude/skills/factory/SKILL.md '-b local/issue-N'

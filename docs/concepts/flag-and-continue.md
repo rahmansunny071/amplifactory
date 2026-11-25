@@ -32,6 +32,30 @@ Claude Code:
 orchestrator reads your answer, applies it (via the builder), resolves the thread, removes the label and continues
 to the gates.
 
+## Ready to merge
+
+A refused merge is not a question, so it isn't `factory:needs-maintainer`. When every gate passes but the merge is
+refused (the harness denies `gh pr merge`, or GitHub rejects it), the factory:
+
+1. labels the PR and issue **`factory:ready-to-merge`** and removes the in-progress label;
+2. posts one PR comment: the exact merge command and the gate summary;
+3. moves on. The issue stays open, so its lane's later issues wait.
+
+It never works around the refusal. `queue.py` lists these under "Waiting for you to merge", and the end-of-run
+report lists them so you can merge in one batch.
+
+**Opt in to merging itself.** You can add a permission rule to the repo's `.claude/settings.json` or your user
+`~/.claude/settings.json`:
+
+```json
+{ "permissions": { "allow": ["Bash(gh pr merge * --merge --admin --delete-branch)"] } }
+```
+
+The syntax follows the [Claude Code permissions docs](https://code.claude.com/docs/en/permissions). The rule lets
+the agent use your ruleset bypass, so it is your choice and the template doesn't ship it. A project rule applies only
+after you accept the workspace trust prompt. The docs don't say whether an allow rule also lets the command run in
+auto mode; check in your own session.
+
 ## What never happens
 
 - The skill never adds the Actions-mode trigger labels (`factory:design`, `design:approved`) and never writes

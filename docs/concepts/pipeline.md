@@ -30,8 +30,9 @@ verify findings and merge. The heavy lifting goes to two subagents per issue.
    code](#docs-ship-with-the-code)).
 5. **Fix.** The builder fixes blockers. You verify each with its reproduction on the new commit and resolve the
    thread. There is no second full review.
-6. **Gates and merge.** When all [thirteen gates](../reference/gates.md) pass, you merge (merge commit) and the lane
-   moves on.
+6. **Gates and merge.** When all [thirteen gates](../reference/gates.md) pass, the factory merges (merge commit) and the lane
+   moves on. If the merge is refused, it hands the PR to you instead (see [Ready to
+   merge](flag-and-continue.md#ready-to-merge)).
 
 ## Urgency triage
 

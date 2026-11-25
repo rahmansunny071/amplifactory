@@ -12,6 +12,7 @@ description: "Every label bootstrap.sh creates, and who may add it."
 | `improvement` | Non-blocking finding, filed instead of fixed (mvp phase) | the skill |
 | `documentation` | The "Documentation tech-debt" tracking issue and its sub-issues (doc todos) | `bootstrap.sh`, the skill |
 | `factory:needs-maintainer` | A question waits for you on this PR | the skill |
+| `factory:ready-to-merge` | Every gate passed but the merge was refused: you merge it (the command is in the PR comment) | the skill |
 | `factory:design` | **Actions mode:** start the design agent | **you only** |
 | `design:approved` | **Actions mode:** start the build agent | **you only** |
 | `factory:designing`, `factory:building`, `factory:review` | Actions-mode progress | workflows |

@@ -48,7 +48,8 @@ and the Project board items. See [Lanes and priorities](../concepts/lanes.md).
 6. The builder fixes blockers. Improvements become one `improvement` issue; `doc-debt` findings become
    sub-issues of the "Documentation tech-debt" issue.
 7. When every [gate](../reference/gates.md) passes, including **all review threads resolved**, Opus merges. The
-   lane moves to its next issue.
+   lane moves to its next issue. If the merge is refused, the PR is labelled `factory:ready-to-merge` with the
+   merge command in a comment, and you merge it ([details](../concepts/flag-and-continue.md#ready-to-merge)).
 
 ## 3. When it needs you
 
