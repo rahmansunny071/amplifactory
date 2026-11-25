@@ -123,7 +123,7 @@ works when the default branch is protected and the repo has no `sync-root-factor
 4. `sf labels --tag <tag>` lists labels the tag's `bootstrap.sh` creates that this repo lacks (it prints
    `none missing` when there are none, so empty output never means success);
    add `--create` to create them. In a shadowing repo it skips the labels only the Actions factory
-   uses (`factory:design`, `factory:designing`, `design:approved`, `factory:building`) and prints
+   uses (`factory:design`, `design:approved`) and prints
    them as skipped; list them under Open. Put the created labels in the Handoff.
 
 ## Finish
