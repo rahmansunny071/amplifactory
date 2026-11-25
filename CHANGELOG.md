@@ -1,6 +1,6 @@
 # Changelog
 
-- Unreleased:
+- v0.10.0 (2026-11-25): **Proposals become issues** (#56): work the orchestrator offers outside a run's own routes is proposed as issues, sub-issues or lanes, not as an ad-hoc fix.
   - **#56: proposals become issues.** The `factory` skill gains a fifth principle: work the orchestrator proposes beyond a run's own routes (audit results, recommended follow-ups, fixes it would offer) is proposed as a sub-issue, lane or doc-debt issue (created with `gh issue create`, wired with `lanes.py`) instead of an ad-hoc fix, and "When you're done" reports follow-ups that way.
 - v0.9.0 (2026-11-25): **`sync-root-factory` hardened by its first real run** (#50, #48): every sync runs the release tag's own `sync.py`, `apply` syncs every skill folder the tag ships (your own skills are never touched), and generated repos get a `copier-check` before `copier update`. Plus `factory-lesson` follow-ups (#47).
   - **#50: `sync-root-factory` gaps from the first real run** (pensieve-traces v0.6.0 to v0.8.0).
