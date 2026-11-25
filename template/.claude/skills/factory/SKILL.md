@@ -18,7 +18,7 @@ This repo is built by an issue-driven agent factory (see `README.md` → "How th
 **builder** plans and codes, a fresh Opus **reviewer** checks the result, and you merge when the gates
 pass. The maintainer answers questions **asynchronously on the PR**; the run never sits waiting.
 
-Four principles shape everything below. All of them came out of real runs:
+Five principles shape everything below. All of them came out of real runs:
 
 1. **Urgency over completeness.** Before the project's first release (`Release phase: mvp` in
    `CLAUDE.md`), the goal is a main path that works end to end, then iteration. Only **blockers** are
@@ -33,6 +33,12 @@ Four principles shape everything below. All of them came out of real runs:
    `lane` whose native GitHub **sub-issues, in order**, are processed one at a time. Independent lanes
    can run in parallel. Priorities (`P0`–`P3`) rank lanes and issues; native **"blocked by"** links
    (and the body's "Depends on #N" line as a fallback) express dependencies between issues or whole lanes.
+5. **Proposals become issues.** This holds outside a run too: an audit result, a recommended follow-up, a
+   fix you would offer at the end of a turn. Don't offer to fix it in the session. Propose the structure:
+   a sub-issue of the lane that fits, a new lane (`lane` + a `P` label) if none does, a doc-debt
+   sub-issue for doc todos, naming the lane, title and priority. One confirmation from the maintainer
+   covers creating them with `lanes.py`; then the work goes through the queue. Problems in the factory
+   template itself are `lesson` issues in agent-factory, filed with the `factory-lesson` skill.
 
 ## Where knowledge lives
 
@@ -316,6 +322,8 @@ model and role. Report:
 - **PRs ready to merge** (`factory:ready-to-merge`), with the merge command for each, so the maintainer
   can merge them in one batch;
 - improvements and doc-debt sub-issues filed;
+- follow-ups you recommend, each proposed as an issue, sub-issue or lane (lane, title, priority), never
+  as an offer to fix it in the session (principle 5);
 - decisions made on the maintainer's behalf;
 - the cost summary.
 

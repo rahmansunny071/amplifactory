@@ -44,6 +44,14 @@ second lane starts, a **collision guard** compares its plan's "Files & interface
 active lane is changing, and holds it if they overlap. After each merge, the other active lanes' branches are updated
 with `main` before their review.
 
+## Proposals become issues
+
+When the orchestrator proposes work, in a run or outside one (an audit result, a recommended follow-up, a fix it
+would offer at the end of a turn), it proposes the GitHub structure instead of an ad-hoc fix: a sub-issue of the
+lane that fits, a new lane if none does, or a doc-debt sub-issue, with the lane, title and priority named. One
+confirmation creates them with `lanes.py`, and the work then goes through the queue. Problems in the factory
+template itself go to agent-factory as `lesson` issues (the `factory-lesson` skill).
+
 ## Seeing it
 
 - `python .claude/skills/factory/scripts/queue.py` prints the lanes, each lane's current issue and state
