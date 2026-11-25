@@ -141,6 +141,10 @@ jobs:
           need .claude/skills/factory-lesson/SKILL.md 'no real data values'
           need .claude/skills/factory-lesson/SKILL.md 'Create nothing until the user says yes'
           need .claude/skills/factory/SKILL.md '`factory-lesson` skill'
+          # #47: closed-lesson dedupe and re-check after edits
+          need .claude/skills/factory-lesson/SKILL.md '--label lesson --state all'
+          need .claude/skills/factory-lesson/SKILL.md 'Closed match'
+          need .claude/skills/factory-lesson/SKILL.md 're-run the step 5 privacy check on the edited text'
           need README.md 'Letting the factory merge for you'
           need README.md 'Bash(gh pr merge * --merge --admin --delete-branch)'
           if grep -rq 'gh pr merge' .claude/settings.json .claude/settings.local.json 2>/dev/null; then

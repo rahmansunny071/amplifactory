@@ -93,7 +93,7 @@ The factory is tested by real use: run it on a project, and turn what goes wrong
 2. Lessons are batched into a **release**: a PR that closes them, a `CHANGELOG.md` entry, template CI green, then a tag (`v0.3.0`, …).
 3. Projects pick up the release with `copier update`, or by copying the skill from the tag.
 
-In a generated repo, the **`factory-lesson` skill** files step 1 for you: say "file a factory lesson: ...", and it finds this template repo (from `.copier-answers.yml`), checks for a duplicate lesson, drafts the issue, keeps real data and private paths out of it, and creates it after one confirmation.
+In a generated repo, the **`factory-lesson` skill** files step 1 for you: say "file a factory lesson: ...", and it finds this template repo (from `.copier-answers.yml`), checks open and closed lessons for a duplicate (a fixed one points you to the release and to updating), drafts the issue, keeps real data and private paths out of it, and creates it after one confirmation (edits to the draft are re-checked for real data first).
 
 See [`CHANGELOG.md`](CHANGELOG.md) for what each release changed and why.
 
