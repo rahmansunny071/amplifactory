@@ -786,6 +786,62 @@
   
   
     <li class="md-nav__item">
+      <a href="../real-data/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Real data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs-with-code/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docs ship with the code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../where-knowledge-lives/" class="md-nav__link">
         
   
@@ -945,6 +1001,34 @@
     
   
     Adopt in an existing repo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/keep-up-to-date/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Keep up to date
   
 
     
@@ -1414,10 +1498,7 @@ verify findings and merge. The heavy lifting goes to two subagents per issue.</p
    merge</a>).</li>
 </ol>
 <h2 id="real-data">Real data<a class="headerlink" href="#real-data" title="Permanent link">&para;</a></h2>
-<p><code>CLAUDE.md</code> has a <strong>Real data</strong> line: <code>never</code> (the default), <code>with-approval</code> or <code>allowed</code>. The skill reads it from
-<code>main</code>; a missing or unrecognised line means <code>never</code>. Under <code>with-approval</code>, the maintainer approves one named
-source on the issue or PR, for that issue or PR only. At every level, real data is never committed or quoted
-(shapes only) and tests use synthetic fixtures.</p>
+<p><code>CLAUDE.md</code> sets how far agents may read real data (<code>never</code> by default): see <a href="../real-data/">Real data</a>.</p>
 <h2 id="urgency-triage">Urgency triage<a class="headerlink" href="#urgency-triage" title="Permanent link">&para;</a></h2>
 <p><code>CLAUDE.md</code> has a <strong>Release phase</strong> line. In <strong><code>mvp</code></strong> (until a first formal release), only <strong>blockers</strong> are fixed in
 a PR:</p>
@@ -1431,20 +1512,7 @@ a PR:</p>
 <p>Everything else is collected into <strong>one <code>improvement</code> issue</strong> per PR, usually in a hardening lane. Switch the line to
 <strong><code>hardening</code></strong> before a release, and reviews become thorough again.</p>
 <h2 id="docs-ship-with-the-code">Docs ship with the code<a class="headerlink" href="#docs-ship-with-the-code" title="Permanent link">&para;</a></h2>
-<p>A <code>CLAUDE.md</code> hard rule: every code change brings its documentation in the same PR, both new docs for new
-behaviour and updates to any README, CHANGELOG, docstring or <code>.factory/designs/</code> text it makes wrong or stale.</p>
-<ul>
-<li>A PR whose docs disagree with its code breaks a hard rule, so it's a <strong>blocker</strong>, even in <code>mvp</code>.</li>
-<li>A mismatch that was already there before the PR is tagged <strong><code>[doc-debt]</code></strong> and isn't fixed in that PR. The
-  orchestrator files it as a sub-issue of the repo's <strong>"Documentation tech-debt"</strong> issue (labels
-  <code>documentation</code>, <code>P2</code>; each todo <code>documentation</code>, <code>improvement</code>, <code>P2</code>) with <code>lanes.py doc-debt add</code>.</li>
-<li><strong>Ride-alongs:</strong> the builder is given the open todos. When its PR already touches a file one of them is
-  about, it fixes that too and the PR closes it.</li>
-<li>Documentation todos that come up while planning also go under the tracking issue.</li>
-</ul>
-<p><code>bootstrap.sh</code> creates the tracking issue; in older repos the skill creates it the first time it's needed
-(<code>lanes.py doc-debt find</code>). This came from pensieve-traces, whose README still called a built feature
-"planned".</p>
+<p>Every code change brings its docs in the same PR, and the tracker catches the rest: see <a href="../docs-with-code/">Docs ship with the code</a>.</p>
 <h2 id="why-this-shape">Why this shape<a class="headerlink" href="#why-this-shape" title="Permanent link">&para;</a></h2>
 <p>The first version used cold subagents for every stage, re-reviewed after every fix and treated every finding as a
 blocker. Two issues cost about 1.4M subagent tokens. Reusing one builder, using one fresh reviewer and triaging by

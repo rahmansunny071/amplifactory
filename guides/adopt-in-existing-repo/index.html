@@ -16,7 +16,7 @@
         <link rel="prev" href="../day-to-day/">
       
       
-        <link rel="next" href="../evolving-the-template/">
+        <link rel="next" href="../keep-up-to-date/">
       
       
         
@@ -669,6 +669,62 @@
   
   
     <li class="md-nav__item">
+      <a href="../../concepts/real-data/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Real data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/docs-with-code/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docs ship with the code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../concepts/where-knowledge-lives/" class="md-nav__link">
         
   
@@ -940,6 +996,34 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../keep-up-to-date/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Keep up to date
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -1361,7 +1445,7 @@ pass" list in <code>CLAUDE.md</code>, which must stay identical. Run <code>./scr
 <code>sync-root-factory</code> folder, so use the first release that ships it. <code>tar -k</code> keeps files you already have, so a skill of the
 same name is not overwritten (check <code>.claude/skills/</code> for one). Commit the result. This is for a repo that has
 no factory skill yet; if you already have <code>factory/</code>, follow
-<a href="#keeping-the-skill-up-to-date">Keeping the skill up to date</a> instead.</p>
+<a href="../keep-up-to-date/#update-a-repo-that-only-carries-the-skill">Keeping the skill up to date</a> instead.</p>
 <p>Then add to your <code>CLAUDE.md</code>:</p>
 <ul>
 <li>a <strong>Release phase</strong> line (<code>mvp</code> or <code>hardening</code>) and the blocker definition;</li>
@@ -1374,62 +1458,7 @@ no factory skill yet; if you already have <code>factory/</code>, follow
 <p>And create the labels the skill uses: <code>factory:needs-maintainer</code>, <code>factory:ready-to-merge</code>, <code>improvement</code>, <code>lane</code>, <code>P0</code>–<code>P3</code>,
 <code>documentation</code>. The skill creates the "Documentation tech-debt" issue itself the first time it needs it.</p>
 <h3 id="keeping-the-skill-up-to-date">Keeping the skill up to date<a class="headerlink" href="#keeping-the-skill-up-to-date" title="Permanent link">&para;</a></h3>
-<p><code>.claude/skills/factory/VERSION</code> (written by the sync, and shipped from the first release that has it) records
-which release the copy came from. Then, in Claude Code in the repo:</p>
-<blockquote>
-<p>sync the factory to the latest release</p>
-</blockquote>
-<p>The <code>sync-root-factory</code> skill:</p>
-<ul>
-<li>works on a new branch <code>local/adopt-&lt;tag&gt;</code> cut from a fresh <code>origin/&lt;default branch&gt;</code>, and refuses a dirty tree;</li>
-<li>replaces <strong>every skill folder the tag ships</strong> (<code>factory/</code>, <code>factory-lesson/</code>, <code>sync-root-factory/</code> and any future
-  one) byte for byte from the <strong>tag</strong>. A folder the old tag had is replaced only after it matches the version the
-  repo claims; a new one is added; a folder the old tag did not have but you already have (your own skill, or a
-  hand copy) is refused, never overwritten; your own other skills are never touched;</li>
-<li>turns the CHANGELOG entries since your version into a checklist; it edits <code>CLAUDE.md</code>, <code>.claude/commands/*</code>,
-  <code>README.md</code> and <code>CHANGELOG.md</code> for the ports it can do safely, never sets a policy value (the <code>Real data:</code>
-  level, the release phase), creates only the labels that are missing, and lists everything else under "Open";</li>
-<li>opens a PR with a Handoff and never merges it.</li>
-</ul>
-<p><strong>Every sync, the first included:</strong> run the <strong>target tag's</strong> <code>sync.py</code>, extracted outside the repo, never the copy in
-the repo (which may predate the guards, and does not exist yet the first time). Nothing is committed before the
-adopt branch exists, so this works on a protected <code>main</code>:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nv">R</span><span class="o">=</span><span class="k">$(</span>git<span class="w"> </span>rev-parse<span class="w"> </span>--show-toplevel<span class="k">)</span><span class="p">;</span><span class="w"> </span><span class="nv">URL</span><span class="o">=</span>https://github.com/rahmansunny071/amplifactory.git<span class="p">;</span><span class="w"> </span><span class="nv">TAG</span><span class="o">=</span>vX.Y.Z<span class="w">  </span><span class="c1"># latest release</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nv">T</span><span class="o">=</span><span class="k">$(</span>mktemp<span class="w"> </span>-d<span class="k">)</span><span class="w">                                  </span><span class="c1"># outside the repo</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>git<span class="w"> </span>init<span class="w"> </span>-q<span class="w"> </span>--bare<span class="w"> </span><span class="s2">"</span><span class="nv">$T</span><span class="s2">/src"</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>git<span class="w"> </span>-C<span class="w"> </span><span class="s2">"</span><span class="nv">$T</span><span class="s2">/src"</span><span class="w"> </span>fetch<span class="w"> </span>-q<span class="w"> </span>--depth<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="s2">"</span><span class="nv">$URL</span><span class="s2">"</span><span class="w"> </span><span class="s2">"refs/tags/</span><span class="si">${</span><span class="nv">TAG</span><span class="si">}</span><span class="s2">:refs/tags/</span><span class="si">${</span><span class="nv">TAG</span><span class="si">}</span><span class="s2">"</span>
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>git<span class="w"> </span>-C<span class="w"> </span><span class="s2">"</span><span class="nv">$T</span><span class="s2">/src"</span><span class="w"> </span>cat-file<span class="w"> </span>-t<span class="w"> </span><span class="s2">"refs/tags/</span><span class="nv">$TAG</span><span class="s2">"</span><span class="w">    </span><span class="c1"># must print: tag  (annotated)</span>
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>mkdir<span class="w"> </span><span class="s2">"</span><span class="nv">$T</span><span class="s2">/x"</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>git<span class="w"> </span>-C<span class="w"> </span><span class="s2">"</span><span class="nv">$T</span><span class="s2">/src"</span><span class="w"> </span>archive<span class="w"> </span><span class="s2">"</span><span class="nv">$TAG</span><span class="s2">"</span><span class="w"> </span>template/.claude/skills/sync-root-factory<span class="w"> </span><span class="p">|</span><span class="w"> </span>tar<span class="w"> </span>-x<span class="w"> </span>-C<span class="w"> </span><span class="s2">"</span><span class="nv">$T</span><span class="s2">/x"</span>
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>python3<span class="w"> </span>-I<span class="w"> </span><span class="s2">"</span><span class="nv">$T</span><span class="s2">/x/template/.claude/skills/sync-root-factory/scripts/sync.py"</span><span class="w"> </span>--repo<span class="w"> </span><span class="s2">"</span><span class="nv">$R</span><span class="s2">"</span><span class="w"> </span>status<span class="w"> </span>--assume-tag<span class="w"> </span>v0.7.0
-</code></pre></div>
-<p><code>--assume-tag</code> is needed only while <code>factory/VERSION</code> is missing (the first sync): it stands in for the file, and
-the folder is still checked against that tag. Then ask Claude to sync; the skill runs the same extracted script.
-The old way (copy <code>sync-root-factory/</code> into the repo and commit it) is no longer needed: the adopt branch is cut
-from <code>origin/&lt;default&gt;</code>, which would not contain that commit. If you already committed one and the old tag did not ship it (before v0.8.0), <code>apply</code> refuses it; on <code>local/adopt-&lt;tag&gt;</code> run <code>git rm -r .claude/skills/sync-root-factory</code>, commit, and
-rerun.</p>
-<p><strong>If the check fails</strong> (your copy matches no tag, for example because a <code>main</code>-only commit was layered on a tag):
-the sync stops and lists the differing files. There is no override. If the edits are unwanted, restore the copy of the
-<strong>recorded</strong> tag, the one <code>verify-local</code> compared against (the version in <code>factory/VERSION</code>, or your <code>--assume-tag</code>; not
-the target tag, whose <code>VERSION</code> would make the repo look synced). Do it on <code>local/adopt-&lt;target tag&gt;</code>, because a commit
-on local <code>main</code> is not on the adopt branch:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nv">OLD</span><span class="o">=</span>v0.7.0<span class="w">                                      </span><span class="c1"># the recorded tag</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>git<span class="w"> </span>init<span class="w"> </span>-q<span class="w"> </span>--bare<span class="w"> </span><span class="s2">"</span><span class="nv">$T</span><span class="s2">/old"</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>git<span class="w"> </span>-C<span class="w"> </span><span class="s2">"</span><span class="nv">$T</span><span class="s2">/old"</span><span class="w"> </span>fetch<span class="w"> </span>-q<span class="w"> </span>--depth<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="s2">"</span><span class="nv">$URL</span><span class="s2">"</span><span class="w"> </span><span class="s2">"refs/tags/</span><span class="si">${</span><span class="nv">OLD</span><span class="si">}</span><span class="s2">:refs/tags/</span><span class="si">${</span><span class="nv">OLD</span><span class="si">}</span><span class="s2">"</span>
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="nb">test</span><span class="w"> </span><span class="s2">"</span><span class="k">$(</span>git<span class="w"> </span>-C<span class="w"> </span><span class="s2">"</span><span class="nv">$T</span><span class="s2">/old"</span><span class="w"> </span>cat-file<span class="w"> </span>-t<span class="w"> </span><span class="s2">"refs/tags/</span><span class="nv">$OLD</span><span class="s2">"</span><span class="k">)</span><span class="s2">"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>tag<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">"not annotated: stop"</span><span class="p">;</span><span class="w"> </span>false<span class="p">;</span><span class="w"> </span><span class="o">}</span>
-<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>rm<span class="w"> </span>-rf<span class="w"> </span><span class="s2">"</span><span class="nv">$R</span><span class="s2">/.claude/skills/factory"</span>
-<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>git<span class="w"> </span>-C<span class="w"> </span><span class="s2">"</span><span class="nv">$T</span><span class="s2">/old"</span><span class="w"> </span>archive<span class="w"> </span><span class="s2">"</span><span class="nv">$OLD</span><span class="s2">"</span><span class="w"> </span>template/.claude/skills/factory<span class="w"> </span><span class="p">|</span><span class="w"> </span>tar<span class="w"> </span>-x<span class="w"> </span>--strip-components<span class="o">=</span><span class="m">2</span><span class="w"> </span>-C<span class="w"> </span><span class="s2">"</span><span class="nv">$R</span><span class="s2">/.claude/"</span>
-<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>git<span class="w"> </span>-C<span class="w"> </span><span class="s2">"</span><span class="nv">$R</span><span class="s2">"</span><span class="w"> </span>add<span class="w"> </span>-A<span class="w"> </span>.claude/skills/factory<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>git<span class="w"> </span>-C<span class="w"> </span><span class="s2">"</span><span class="nv">$R</span><span class="s2">"</span><span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"restore factory/ to </span><span class="nv">$OLD</span><span class="s2">"</span>
-</code></pre></div>
-<p>then rerun the sync. If the edits are wanted, port them after the sync.</p>
-<p>A repo generated by Copier doesn't need any of this: it records its version in <code>.copier-answers.yml</code>, and the
-sync runs <code>copier update</code>, after <code>sync.py copier-check &lt;tag&gt;</code> confirms the tag is annotated, <code>_commit</code> is a release
-tag and <code>_src_path</code> is the GitHub template (not a local clone).</p>
-<div class="admonition note">
-<p class="admonition-title">Renamed from agent-factory</p>
-<p>The template was renamed to <code>amplifactory</code>. A repo whose <code>.copier-answers.yml</code> still says
-<code>_src_path: gh:rahmansunny071/agent-factory</code> keeps working (GitHub redirects the old URL and
-<code>copier-check</code> accepts both names). Updating that line to <code>gh:rahmansunny071/amplifactory</code> is optional.</p>
-</div>
+<p>See <a href="../keep-up-to-date/#update-a-repo-that-only-carries-the-skill">Keep up to date</a>: the first sync (with <code>--assume-tag</code>), the check, and what the sync changes.</p>
 <h2 id="organise-existing-issues-into-lanes">Organise existing issues into lanes<a class="headerlink" href="#organise-existing-issues-into-lanes" title="Permanent link">&para;</a></h2>
 <blockquote>
 <p>organise the open issues into lanes</p>
@@ -1494,13 +1523,13 @@ pensieve-traces moved to lanes: four lanes, thirteen issues, four "blocked by" l
         
         
           
-          <a href="../evolving-the-template/" class="md-footer__link md-footer__link--next" aria-label="Next: Evolving the template">
+          <a href="../keep-up-to-date/" class="md-footer__link md-footer__link--next" aria-label="Next: Keep up to date">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Evolving the template
+                Keep up to date
               </div>
             </div>
             <div class="md-footer__button md-icon">

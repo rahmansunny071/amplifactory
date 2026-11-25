@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://rahmansunny071.github.io/amplifactory/guides/evolving-the-template/">
       
       
-        <link rel="prev" href="../adopt-in-existing-repo/">
+        <link rel="prev" href="../keep-up-to-date/">
       
       
         <link rel="next" href="../../reference/questions/">
@@ -669,6 +669,62 @@
   
   
     <li class="md-nav__item">
+      <a href="../../concepts/real-data/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Real data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/docs-with-code/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docs ship with the code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../concepts/where-knowledge-lives/" class="md-nav__link">
         
   
@@ -833,6 +889,34 @@
     
   
     Adopt in an existing repo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../keep-up-to-date/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Keep up to date
   
 
     
@@ -1329,23 +1413,7 @@
 <p>The factory is tested by real use. A project driven through it is the <strong>proving ground</strong>; what goes wrong becomes
 template changes.</p>
 <h2 id="1-file-a-lesson">1. File a lesson<a class="headerlink" href="#1-file-a-lesson" title="Permanent link">&para;</a></h2>
-<p>A <strong>factory problem</strong> (not a bug in the project's own code) found while driving a project is filed in amplifactory
-as an issue labelled <strong><code>lesson</code></strong>:</p>
-<ul>
-<li>what happened, with links;</li>
-<li>the fix applied in the project, if any;</li>
-<li>the template files to change.</li>
-</ul>
-<p>File it <strong>when it happens</strong>, not at the end of the run.</p>
-<p>In a generated repo, ask Claude Code to "file a factory lesson: ..." and the <strong><code>factory-lesson</code> skill</strong> does it:</p>
-<ol>
-<li>finds the template repo from <code>.copier-answers.yml</code> (<code>_src_path</code>), used only when it is a GitHub source (<code>gh:</code>, <code>https://github.com/</code>, <code>ssh://git@github.com/</code>, <code>git@github.com:</code>); a local path, an empty value or a missing file falls back to <code>rahmansunny071/amplifactory</code>; the old slug <code>rahmansunny071/agent-factory</code> (any case) is mapped to the new one; it then confirms the slug with <code>gh repo view</code>; it never files in the current repo;</li>
-<li>searches open and closed <code>lesson</code> issues for a duplicate: an open match gets a comment instead of a new issue; a closed match means it is already fixed, so it points to the release that fixed it and to updating (<code>copier update</code>, or the <code>sync-root-factory</code> skill);</li>
-<li>drafts the body (What happened, Fix applied in the generated repo, Template files to change, Options, Takeaway) and checks it for real data values, secrets and private paths, since the issue goes to another repo;</li>
-<li>asks you <strong>once</strong> (if you edit the draft, it re-checks the edited text for real data and shows the result before filing), then creates it with the <code>lesson</code> label and reports the URL;</li>
-<li>offers a comment on the downstream PR or issue linking the lesson, only if you agree.</li>
-</ol>
-<p>It needs a <code>gh</code> login with access to the template repo (private repos need one).</p>
+<p>File it <strong>when it happens</strong>, not at the end of the run. In a generated repo, ask Claude Code to "file a factory lesson: ..." and the <code>factory-lesson</code> skill does it; see <a href="../keep-up-to-date/#file-a-factory-problem-upstream">Keep up to date</a>.</p>
 <h2 id="2-release">2. Release<a class="headerlink" href="#2-release" title="Permanent link">&para;</a></h2>
 <p>Lessons are batched into a release:</p>
 <ol>
@@ -1356,15 +1424,7 @@ as an issue labelled <strong><code>lesson</code></strong>:</p>
 <li>you merge, then tag <code>vX.Y.Z</code>. Copier only sees tags.</li>
 </ol>
 <h2 id="3-update-projects">3. Update projects<a class="headerlink" href="#3-update-projects" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nb">cd</span><span class="w"> </span>my-project<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>uvx<span class="w"> </span>copier<span class="w"> </span>update
-</code></pre></div>
-<p>Copier does a three-way merge and marks conflicts. Or, in Claude Code inside the project, say
-<strong>"sync the factory to the latest release"</strong>: the <code>sync-root-factory</code> skill does it on a <code>local/adopt-&lt;tag&gt;</code> branch
-and opens a PR (mechanical conflicts resolved, the rest listed for you; it never merges). It also works for a
-project that only carries the skill: it replaces every skill folder the tag ships (<code>factory/</code>, <code>factory-lesson/</code>,
-<code>sync-root-factory/</code>) from the tag after checking each matches the version it claims (a new one is added; a local one
-the old tag lacked is refused), using the target tag's <code>sync.py</code> extracted outside the repo, and builds a hand-port checklist from the CHANGELOG entries. See
-<a href="../adopt-in-existing-repo/#keeping-the-skill-up-to-date">Adopt in an existing repo</a> for the first-time setup.</p>
+<p>Projects pick the release up with <code>copier update</code> or the <code>sync-root-factory</code> skill: see <a href="../keep-up-to-date/">Keep up to date</a>.</p>
 <h2 id="developing-the-template">Developing the template<a class="headerlink" href="#developing-the-template" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Template files live in <code>template/</code>; files ending in <code>.jinja</code> are rendered.</li>
@@ -1415,7 +1475,7 @@ the old tag lacked is refused), using the target tag's <code>sync.py</code> extr
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../adopt-in-existing-repo/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Adopt in an existing repo">
+          <a href="../keep-up-to-date/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Keep up to date">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -1425,7 +1485,7 @@ the old tag lacked is refused), using the target tag's <code>sync.py</code> extr
                 Previous
               </span>
               <div class="md-ellipsis">
-                Adopt in an existing repo
+                Keep up to date
               </div>
             </div>
           </a>
