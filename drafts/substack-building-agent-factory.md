@@ -141,10 +141,11 @@ Here is the whole arc, one row per release. The pattern is that each row exists 
 | v0.7.0 | "Never read real data" hard-coded | Per-repo real-data level | #33 |
 | v0.8.0 | Updating a repo was manual | `sync-root-factory` and `factory-lesson` skills | #40, #41 |
 | v0.9.0 | First real sync hit gaps | Sync runs the tag's own script; new skills arrive | #48, #50 |
+| v0.10.0 | Orchestrator offered ad-hoc fixes for its own findings | Proposals become issues, sub-issues or lanes | #56 |
 
 ## The recent stretch, briefly
 
-v0.6.0 through v0.9.0 were smaller but telling. A README on pensieve-traces still called a built feature "planned", so docs now ship in the same PR as the code, and a mismatch is a blocker even in MVP. Real-data access became a per-repo choice (`never`, `with-approval`, `allowed`) instead of a hard-coded ban, with a few rules that stay on regardless: never commit real data, never quote values from it. Two new skills close the loop on the template itself: `sync-root-factory` brings a repo up to the latest release, and `factory-lesson` files a factory problem as a lesson issue straight from the project that hit it. On merging: the template's default hands the merge to the maintainer (a `factory:ready-to-merge` label plus the exact merge command). On agent-factory itself I have since let the orchestrator merge and cut releases when every gate passes. That is a choice each maintainer makes, not a template feature.
+v0.6.0 through v0.10.0 were smaller but telling. A README on pensieve-traces still called a built feature "planned", so docs now ship in the same PR as the code, and a mismatch is a blocker even in MVP. Real-data access became a per-repo choice (`never`, `with-approval`, `allowed`) instead of a hard-coded ban, with a few rules that stay on regardless: never commit real data, never quote values from it. Two new skills close the loop on the template itself: `sync-root-factory` brings a repo up to the latest release, and `factory-lesson` files a factory problem as a lesson issue straight from the project that hit it. On merging: the template's default hands the merge to the maintainer (a `factory:ready-to-merge` label plus the exact merge command). On agent-factory itself I have since let the orchestrator merge and cut releases when every gate passes. That is a choice each maintainer makes, not a template feature.
 
 ## What's next
 
