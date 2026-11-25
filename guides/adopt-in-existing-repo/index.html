@@ -1316,17 +1316,19 @@ pass" list in <code>CLAUDE.md</code>, which must stay identical. Run <code>./scr
 <p>Because <code>.copier-answers.yml</code> now exists, later releases come in with <code>uvx copier update</code>.</p>
 <h2 id="option-2-just-the-skill">Option 2: just the skill<a class="headerlink" href="#option-2-just-the-skill" title="Permanent link">&para;</a></h2>
 <p>If you only want the Claude Code skill:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>git<span class="w"> </span>-C<span class="w"> </span>/path/to/agent-factory<span class="w"> </span>archive<span class="w"> </span>v0.5.1<span class="w"> </span>template/.claude/skills/factory<span class="w"> </span><span class="se">\</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>git<span class="w"> </span>-C<span class="w"> </span>/path/to/agent-factory<span class="w"> </span>archive<span class="w"> </span>v0.6.0<span class="w"> </span>template/.claude/skills/factory<span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="p">|</span><span class="w"> </span>tar<span class="w"> </span>-x<span class="w"> </span>--strip-components<span class="o">=</span><span class="m">2</span><span class="w"> </span>-C<span class="w"> </span>.claude/
 </code></pre></div>
 <p>Then add to your <code>CLAUDE.md</code>:</p>
 <ul>
 <li>a <strong>Release phase</strong> line (<code>mvp</code> or <code>hardening</code>) and the blocker definition;</li>
 <li>a <strong>"checks pass"</strong> list identical to your CI;</li>
-<li>the <strong>hard rules</strong> you want enforced (see the template's <code>CLAUDE.md.jinja</code>);</li>
+<li>the <strong>hard rules</strong> you want enforced (see the template's <code>CLAUDE.md.jinja</code>), including "every code change
+  ships its docs in the same PR";</li>
 <li><strong>Where knowledge lives</strong>.</li>
 </ul>
-<p>And create the labels the skill uses: <code>factory:needs-maintainer</code>, <code>improvement</code>, <code>lane</code>, <code>P0</code>–<code>P3</code>.</p>
+<p>And create the labels the skill uses: <code>factory:needs-maintainer</code>, <code>improvement</code>, <code>lane</code>, <code>P0</code>–<code>P3</code>,
+<code>documentation</code>. The skill creates the "Documentation tech-debt" issue itself the first time it needs it.</p>
 <h2 id="organise-existing-issues-into-lanes">Organise existing issues into lanes<a class="headerlink" href="#organise-existing-issues-into-lanes" title="Permanent link">&para;</a></h2>
 <blockquote>
 <p>organise the open issues into lanes</p>

@@ -1339,6 +1339,8 @@
 </table>
 <p>Lane states, from the lane's current issue: <code>active</code> (a PR in progress), <code>replied</code> (you answered a question),
 <code>ready</code>, <code>asked</code> (waiting on you; uses no slot), <code>blocked</code>, <code>waiting</code> (on another lane or issue), <code>done</code>.</p>
+<p>The "Documentation tech-debt" tracking issue is never listed as work; its open sub-issues appear under "Not in a
+lane" as improvements.</p>
 <h2 id="lanespy">lanes.py<a class="headerlink" href="#lanespy" title="Permanent link">&para;</a></h2>
 <p>Creates and maintains lanes with native GitHub features. The sub-issue and dependency APIs need internal issue ids;
 <code>lanes.py</code> looks them up.</p>
@@ -1374,8 +1376,26 @@
 <td><code>show LANE</code></td>
 <td>print the lane's order</td>
 </tr>
+<tr>
+<td><code>doc-debt find</code></td>
+<td>print the "Documentation tech-debt" issue's number, creating it (and its labels) if missing</td>
+</tr>
+<tr>
+<td><code>doc-debt add --title T --body-file F</code></td>
+<td>file a doc todo (<code>documentation</code>, <code>improvement</code>, <code>P2</code>) as a sub-issue of it</td>
+</tr>
+<tr>
+<td><code>doc-debt add --issue N</code></td>
+<td>label an existing issue as a doc todo and link it as a sub-issue</td>
+</tr>
+<tr>
+<td><code>doc-debt list [--json]</code></td>
+<td>the open doc todos, which the builder gets for ride-alongs</td>
+</tr>
 </tbody>
 </table>
+<p>The tracking issue is found by its <strong>exact title</strong>, open and labelled <code>documentation</code>; if there are several, the
+oldest wins.</p>
 <h2 id="runlogpy">runlog.py<a class="headerlink" href="#runlogpy" title="Permanent link">&para;</a></h2>
 <p>The run log in <code>.factory/runs/&lt;date&gt;.jsonl</code>: a local cache and cost ledger that <strong>points at</strong> GitHub.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>python<span class="w"> </span>.claude/skills/factory/scripts/runlog.py<span class="w"> </span>add<span class="w"> </span>--issue<span class="w"> </span><span class="m">4</span><span class="w"> </span>--step<span class="w"> </span>plan<span class="w"> </span>--actor<span class="w"> </span>builder<span class="w"> </span><span class="se">\</span>

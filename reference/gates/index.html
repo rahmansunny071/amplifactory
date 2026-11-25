@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="The twelve conditions that must all hold on a PR’s current commit before the factory merges it.">
+        <meta name="description" content="The thirteen conditions that must all hold on a PR’s current commit before the factory merges it.">
       
       
       
@@ -1259,6 +1259,11 @@ evidence, not proof. If a gate fails and the fix isn't mechanical, the factory <
 </tr>
 <tr>
 <td>12</td>
+<td><strong>Docs ship with the code</strong></td>
+<td>The Handoff has a <strong>Docs</strong> line naming the docs updated, or "none needed" with a reason; a diff that changes code but no docs needs that reason, and it must hold up</td>
+</tr>
+<tr>
+<td>13</td>
 <td><strong>Not unsure</strong></td>
 <td>The orchestrator skims the diff; if anything still bothers it, it asks instead of merging</td>
 </tr>

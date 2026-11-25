@@ -1390,10 +1390,12 @@ and the Project board items. See <a href="../../concepts/lanes/">Lanes and prior
    <code>local/issue-N</code> branch.</li>
 <li>Opus checks the plan. For a critical issue (privacy or security code, a new dependency, a shared data contract),
    a fresh Opus design reviewer does it.</li>
-<li>The same builder builds, fills in the PR's <strong>Handoff</strong>, and marks the PR ready.</li>
-<li>A fresh Opus reviewer posts <strong>inline comments</strong> tagged <code>[blocker]</code>, <code>[improvement]</code> or <code>[question]</code>, while CI
-   runs.</li>
-<li>The builder fixes blockers. Improvements become one <code>improvement</code> issue.</li>
+<li>The same builder builds, updates the docs the change affects, fills in the PR's <strong>Handoff</strong> (with its
+   <strong>Docs</strong> line), and marks the PR ready.</li>
+<li>A fresh Opus reviewer posts <strong>inline comments</strong> tagged <code>[blocker]</code>, <code>[improvement]</code>, <code>[doc-debt]</code> or
+   <code>[question]</code>, while CI runs. Docs that disagree with the PR's code are a blocker.</li>
+<li>The builder fixes blockers. Improvements become one <code>improvement</code> issue; <code>doc-debt</code> findings become
+   sub-issues of the "Documentation tech-debt" issue.</li>
 <li>When every <a href="../../reference/gates/">gate</a> passes, including <strong>all review threads resolved</strong>, Opus merges. The
    lane moves to its next issue.</li>
 </ol>
