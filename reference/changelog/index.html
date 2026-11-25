@@ -1190,7 +1190,8 @@
 
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
 <ul>
-<li>Unreleased: <strong>Real-data access is a per-repo choice (#33).</strong> The skill no longer hard-codes "agents may not read real user data".</li>
+<li>v0.7.0 (2026-11-25): <strong>Real-data access is a per-repo choice</strong> (#33, from pensieve-traces, which allows reading real data shapes), plus ready-to-merge follow-ups (#35).</li>
+<li>The skill no longer hard-codes "agents may not read real user data".</li>
 <li><strong>Question:</strong> <code>real_data_access</code> (<code>never</code>, <code>with-approval</code>, <code>allowed</code>; default <code>never</code>, so <code>copier update</code> changes behaviour for no one). It renders a <code>## Real data</code> section in <code>CLAUDE.md</code> whose first line is <code>Real data: &lt;level&gt;.</code>.</li>
 <li><strong>Always on:</strong> never commit real data; never quote values from it (field names, counts and shapes only); tests use synthetic fixtures only; read data where it lives and never copy it into the repo or worktree; a stricter hard rule overrides the level.</li>
 <li><strong><code>with-approval</code>:</strong> the maintainer approves one named source on the issue or PR, for that issue or PR only. Standing access means <code>allowed</code>.</li>
