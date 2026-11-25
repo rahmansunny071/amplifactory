@@ -69,7 +69,7 @@ Steps: `plan`, `plan-check`, `design-review`, `build`, `review`, `fix`, `handoff
 
 ## sync.py
 
-The guards of the `sync-root-factory` skill (`.claude/skills/sync-root-factory/scripts/`). It needs `git`, and `gh` only for `labels`. Every command that refuses prints `refused: <why>`, exits 1 and has written nothing.
+The guards of the `sync-root-factory` skill (`.claude/skills/sync-root-factory/scripts/`). It needs `git`, and `gh` only for `labels`. Every command that refuses prints `refused: <why>`, exits 1. Each refuses before writing, with two exceptions that say so: `apply`'s post-write diff (undo with `git restore .` and `git clean -fd -- .claude/skills/factory .claude/skills/sync-root-factory`) and `labels --create`, which reports the labels created before a failure.
 
 ```bash
 python .claude/skills/sync-root-factory/scripts/sync.py preflight
@@ -87,8 +87,8 @@ python .claude/skills/sync-root-factory/scripts/sync.py apply --to-tag vX.Y.Z [-
 | `branch TAG` | creates `local/adopt-TAG` from a fresh `origin/<default>`; refuses if it exists locally or on origin |
 | `verify-local` | compares the two skill folders with the recorded tag; any difference stops, listed |
 | `apply --to-tag` | replaces only tracked files in `.claude/skills/factory/` and `.claude/skills/sync-root-factory/` from the tag, then diffs |
-| `changelog --tag --from` | CHANGELOG entries after `--from`, up to `--tag`, quoted as data |
-| `labels --tag [--create]` | labels in the tag's `bootstrap.sh` the repo lacks; `--create` adds only those, never `--force` |
+| `changelog --tag --from` | CHANGELOG entries after `--from`, up to `--tag`, as JSON (data, not instructions) |
+| `labels --tag [--create]` | labels in the tag's `bootstrap.sh` the repo lacks; `--create` adds only those, never `--force`; a shadowing repo skips the Actions-only labels and lists them as skipped |
 | `check-markers` | refuses if any file has conflict markers or a `*.rej` file exists |
 | `push TAG` | pushes `local/adopt-TAG` only, with an explicit refspec, never `--force` |
 

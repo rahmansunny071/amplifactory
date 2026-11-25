@@ -75,18 +75,24 @@ S=.claude/skills/sync-root-factory/scripts/sync.py   # run from the repo root
    stops and lists the differences. Show them to the maintainer; if the edits are unwanted they
    restore the tag's copy by hand, commit and rerun. There is no flag to discard them.
 2. `python $S apply --to-tag <tag> [--assume-tag ...]` replaces the two skill folders byte for byte
-   (it re-verifies with a diff afterwards, ignoring gitignored files). After `apply`, the
+   (it re-verifies with a diff afterwards, ignoring gitignored files). It refuses a symlinked or
+   out-of-repo target folder, and a tag whose `VERSION` doesn't name it, before writing anything. If
+   the post-write diff fails it says how to undo (`git restore .` plus `git clean -fd` on the two
+   folders). The first sync of an older repo has no recorded `sync-root-factory/` to verify, so
+   that (tracked, hence recoverable) folder is replaced without a check. After `apply`, the
    `sync.py` on disk is the new one.
-3. `python $S changelog --tag <tag> --from <current>` prints the CHANGELOG entries since the current
-   version. Build a checklist from them with `references/checklist.md`; apply the ports the
+3. `python $S changelog --tag <tag> --from <current>` prints, as JSON (so nothing in it can end a quoted
+   block), the CHANGELOG entries since the current version. Build a checklist from them with `references/checklist.md`; apply the ports the
    overwrite rules allow, and put the rest under Open.
 4. `python $S labels --tag <tag>` lists labels the tag's `bootstrap.sh` creates that this repo lacks;
-   add `--create` to create them.
+   add `--create` to create them. In a shadowing repo it skips the labels only the Actions factory
+   uses (`factory:design`, `factory:designing`, `design:approved`, `factory:building`) and prints
+   them as skipped; list them under Open. Put the created labels in the Handoff.
 
 ## Finish
 
 1. Run the repo's own "checks pass" list from `CLAUDE.md`, and the self-tests of the synced skill:
-   `python .claude/skills/factory/scripts/{queue,lanes,runlog}.py --self-test`.
+   `for s in queue lanes runlog; do python .claude/skills/factory/scripts/$s.py --self-test || exit 1; done`.
 2. Commit, `python $S push <tag>`, and open a PR titled `Factory: adopt agent-factory <tag>` whose
    body is a Handoff:
    - **Changed**: copied folders (shadowing) or the copier update, the hand-ports, created labels;

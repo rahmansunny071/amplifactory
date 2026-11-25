@@ -31,7 +31,9 @@ git -C /path/to/agent-factory archive <tag> template/.claude/skills/factory \
 ```
 
 Use a release **tag**, never `main`: the skill itself refuses anything else. Releases up to v0.7.0 have no
-`sync-root-factory` folder, so use the first release that ships it. Commit the result.
+`sync-root-factory` folder, so use the first release that ships it. Commit the result. This is for a repo that has
+no factory skill yet; if you already have `factory/`, follow
+[Keeping the skill up to date](#keeping-the-skill-up-to-date) instead.
 
 Then add to your `CLAUDE.md`:
 
@@ -47,8 +49,8 @@ And create the labels the skill uses: `factory:needs-maintainer`, `factory:ready
 
 ### Keeping the skill up to date
 
-`.claude/skills/factory/VERSION` (from the release that ships it) records which release the copy came from. Then,
-in Claude Code in the repo:
+`.claude/skills/factory/VERSION` (written by the sync, and shipped from the first release that has it) records
+which release the copy came from. Then, in Claude Code in the repo:
 
 > sync the factory to the latest release
 
@@ -64,7 +66,9 @@ The `sync-root-factory` skill:
 
 **First time, for a repo that has no `VERSION` yet:**
 
-1. `git archive` the new tag's `template/.claude/skills/sync-root-factory` into `.claude/skills/` (see Option 2);
+1. archive **only** the sync skill from the new tag, and do **not** re-copy `factory/` (that would bring its
+   `VERSION`, so the sync would see "up to date" and skip every hand-port):
+   `git -C /path/to/agent-factory archive <new tag> template/.claude/skills/sync-root-factory | tar -x --strip-components=2 -C .claude/`;
 2. commit it, so the working tree is clean;
 3. run the sync with the tag your `factory/` folder was copied from:
    `python .claude/skills/sync-root-factory/scripts/sync.py status --assume-tag v0.7.0`, then ask Claude to sync.

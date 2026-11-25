@@ -40,7 +40,7 @@ Copier does a three-way merge and marks conflicts. Or, in Claude Code inside the
 and opens a PR (mechanical conflicts resolved, the rest listed for you; it never merges). It also works for a
 project that only carries the skill: it replaces `.claude/skills/factory/` from the tag after checking it matches
 the version it claims, and builds a hand-port checklist from the CHANGELOG entries. See
-[Adopt in an existing repo](adopt-in-existing-repo.md#option-2-just-the-skill) for the first-time setup.
+[Adopt in an existing repo](adopt-in-existing-repo.md#keeping-the-skill-up-to-date) for the first-time setup.
 
 ## Developing the template
 

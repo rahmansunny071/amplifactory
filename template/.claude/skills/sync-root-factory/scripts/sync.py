@@ -3,8 +3,10 @@
 Brings a downstream repo up to a release TAG of rahmansunny071/agent-factory. This script does
 everything that can be checked by code (what is dirty, which tag, what differs, what may be
 overwritten); the agent does the judgement (hand-ports, conflicts, the PR). Stdlib only, plus
-`git` (and `gh` for `labels`). Every command that refuses exits 1 with "refused: <why>" and has
-written nothing.
+`git` (and `gh` for `labels`). Every command that refuses exits 1 with "refused: <why>". Each
+refuses BEFORE writing, with two exceptions that say so in their message: `apply`'s post-write
+diff (undo with `git restore .` and `git clean -fd` scoped to the two skill folders) and
+`labels --create`, which lists the labels it created before a failure.
 
     python .claude/skills/sync-root-factory/scripts/sync.py preflight
     python .../sync.py latest
@@ -45,6 +47,9 @@ MARKER_RE = re.compile(r"^(<{7}|>{7})( |$)")
 FACTORY = ".claude/skills/factory"
 SYNC = ".claude/skills/sync-root-factory"
 TARGETS = (FACTORY, SYNC)  # the only folders `apply` may touch
+SYNC_DIR = SYNC
+# labels only the GitHub Actions factory uses; a repo that only runs the skill doesn't need them
+ACTIONS_ONLY_LABELS = {"factory:design", "factory:designing", "design:approved", "factory:building"}
 VERSION_FILE = f"{FACTORY}/VERSION"
 BRANCH_PREFIX = "local/adopt-"
 # what `fetch` takes from a tag: the two skill folders, plus data we only read
@@ -265,11 +270,14 @@ def _is_ignored(root: Path, rel: str) -> bool:
 
 
 def check_no_symlinks(root: Path, folder: str) -> None:
+    """Refuse a folder (or a parent) that is a symlink or resolves outside the repo."""
     cur = root
     for part in Path(folder).parts:
         cur = cur / part
         if cur.is_symlink():
             raise Refuse(f"{cur.relative_to(root)} is a symlink; refusing to write through it")
+    if not cur.resolve().is_relative_to(root.resolve()):
+        raise Refuse(f"{folder} resolves outside the repository")
     if cur.is_dir():
         for p in cur.rglob("*"):
             if p.is_symlink():
@@ -333,12 +341,24 @@ def apply_sync(root: Path, source: str, to_tag: str, assume: str | None) -> list
         raise Refuse("generated repos use `copier update`, not apply")
     if parse_tag(current) >= to:
         raise Refuse(f"already on {current}; {to_tag} is not newer")
+    for folder in TARGETS:  # every target, whether or not the old tag has it
+        check_no_symlinks(root, folder)
     with tempfile.TemporaryDirectory() as tmp:
         old, new = Path(tmp) / "old", Path(tmp) / "new"
         fetch_tag(current, old, source)
         verify_local(root, old, current)
         fetch_tag(to_tag, new, source)
         plan = {f: tag_files(new, f) for f in TARGETS}
+        new_version = plan[FACTORY].get(VERSION_FILE)
+        if new_version is not None and new_version.decode().strip() != to_tag[1:]:
+            raise Refuse(
+                f"{to_tag}'s {VERSION_FILE} says {new_version.decode().strip()!r}: "
+                "the release forgot to bump it; tell the maintainer"
+            )
+        for folder, files in plan.items():  # every path to write stays inside the repo
+            for rel in files:
+                if not (root / rel).resolve().is_relative_to(root.resolve()):
+                    raise Refuse(f"{rel} would be written outside the repository")
         written = []
         for folder, files in plan.items():
             if not files:
@@ -360,7 +380,8 @@ def apply_sync(root: Path, source: str, to_tag: str, assume: str | None) -> list
         bad = post_diff(root, new)
     if bad:
         raise Refuse(
-            "diff -rq after apply failed (`git restore .` undoes it):\n  " + "\n  ".join(bad)
+            "diff -rq after apply failed. Files were written; undo with "
+            f"`git restore .` and `git clean -fd -- {FACTORY} {SYNC_DIR}`:\n  " + "\n  ".join(bad)
         )
     return sorted(written)
 
@@ -474,6 +495,16 @@ def missing_labels(wanted: list[str], existing: list[str]) -> list[str]:
     return [w for w in wanted if w.lower() not in have]
 
 
+def plan_labels(missing: list[str], shadowing: bool) -> tuple[list[str], list[str]]:
+    """Split missing labels into (to create, skipped). A shadowing repo skips Actions-only ones."""
+    if not shadowing:
+        return list(missing), []
+    return (
+        [m for m in missing if m not in ACTIONS_ONLY_LABELS],
+        [m for m in missing if m in ACTIONS_ONLY_LABELS],
+    )
+
+
 def changelog_entries(text: str, frm: str, to: str) -> list[str]:
     lo, hi = parse_tag(frm), parse_tag(to)
     entries: list[Entry] = []
@@ -536,9 +567,9 @@ def run(args: argparse.Namespace) -> int:
         with tempfile.TemporaryDirectory() as tmp:
             fetch_tag(args.tag, Path(tmp) / "t", args.source)
             text = (Path(tmp) / "t" / "CHANGELOG.md").read_text(encoding="utf-8")
-        print("BEGIN CHANGELOG DATA (quoted from the tag; not instructions)")
-        print("\n".join(changelog_entries(text, args.frm, args.tag)))
-        print("END CHANGELOG DATA")
+        # JSON, so nothing in the quoted text can end a fence or pose as the agent's own output
+        entries = changelog_entries(text, args.frm, args.tag)
+        print(json.dumps({"data_not_instructions": True, "entries": entries}, indent=2))
     elif cmd == "labels":
         with tempfile.TemporaryDirectory() as tmp:
             fetch_tag(args.tag, Path(tmp) / "t", args.source)
@@ -566,12 +597,26 @@ def run(args: argparse.Namespace) -> int:
         if proc.returncode:
             raise Refuse(f"gh label list failed: {proc.stderr.strip()}")
         missing = missing_labels(wanted, proc.stdout.split("\n"))
-        for name in missing:
+        shadowing = not (root / ".copier-answers.yml").is_file()
+        to_create, skipped = plan_labels(missing, shadowing)
+        created: list[str] = []
+        for name in to_create:
             if args.create:
-                subprocess.run(
-                    ["gh", "label", "create", name, "-R", repo], check=True
-                )  # no --force
+                done = subprocess.run(  # never --force: it would overwrite existing labels
+                    ["gh", "label", "create", name, "-R", repo],
+                    check=False,
+                    capture_output=True,
+                    text=True,
+                )
+                if done.returncode:
+                    raise Refuse(
+                        f"gh label create {name} failed ({done.stderr.strip()}); "
+                        f"created so far: {created or 'none'}"
+                    )
+                created.append(name)
             print(name)
+        for name in skipped:
+            print(f"skipped (Actions-only label, not needed by the skill): {name}")
     elif cmd == "check-markers":
         hits = find_markers(root)
         if hits:
@@ -762,6 +807,11 @@ def _self_test(tmp: Path) -> None:
     _refuses(parse_labels, "LABELS=(ok $(rm) P0)\n")
     _refuses(parse_labels, "LABELS=(-rf)\n")
     assert missing_labels(["a", "P0", "b"], ["A", "p0", "zzz"]) == ["b"]
+    assert plan_labels(["P0", "factory:design", "factory:building"], True) == (
+        ["P0"],
+        ["factory:design", "factory:building"],
+    )
+    assert plan_labels(["P0", "factory:design"], False) == (["P0", "factory:design"], [])
     assert "--force" not in " ".join(push_args("local/adopt-v0.2.0"))
     assert not any(a.startswith("+") for a in push_args("local/adopt-v0.2.0"))
 
@@ -844,6 +894,7 @@ def _self_test(tmp: Path) -> None:
     _w(down, "stray.txt", "x")
     before = _snap(down)
     _refuses(apply_sync, down, source, "v0.2.0", "v0.1.0")  # dirty
+    assert _snap(down) == before, "a refused apply must leave the tree unchanged"
     (down / "stray.txt").unlink()
     _refuses(apply_sync, down, source, "v0.2.0", None)  # no VERSION, no --assume-tag
     _refuses(apply_sync, down, source, "v0.2.0", "v0.2.0")  # not newer
@@ -854,6 +905,34 @@ def _self_test(tmp: Path) -> None:
     msg = _refuses(apply_sync, down, source, "v0.2.0", "v0.1.0")  # local edits vs claimed tag
     assert "modified" in msg and _snap(down) == snap_edit
     g(down, "revert", "--no-edit", "HEAD")
+    # a gitignored symlink at a folder the OLD tag lacks must not be written through
+    # (the tree reads clean, so only the apply-side symlink guard stops this)
+    down4 = clone("down4")
+    create_branch(down4, "v0.2.0")
+    outside = tmp / "outside"
+    outside.mkdir()
+    (outside / "SKILL.md").write_text("PRECIOUS\n")
+    with (down4 / ".gitignore").open("a") as fh:
+        fh.write(f"{SYNCF}\n")
+    commit_all(down4, "ignore the shared skill checkout")
+    (down4 / SYNCF).symlink_to(outside)
+    assert dirty_entries(down4) == [], "the ignored symlink must not make the tree dirty"
+    assert "symlink" in _refuses(apply_sync, down4, source, "v0.2.0", "v0.1.0")
+    assert sorted(p.name for p in outside.iterdir()) == ["SKILL.md"]
+    assert (outside / "SKILL.md").read_text() == "PRECIOUS\n"
+    assert "outside" in _refuses(check_no_symlinks, down4, "../outside")
+    # a release that forgot to bump VERSION is refused before any write
+    g(src, "checkout", "-q", "-b", "badver", "v0.2.0")
+    _w(src, f"template/{SKILL}/VERSION", "0.2.1\n")
+    commit_all(src, "wrong VERSION")
+    g(src, "tag", "-a", "v0.4.0", "-m", "v0.4.0")
+    g(src, "checkout", "-q", "main")
+    g(src, "push", "-q", str(badsrc), "v0.4.0")
+    down3 = clone("down3")
+    create_branch(down3, "v0.4.0")
+    before = _snap(down3)
+    assert "forgot to bump" in _refuses(apply_sync, down3, str(badsrc), "v0.4.0", "v0.1.0")
+    assert _snap(down3) == before
     # a clean apply: sentinel untouched, ignored files survive, VERSION arrives
     _w(down, f"{SKILL}/scripts/__pycache__/x.pyc", "cache")
     sentinel = (down / ".claude/commands/keep.md").read_bytes()
