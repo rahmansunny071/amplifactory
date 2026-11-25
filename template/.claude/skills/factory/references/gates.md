@@ -17,7 +17,8 @@ it if it's mechanical, otherwise **flag and continue** (SKILL.md).
 | 9 | **Closes its issue** | The PR body has `Closes #<N>` |
 | 10 | **Handoff present** | The PR body has an up-to-date "## Handoff" section |
 | 11 | **All review threads resolved** | The unresolved-thread query (below) returns 0. No maintainer question is left open, and every blocker thread was verified and resolved |
-| 12 | **You aren't unsure** | Skim the diff yourself. If something still bothers you, flag it on the PR instead of merging |
+| 12 | **Docs ship with the code** | The Handoff has a "**Docs:**" line naming the docs updated, or "none needed" with a reason. If `gh pr diff <PR> --name-only` changes code but no docs (README, CHANGELOG, `docs/`, docstrings, `.factory/designs/` beyond the plan), that line must say why none were needed, and the reason must hold up against the diff. Docs that disagree with the code are a hard-rule blocker (gate 5) |
+| 13 | **You aren't unsure** | Skim the diff yourself. If something still bothers you, flag it on the PR instead of merging |
 
 ## Bounded CI waits (gate 1)
 
@@ -75,7 +76,8 @@ query($o:String!,$r:String!,$n:Int!){ repository(owner:$o,name:$r){ pullRequest(
   `gh api graphql -f query='mutation($id:ID!){resolveReviewThread(input:{threadId:$id}){thread{isResolved}}}' -f id=<thread-node-id>`
 
 Resolve only what you've verified: a blocker's fix (repro plus CI), an answered question that's been
-implemented, or an improvement filed as an issue (reply with the link first).
+implemented, an improvement filed as an issue, or a `doc-debt` finding filed as a sub-issue of the
+"Documentation tech-debt" issue (reply with the link first).
 
 ## Merge
 
@@ -91,7 +93,8 @@ gh pr merge <PR> --merge --admin --delete-branch
 - Use `--merge`, never `--squash` or `--rebase`, so release tags stay on `main`'s history.
 
 Then post one comment on the PR: `Merged by the factory orchestrator: CI green; review READY (or N blockers
-fixed and verified); all threads resolved; no workflow/dependency/CLAUDE.md surprises; improvements → #M.`
+fixed and verified); all threads resolved; docs updated (<list> or "none needed: <reason>"); no
+workflow/dependency/CLAUDE.md surprises; improvements → #M; doc-debt → #D… (or "none").`
 Log it, `git -C <repo> pull --ff-only`, and `git worktree remove <worktree>`.
 
 ## After merging something that touches the factory itself

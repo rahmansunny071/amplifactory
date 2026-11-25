@@ -1,6 +1,6 @@
 ---
 title: "Merge gates"
-description: "The twelve conditions that must all hold on a PR’s current commit before the factory merges it."
+description: "The thirteen conditions that must all hold on a PR’s current commit before the factory merges it."
 ---
 
 # Merge gates
@@ -21,6 +21,7 @@ evidence, not proof. If a gate fails and the fix isn't mechanical, the factory [
 | 9 | **Closes its issue** | `Closes #N` in the PR body |
 | 10 | **Handoff present** | An up-to-date `## Handoff` section |
 | 11 | **All review threads resolved** | The GraphQL unresolved-thread query returns 0; also enforced by the ruleset |
-| 12 | **Not unsure** | The orchestrator skims the diff; if anything still bothers it, it asks instead of merging |
+| 12 | **Docs ship with the code** | The Handoff has a **Docs** line naming the docs updated, or "none needed" with a reason; a diff that changes code but no docs needs that reason, and it must hold up |
+| 13 | **Not unsure** | The orchestrator skims the diff; if anything still bothers it, it asks instead of merging |
 
 Merges use **merge commits**, so release tags stay on `main`, and happen **one at a time**.

@@ -21,7 +21,7 @@ cd my-project
 
 The repo is private, so Copier needs your GitHub credentials. `gh auth setup-git` lets the `gh:` shortcut (HTTPS) use your `gh` login; or use `git@github.com:rahmansunny071/agent-factory.git`.
 
-`bootstrap.sh` does what a template can't: `uv lock` and the first commit, creating and pushing the GitHub repo, the factory labels (including `improvement`, `lane` and `P0`–`P3`), a **GitHub Project board** with a Priority field (needs the `project` scope: `gh auth refresh -h github.com -s project`), a ruleset protecting `main` (no deletion or force push, PR with your approval, required checks `Tests (Python X)` and `Lint`, admin bypass for PRs only), and fork-PR approval. Rulesets need a **public** repo or GitHub Pro.
+`bootstrap.sh` does what a template can't: `uv lock` and the first commit, creating and pushing the GitHub repo, the factory labels (including `improvement`, `lane`, `P0`–`P3` and `documentation`), the **"Documentation tech-debt"** tracking issue, a **GitHub Project board** with a Priority field (needs the `project` scope: `gh auth refresh -h github.com -s project`), a ruleset protecting `main` (no deletion or force push, PR with your approval, required checks `Tests (Python X)` and `Lint`, admin bypass for PRs only), and fork-PR approval. Rulesets need a **public** repo or GitHub Pro.
 
 For the GitHub Actions mode, once per repo in Claude Code: `/install-github-app` → pick the repo → choose your subscription. That saves the `CLAUDE_CODE_OAUTH_TOKEN` secret. If it says the GitHub CLI lacks the `workflow` scope, run `gh auth refresh -h github.com -s repo,workflow` first. **Close the installer's PR** (`claude.yml`, `claude-code-review.yml`): `factory-chat.yml` and `factory-review.yml` already cover those, with the sender and fork checks the installer's versions lack. The skill needs no secret: it runs in your session.
 
@@ -45,11 +45,13 @@ Open Claude Code in the repo, on Opus, and say what you want:
 
 **It never waits on you in the session. It flags and continues.** When it's unsure, when a reviewer raises a question, when a gate fails (workflows, unplanned dependencies, the version, `CLAUDE.md`), or when it would rely on an assumption about real data it can't verify, it posts the question **inline on the PR** with options and a recommendation, labels the issue and PR `factory:needs-maintainer`, and moves on to independent work. Reply in the threads (or use `@claude` on the PR to have the Actions agent apply it right away), then say "resume the factory". Nothing merges until every review thread is resolved; `bootstrap.sh` also turns on GitHub's "require conversation resolution".
 
+**Docs ship with the code** (v0.6.0). A `CLAUDE.md` hard rule: every code change updates, in the same PR, the docs it affects (README, CHANGELOG, docstrings, `.factory/designs/`). The builder's Handoff has a **Docs** line (what it updated, or "none needed" and why), the reviewer checks docs against code in the changed area, and a merge gate checks the Docs line. Docs that disagree with the PR's code are a **blocker**, even in `mvp`. A mismatch that predates the PR is tagged `doc-debt` and filed as a sub-issue of the repo's **"Documentation tech-debt"** issue (`scripts/lanes.py doc-debt`); the builder fixes open ones when its PR already touches that file. The skill creates the tracking issue in repos bootstrapped before v0.6.0.
+
 **Where knowledge lives.** GitHub and the repo are the source of truth: issues, PRs, review threads, plans and implementation notes (`.factory/designs/`), `CLAUDE.md`. Each PR keeps a **Handoff** section (what changed and why, decisions, how to test, what's open), so a fresh session or a replacement agent starts from it rather than from scratch, and its gist lands in the design file at merge. The run log is only a local cache and cost ledger that points at GitHub.
 
 The two modes never trigger each other: the skill works on **`local/issue-N`** branches (the Actions review only watches `factory/issue-*`), and it never adds the Actions trigger labels (`factory:design`, `design:approved`) or writes `@claude`. If you only ever use the skill, you can also disable the Actions workflows with `gh workflow disable`.
 
-**Using the skill in a repo not generated from this template:** copy `template/.claude/skills/factory/` from a release tag into the repo's `.claude/skills/factory/`, and add a "Release phase" section to its `CLAUDE.md`. The skill expects the stage prompts in `.claude/commands/` and the labels above.
+**Using the skill in a repo not generated from this template:** copy `template/.claude/skills/factory/` from a release tag into the repo's `.claude/skills/factory/`, and add a "Release phase" section and the docs-with-code hard rule to its `CLAUDE.md`. The skill expects the stage prompts in `.claude/commands/` and the labels above.
 
 ## Run the factory on GitHub Actions (async)
 
@@ -111,7 +113,7 @@ See [`CHANGELOG.md`](CHANGELOG.md) for what each release changed and why.
 | Path | Purpose |
 |---|---|
 | `CLAUDE.md` | Agent guide: project context, release phase, "checks pass" definition (identical to CI), hard rules |
-| `.claude/skills/factory/` | The `factory` skill: `SKILL.md`, `references/` (subagent briefs, merge gates, issue and lane format), `scripts/queue.py` (lane-aware queue), `scripts/lanes.py` (lanes, sub-issues, dependencies, priorities, Project board), `scripts/runlog.py` (run log) |
+| `.claude/skills/factory/` | The `factory` skill: `SKILL.md`, `references/` (subagent briefs, merge gates, issue and lane format), `scripts/queue.py` (lane-aware queue), `scripts/lanes.py` (lanes, sub-issues, dependencies, priorities, Project board, the Documentation tech-debt issue), `scripts/runlog.py` (run log) |
 | `.claude/commands/` | Stage prompts: `design-issue`, `build-from-design`, `review-against-design` (used by both modes) |
 | `.github/workflows/factory-*.yml` | Actions mode: design, build, review, chat (`@claude`) and label guard |
 | `.github/workflows/ci.yml` | Tests on each Python version, pinned ruff format and lint |
@@ -127,7 +129,7 @@ See [`CHANGELOG.md`](CHANGELOG.md) for what each release changed and why.
 - **Only you advance work.** Every Actions trigger checks the sender is `maintainer_github`, and a label guard strips trigger labels anyone else adds. The skill runs in your session and stops to ask at defined points.
 - **Forks can't run agents.** Build, review and chat refuse PRs from forks, and fork-PR workflows need your approval.
 - **Least privilege per stage.** Reviewers can't push. The build step refuses design branches that touch anything outside `.factory/designs/`. Per-stage tool allowlists apply.
-- **Merge gates** (skill): CI green, no open blockers, **all review threads resolved**, Handoff present, no workflow, unplanned dependency, version or `CLAUDE.md` changes, deviations disclosed. Merges use merge commits, so release tags stay on `main`.
+- **Merge gates** (skill): CI green, no open blockers, **all review threads resolved**, Handoff present with its Docs line, no workflow, unplanned dependency, version or `CLAUDE.md` changes, deviations disclosed. Merges use merge commits, so release tags stay on `main`.
 - **Bounded cost.** `timeout-minutes`, `--max-turns` and per-issue `concurrency` on every Actions job; pinned models; the skill's urgency triage and run-log cost report.
 - Agents may not touch `.github/workflows/`, bump versions or publish unless the approved plan says so. Workflow changes go in their own PR.
 

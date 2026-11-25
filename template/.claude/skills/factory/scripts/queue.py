@@ -15,6 +15,8 @@ Per lane, the state of its **current** issue (the first open sub-issue) decides 
 - waiting: open dependencies (its own or the lane's)
 
 Issues not in any lane are listed separately with the same states (repos without lanes keep working).
+The "Documentation tech-debt" tracking issue is never work itself and is left out; its open sub-issues
+(doc todos, labelled `improvement`) are listed with the issues outside lanes.
 
     python .claude/skills/factory/scripts/queue.py              # table
     python .claude/skills/factory/scripts/queue.py --lanes 2    # plan for two lanes in parallel
@@ -37,6 +39,7 @@ NEEDS_MAINTAINER = "factory:needs-maintainer"
 BLOCKED = "factory:blocked"
 IMPROVEMENT = "improvement"
 LANE = "lane"
+DOC_DEBT_TITLE = "Documentation tech-debt"  # same exact title in lanes.py and bootstrap.sh
 _PRIORITY = re.compile(r"^P([0-3])$")
 _DEPENDS_LINE = re.compile(r"^\W*depends on\b(?P<rest>.*)$", re.IGNORECASE | re.MULTILINE)
 _ISSUE_REF = re.compile(r"(?<![\w/])#(\d+)\b")
@@ -131,6 +134,11 @@ def classify(
     )
 
 
+def is_doc_debt_tracker(issue: dict) -> bool:
+    labels = {label["name"] for label in issue.get("labels", [])}
+    return issue["title"] == DOC_DEBT_TITLE and "documentation" in labels
+
+
 def plan(
     issues: list[dict],
     sub_issues: dict[int, IntList],
@@ -177,7 +185,7 @@ def plan(
     loose = [
         classify(by_number[n], closed, native_deps, replies)
         for n in sorted(is_open)
-        if n not in in_a_lane and n not in lane_numbers
+        if n not in in_a_lane and n not in lane_numbers and not is_doc_debt_tracker(by_number[n])
     ]
     loose.sort(key=lambda i: (state_rank[i.state], i.improvement, i.priority, i.number))
     return lanes, loose
@@ -357,6 +365,9 @@ def _self_test() -> None:
         iss(20, "done", state="CLOSED"),
         # an issue outside any lane
         iss(30, "loose", labels=("P1",)),
+        # the doc-debt tracker is never work; its todos are ordinary loose improvements
+        iss(43, DOC_DEBT_TITLE, labels=("documentation", "P2")),
+        iss(44, "README: stale status table", labels=("documentation", "improvement", "P2")),
     ]
     subs = {10: [4, 6], 11: [5, 8], 12: [7], 13: [17], 14: [20]}
     lanes, loose = plan(issues, subs, native_deps={7: [4]}, replies={})
@@ -368,7 +379,7 @@ def _self_test() -> None:
     assert by[14].state == "done"
     # ranked by priority, done last
     assert [lane.number for lane in lanes] == [10, 11, 12, 13, 14], [lane.number for lane in lanes]
-    assert [i.number for i in loose] == [30]
+    assert [i.number for i in loose] == [30, 44], [i.number for i in loose]
     now, queued = start_now(lanes, slots=1)
     assert [lane.number for lane in now] == [10] and queued == []
     # with lane B answered, the single slot resumes B first and leaves A queued

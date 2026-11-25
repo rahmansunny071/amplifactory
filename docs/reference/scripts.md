@@ -27,6 +27,9 @@ python .claude/skills/factory/scripts/queue.py --json
 Lane states, from the lane's current issue: `active` (a PR in progress), `replied` (you answered a question),
 `ready`, `asked` (waiting on you; uses no slot), `blocked`, `waiting` (on another lane or issue), `done`.
 
+The "Documentation tech-debt" tracking issue is never listed as work; its open sub-issues appear under "Not in a
+lane" as improvements.
+
 ## lanes.py
 
 Creates and maintains lanes with native GitHub features. The sub-issue and dependency APIs need internal issue ids;
@@ -40,6 +43,13 @@ Creates and maintains lanes with native GitHub features. The sub-issue and depen
 | `priority ISSUE P0…P3` | set exactly one priority label |
 | `project-add ISSUE… --project N` | add to the Project board and set its Priority field from the label |
 | `show LANE` | print the lane's order |
+| `doc-debt find` | print the "Documentation tech-debt" issue's number, creating it (and its labels) if missing |
+| `doc-debt add --title T --body-file F` | file a doc todo (`documentation`, `improvement`, `P2`) as a sub-issue of it |
+| `doc-debt add --issue N` | label an existing issue as a doc todo and link it as a sub-issue |
+| `doc-debt list [--json]` | the open doc todos, which the builder gets for ride-alongs |
+
+The tracking issue is found by its **exact title**, open and labelled `documentation`; if there are several, the
+oldest wins.
 
 ## runlog.py
 
