@@ -5,7 +5,7 @@ description: "The skills’ helper scripts: queue.py, lanes.py, runlog.py and sy
 
 # Scripts
 
-The first three live in `.claude/skills/factory/scripts/`, need only Python ≥3.10 and `gh`, and have a `--self-test`. `sync.py` belongs to the `sync-root-factory` skill and is described at the end.
+The first three live in `.claude/skills/factory/scripts/`, need only Python ≥3.9 (macOS's system `python3` works) and `gh`, and have a `--self-test`. `sync.py` (also Python ≥3.9) belongs to the `sync-root-factory` skill and is described at the end.
 
 ## queue.py
 

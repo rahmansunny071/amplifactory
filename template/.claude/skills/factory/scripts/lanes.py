@@ -25,7 +25,6 @@ Documentation debt: one open issue titled exactly "Documentation tech-debt" (lab
 from __future__ import annotations
 
 import argparse
-import itertools
 import json
 import re
 import subprocess
@@ -60,7 +59,9 @@ def issue_id(r: str, number: int) -> int:
 
 
 def sub_issues(r: str, lane: int) -> list[int]:
-    return [i["number"] for i in json.loads(_gh("api", f"repos/{r}/issues/{lane}/sub_issues"))]
+    """The lane's sub-issue numbers in order (paginated: GitHub returns 30 per page)."""
+    out = _gh("api", f"repos/{r}/issues/{lane}/sub_issues", "--paginate", "--jq", ".[].number")
+    return [int(line) for line in out.splitlines() if line.strip()]
 
 
 def sub_add(r: str, lane: int, numbers: list[int]) -> None:
@@ -114,7 +115,7 @@ def order(r: str, lane: int, wanted: list[int]) -> None:
             "-F",
             f"before_id={ids[front]}",
         )
-    for prev, n in itertools.pairwise(wanted):
+    for prev, n in zip(wanted, wanted[1:]):
         _gh(
             "api",
             "-X",
@@ -326,6 +327,7 @@ def _self_test_sub_add() -> None:
     """sub-add appends; the fake `_gh` models GitHub: POST appends, PATCH priority moves."""
     global _gh
     lanes: dict = {}  # lane number to its ordered issue numbers
+    prepend = False  # True models a GitHub whose POST puts the new issue first
 
     def fake(*args: str) -> str:
         path = next(a for a in args if a.startswith("repos/"))
@@ -334,11 +336,11 @@ def _self_test_sub_add() -> None:
         if len(parts) == 5:  # issue id: id = number + 1000
             return f"{int(parts[4]) + 1000}\n"
         lane = lanes.setdefault(int(parts[4]), [])
-        if "-X" not in args:
-            return json.dumps([{"number": n} for n in lane])
+        if "-X" not in args:  # GET with --paginate --jq '.[].number': one number per line
+            return "".join(f"{n}\n" for n in lane)
         moved = int(fields["sub_issue_id"]) - 1000
         if parts[-1] == "sub_issues":  # POST: GitHub appends at the end
-            lane.append(moved)
+            lane.insert(0 if prepend else len(lane), moved)
         else:  # PATCH .../priority with before_id or after_id
             lane.remove(moved)
             if "before_id" in fields:
@@ -357,6 +359,13 @@ def _self_test_sub_add() -> None:
         assert lanes[1] == [5, 3, 9, 4, 8, 2], lanes
         order("o/r", 1, [2])  # order is the way to move one to the front
         assert lanes[1] == [2, 5, 3, 9, 4, 8], lanes
+        lanes[7] = list(range(100, 135))  # more than one page of 30
+        assert sub_issues("o/r", 7) == list(range(100, 135))
+        prepend = True  # POST prepends: sub_add's order(wanted) fallback restores the order
+        sub_add("o/r", 8, [5, 3])
+        assert lanes[8] == [5, 3], lanes
+        sub_add("o/r", 8, [9, 4])
+        assert lanes[8] == [5, 3, 9, 4], lanes
     finally:
         _gh = real
 

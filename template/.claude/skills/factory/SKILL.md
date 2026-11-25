@@ -38,8 +38,8 @@ Five principles shape everything below. All of them came out of real runs:
    at the end of a turn or in the final report. Propose the structure: a sub-issue of the lane that fits,
    a new lane (`lane` + a `P` label) if none does, a doc-debt sub-issue for doc todos, naming the lane,
    title and priority. One confirmation covers it: create them with `gh issue create` (as in Mode 1
-   step 5) and wire them with `lanes.py` (`priority`, `sub-add` (appends to the lane; `order` moves issues forward), `block`, `project-add`; `doc-debt add`
-   for doc todos); then the work goes through the queue. Findings inside a run keep their routes (step 7,
+   step 5) and wire them with `lanes.py` (`priority`, `sub-add` (it appends to the lane; `order` moves issues forward), `block`,
+   `project-add`; `doc-debt add` for doc todos); then the work goes through the queue. Findings inside a run keep their routes (step 7,
    doc-debt, PR questions). Problems in the factory template repo are `lesson` issues.
 
 ## Where knowledge lives
