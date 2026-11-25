@@ -1,8 +1,8 @@
-# agent-factory
+# amplifactory
 
 **A [Copier](https://copier.readthedocs.io/) template for an issue-driven agent factory on Claude Code.**
 
-📖 **Documentation:** https://rahmansunny071.github.io/agent-factory/
+📖 **Documentation:** https://rahmansunny071.github.io/amplifactory/
 
 Every generated repo gets one process, with two ways to run it:
 
@@ -14,12 +14,12 @@ Either way you stay the only one who can start work, approve it, merge to `main`
 ## Create a project
 
 ```bash
-uvx copier copy gh:rahmansunny071/agent-factory my-project   # answers a few questions
+uvx copier copy gh:rahmansunny071/amplifactory my-project   # answers a few questions
 cd my-project
 ./scripts/bootstrap.sh --public                              # or --private
 ```
 
-The repo is private, so Copier needs your GitHub credentials. `gh auth setup-git` lets the `gh:` shortcut (HTTPS) use your `gh` login; or use `git@github.com:rahmansunny071/agent-factory.git`.
+The repo is private, so Copier needs your GitHub credentials. `gh auth setup-git` lets the `gh:` shortcut (HTTPS) use your `gh` login; or use `git@github.com:rahmansunny071/amplifactory.git`.
 
 `bootstrap.sh` does what a template can't: `uv lock` and the first commit, creating and pushing the GitHub repo, the factory labels (including `improvement`, `lane`, `P0`–`P3` and `documentation`), the **"Documentation tech-debt"** tracking issue, a **GitHub Project board** with a Priority field (needs the `project` scope: `gh auth refresh -h github.com -s project`), a ruleset protecting `main` (no deletion or force push, PR with your approval, required checks `Tests (Python X)` and `Lint`, admin bypass for PRs only), and fork-PR approval. Rulesets need a **public** repo or GitHub Pro.
 

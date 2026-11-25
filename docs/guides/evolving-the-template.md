@@ -10,7 +10,7 @@ template changes.
 
 ## 1. File a lesson
 
-A **factory problem** (not a bug in the project's own code) found while driving a project is filed in agent-factory
+A **factory problem** (not a bug in the project's own code) found while driving a project is filed in amplifactory
 as an issue labelled **`lesson`**:
 
 - what happened, with links;
@@ -21,7 +21,7 @@ File it **when it happens**, not at the end of the run.
 
 In a generated repo, ask Claude Code to "file a factory lesson: ..." and the **`factory-lesson` skill** does it:
 
-1. finds the template repo from `.copier-answers.yml` (`_src_path`), used only when it is a GitHub source (`gh:`, `https://github.com/`, `ssh://git@github.com/`, `git@github.com:`); a local path, an empty value or a missing file falls back to `rahmansunny071/agent-factory`, and confirms it with `gh repo view`; it never files in the current repo;
+1. finds the template repo from `.copier-answers.yml` (`_src_path`), used only when it is a GitHub source (`gh:`, `https://github.com/`, `ssh://git@github.com/`, `git@github.com:`); a local path, an empty value or a missing file falls back to `rahmansunny071/amplifactory`; the old slug `rahmansunny071/agent-factory` (any case) is mapped to the new one; it then confirms the slug with `gh repo view` and confirms it with `gh repo view`; it never files in the current repo;
 2. searches open and closed `lesson` issues for a duplicate: an open match gets a comment instead of a new issue; a closed match means it is already fixed, so it points to the release that fixed it and to updating (`copier update`, or the `sync-root-factory` skill);
 3. drafts the body (What happened, Fix applied in the generated repo, Template files to change, Options, Takeaway) and checks it for real data values, secrets and private paths, since the issue goes to another repo;
 4. asks you **once** (if you edit the draft, it re-checks the edited text for real data and shows the result before filing), then creates it with the `lesson` label and reports the URL;

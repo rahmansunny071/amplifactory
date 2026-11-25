@@ -11,7 +11,7 @@ You need [uv](https://docs.astral.sh/uv/), [git](https://git-scm.com/), the [Git
 ## 1. Generate the repo
 
 ```bash
-uvx copier copy gh:rahmansunny071/agent-factory my-project
+uvx copier copy gh:rahmansunny071/amplifactory my-project
 ```
 
 Copier asks a few [questions](../reference/questions.md): the project and package names, a description, what the
@@ -20,7 +20,7 @@ are filled in.
 
 !!! note "Private template"
     If the template repo is private, Copier needs your GitHub credentials. Run `gh auth setup-git` so the `gh:`
-    shortcut (HTTPS) uses your `gh` login, or use `git@github.com:rahmansunny071/agent-factory.git`.
+    shortcut (HTTPS) uses your `gh` login, or use `git@github.com:rahmansunny071/amplifactory.git`.
 
 ## 2. Give `gh` the scopes it needs
 

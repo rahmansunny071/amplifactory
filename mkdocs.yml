@@ -1,8 +1,8 @@
-site_name: agent-factory
+site_name: amplifactory
 site_description: An issue-driven agent factory on Claude Code, as a Copier template.
-site_url: https://rahmansunny071.github.io/agent-factory/
-repo_url: https://github.com/rahmansunny071/agent-factory
-repo_name: agent-factory
+site_url: https://rahmansunny071.github.io/amplifactory/
+repo_url: https://github.com/rahmansunny071/amplifactory
+repo_name: amplifactory
 docs_dir: docs
 strict: true
 hooks:
