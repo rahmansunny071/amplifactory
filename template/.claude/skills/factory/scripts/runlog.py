@@ -8,8 +8,8 @@ Logs live in `.factory/runs/<YYYY-MM-DD>.jsonl` at the repo root (gitignored). S
 
     python3 .claude/skills/factory/scripts/runlog.py add --issue 4 --step plan --model sonnet \\
         --tokens 41000 --ms 52000 --note "plan pushed"
-    python3 .claude/skills/factory/scripts/runlog.py status     # last step per issue; in-flight ones
-    python3 .claude/skills/factory/scripts/runlog.py summary    # wall time, rounds, tokens by model
+    python3 .claude/skills/factory/scripts/runlog.py status  # last step per issue; in-flight ones
+    python3 .claude/skills/factory/scripts/runlog.py summary  # wall time, rounds, tokens by model
     python3 .claude/skills/factory/scripts/runlog.py --self-test
 
 Steps used by the factory skill: plan, plan-check, design-review, build, review, fix, handoff-written,

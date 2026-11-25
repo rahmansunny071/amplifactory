@@ -25,9 +25,10 @@ Copier asks a few [questions](../reference/questions.md): the project and packag
 agents should know about the project, project-specific hard rules, Python versions, the release phase and whether agents may read your real data (`never` by default). Defaults
 are filled in.
 
-!!! note "Private template"
-    If the template repo is private, Copier needs your GitHub credentials. Run `gh auth setup-git` so the `gh:`
-    shortcut (HTTPS) uses your `gh` login, or use `git@github.com:rahmansunny071/amplifactory.git`.
+!!! note "Private fork"
+    The template repo is public, so Copier needs no credentials. If you copy from a private fork, Copier needs your
+    GitHub credentials: run `gh auth setup-git` so the `gh:` shortcut (HTTPS) uses your `gh` login, or use the
+    fork's `git@github.com:…` URL.
 
 ## 2. Give `gh` the scopes it needs
 
@@ -79,6 +80,22 @@ needs the Claude GitHub App and a token secret:
    `CLAUDE_CODE_OAUTH_TOKEN`.
 2. **Close the PR the installer opens** (`claude.yml`, `claude-code-review.yml`). The template's `factory-chat.yml`
    and `factory-review.yml` already cover those, with sender and fork checks.
+
+## What a generated repo contains
+
+| Path | Purpose |
+|---|---|
+| `CLAUDE.md` | Agent guide: project context, release phase, real-data access, "checks pass" definition (identical to CI), hard rules |
+| `.claude/skills/factory/` | The `factory` skill: `SKILL.md`, `references/` (subagent briefs, merge gates, issue and lane format), `scripts/queue.py` (lane-aware queue), `scripts/lanes.py` (lanes, sub-issues, dependencies, priorities, Project board, the Documentation tech-debt issue), `scripts/runlog.py` (run log) |
+| `.claude/commands/` | Stage prompts: `design-issue`, `build-from-design`, `review-against-design` (used by both modes) |
+| `.github/workflows/factory-*.yml` | Actions mode: design, build, review, chat (`@claude`) and label guard |
+| `.github/workflows/ci.yml` | Tests on each Python version, pinned ruff format and lint |
+| `.github/ISSUE_TEMPLATE/factory-task.yml` | Factory task template (never auto-applies `factory:design`) |
+| `.github/CODEOWNERS` | You own `.github/` |
+| `.factory/designs/` | Plans, shipped inside each implementation PR |
+| `.factory/runs/` | The skill's run log: a local cache and cost ledger pointing at PRs, commits and threads (gitignored) |
+| `pyproject.toml`, package, `tests/` | Minimal uv/hatchling skeleton so the checks run from day one |
+| `scripts/bootstrap.sh` | One-time GitHub setup (above) |
 
 ## Next
 

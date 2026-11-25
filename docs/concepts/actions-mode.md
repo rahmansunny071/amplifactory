@@ -39,4 +39,6 @@ issue ──(you: factory:design)──► DESIGN agent ──► draft design P
 ## Using both
 
 The skill and the Actions mode share `.claude/commands/` and `CLAUDE.md`. The skill never adds trigger labels or
-writes `@claude`, so the two don't start each other. Pick one per issue.
+writes `@claude`, and it works on `local/issue-N` branches while the Actions review only watches `factory/issue-*`,
+so the two don't start each other. Pick one per issue. If you only ever use the skill, you can turn the Actions
+workflows off with `gh workflow disable <workflow>`.

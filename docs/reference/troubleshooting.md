@@ -34,3 +34,31 @@ description: "Problems met while running the factory for real, and their fixes."
 ??? question "`lanes.py` fails with a 404 or 422"
     The sub-issue and dependency APIs need the issue's internal `id`, which `lanes.py` looks up for you. A 422 on
     `sub-add` usually means the issue already has a different parent: an issue can only be in one lane.
+
+??? question "`python: command not found`"
+    The skill's scripts run as `python3`: stock macOS has no `python`. Use `python3 .claude/skills/factory/scripts/...`,
+    and make sure Python 3.9 or newer is installed.
+
+??? question "The Documentation tech-debt issue is missing"
+    Repos bootstrapped before v0.6.0 don't have it, and a bootstrap that stopped early may not have created it.
+    `python3 .claude/skills/factory/scripts/lanes.py doc-debt find` prints its number and creates it if missing.
+
+??? question "`sync.py` prints `refused: …`"
+    A guard fired. Unless the message says otherwise, nothing was written. The common ones:
+
+    - **`working tree is not clean`**: commit or stash, then rerun.
+    - **`branch local/adopt-<tag> already exists`** (locally or on origin): an earlier sync left it. Continue on it,
+      or delete it and rerun.
+    - **`the skill folders differ from <tag>`** (items `modified:`, `missing locally:`, `untracked:`, `only local:`):
+      your local copy no longer matches the tag it claims, so the sync won't overwrite your edits. Restore the files
+      from that tag, or move your own changes out, then rerun.
+    - **`diff -rq after apply failed`** (items `differs:`, `extra:`): files *were* written but don't match the tag.
+      Run the undo command the message prints, then report it.
+    - **`<tag> is not an annotated tag`**: syncs trust only annotated release tags. Use a real `vX.Y.Z` release.
+    - **`_src_path … is not … on GitHub (a local clone or a fork?)`**: `copier-check` wants `_src_path: gh:rahmansunny071/amplifactory`
+      in `.copier-answers.yml` (edit the existing line, don't add a second). The old repo name is also accepted.
+    - **`this is amplifactory itself (or a fork of it)`**: the sync never runs in the template repo.
+
+??? question "`/install-github-app` fails with a workflow-scope error"
+    The installer pushes workflow files, which needs the `workflow` scope on your `gh` login. Run
+    `gh auth refresh -h github.com -s repo,workflow`, then run `/install-github-app` again.
