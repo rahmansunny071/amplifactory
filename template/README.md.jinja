@@ -4,32 +4,17 @@
 
 <!-- What the project does, how to install and use it. Agents keep this up to date. -->
 
-## How this repo is built: an agent factory
+## Getting started
 
-Work happens through an issue-driven factory on Claude Code GitHub Actions. Agents write short designs, the maintainer signs off, then agents build, test and open PRs. Only the maintainer (@[[ maintainer_github ]]) can start or advance work, merge to `main`, or publish anything.
+This repo is built by an issue-driven agent factory. Only the maintainer (@[[ maintainer_github ]]) can start or advance work, merge to `main`, or publish anything. The quickest way in is the **`factory` skill** (`.claude/skills/factory/`), which runs the whole pipeline from a Claude Code session:
 
-1. Open an issue with the **Factory task** template.
-2. Add `factory:design`. The design agent writes `.factory/designs/issue-N.md` and opens a draft design PR.
-3. Review it; iterate with `@claude …` comments or edit it yourself.
-4. Add `design:approved` to the design PR. The build agent implements it on `factory/issue-N`, runs the checks until green and opens a PR.
-5. The review agent checks the PR against the design and `CLAUDE.md`.
-6. Merge. Releases stay manual.
+1. Bootstrap is already done (`scripts/bootstrap.sh`). The skill does **not** need `/install-github-app`.
+2. Run `claude` in this repo, on Opus.
+3. Say **"brainstorm X into issues"** or **"run the factory"**. It never adds `factory:design` or `design:approved`, so the Actions workflows don't duplicate the work.
 
-| Label | Applied by | Meaning |
-|---|---|---|
-| `factory:design` | maintainer, on an issue | Ask an agent for a design |
-| `factory:designing` | agent | Design in progress / awaiting review |
-| `design:approved` | maintainer, on the design PR | Signed off: start building |
-| `factory:building` | agent | Implementation in progress |
-| `factory:review` | agent | Implementation PR open, awaiting merge |
-| `factory:blocked` | agent | Agent hit something it shouldn't decide |
-| `factory:ready-to-merge` | factory skill | Every gate passed but the merge was refused: you merge it |
+The skill's scripts need Python 3.9 or newer and run as `python3`. Step-by-step: [first run](https://rahmansunny071.github.io/amplifactory/getting-started/first-run/); everything else is in the [docs site](https://rahmansunny071.github.io/amplifactory/). Agent rules live in [`CLAUDE.md`](CLAUDE.md); the stage prompts in [`.claude/commands/`](.claude/commands/).
 
-Agent rules live in [`CLAUDE.md`](CLAUDE.md); the stage prompts in [`.claude/commands/`](.claude/commands/).
-
-### Faster: run the factory from Claude Code
-
-The labels above wait for you at every step. The **`factory` skill** (`.claude/skills/factory/`) runs the same pipeline from a Claude Code session, with the maintainer in the loop by exception:
+### What the skill does
 
 - **Brainstorm → lanes → issues:** talk an idea through with Claude (Opus). It proposes **lanes** (features, with priorities `P0`–`P3` and dependencies between lanes) and the **ordered issues** in each, you confirm once, and they're created as lane issues with native sub-issues, "blocked by" links and priority labels (and added to the Project board).
 - **Lanes:** each lane's sub-issues run one at a time, in order; lanes run **one at a time by default**, and Claude asks before running more in parallel (`queue.py` shows each lane's current issue and what to work on now).
@@ -42,8 +27,6 @@ The labels above wait for you at every step. The **`factory` skill** (`.claude/s
 - **Handoffs:** every PR keeps a "## Handoff" section, so a new session or reviewer starts from it. Its gist is saved to `.factory/designs/` at merge.
 - **Run log:** `.factory/runs/` records each step, so a fresh session resumes mid-issue; `scripts/runlog.py summary` reports time and tokens per issue.
 
-Start it by asking Claude Code to "brainstorm X into issues" or "run the factory". It never adds `factory:design` or `design:approved`, so the Actions workflows don't duplicate the work.
-
 **Reporting a factory problem.** If the factory itself got in the way (not this project's code), say "file a factory lesson: ...". The **`factory-lesson` skill** (`.claude/skills/factory-lesson/`) finds the template repo from `.copier-answers.yml`, checks for a duplicate `lesson` issue, drafts the issue without real data values, secrets or private paths, and files it there after one confirmation from you. It can then link the lesson on the PR or issue where you hit it, if you agree. It needs a `gh` login with access to the template repo.
 
 **Letting the factory merge for you (opt-in).** By default, when every gate passes and the merge is refused, the skill labels the PR `factory:ready-to-merge`, comments the exact merge command and moves on; you merge them in one batch. If you would rather it merged itself, you can add a Claude Code permission rule yourself, in `.claude/settings.json` or your user `~/.claude/settings.json`:
@@ -54,7 +37,39 @@ Start it by asking Claude Code to "brainstorm X into issues" or "run the factory
 
 This uses the wildcard syntax from the [Claude Code permissions docs](https://code.claude.com/docs/en/permissions). The rule lets the agent use your ruleset bypass (`--admin`), so it is your choice and the template does not ship it. The rule matches only commands that end in `--delete-branch`, which is how the skill runs the merge (`references/gates.md` → "Merge"); variants with `-R` or other trailing flags aren't covered. A project rule applies only after you accept the workspace trust prompt. How allow rules interact with auto mode is described in the [permission modes docs](https://code.claude.com/docs/en/permission-modes); check it, and try it in your own session. Even with the rule, a merge GitHub itself refuses is still handed off.
 
-### Changing the factory itself
+### Labels
+
+Bootstrap creates these. Meanings in short; the docs site has the detail.
+
+| Group | Label | Meaning |
+|---|---|---|
+| Skill | `factory:needs-maintainer` | The skill asked you a question on the PR; reply, then say "resume the factory" |
+| Skill | `factory:ready-to-merge` | Every gate passed; you merge it (the default hand-off) |
+| Skill | `improvement` | Non-blocking follow-up, filed instead of fixed in the PR |
+| Skill | `documentation` | A docs todo, including the "Documentation tech-debt" sub-issues |
+| Progress (skill and Actions) | `factory:designing` | Design / plan in progress or awaiting review |
+| Progress (skill and Actions) | `factory:building` | Implementation in progress |
+| Progress (skill and Actions) | `factory:review` | PR open, in review or awaiting merge |
+| Progress (skill and Actions) | `factory:blocked` | An agent hit something it shouldn't decide, or couldn't finish |
+| Actions | `factory:design` | You ask the design agent for a design (on an issue) |
+| Actions | `design:approved` | You sign off the design PR: start building |
+| Lanes | `lane` | Parent issue of a feature; its sub-issues run in order |
+| Priority | `P0` | Most urgent; ranks lanes and issues |
+| Priority | `P1`, `P2` | In between |
+| Priority | `P3` | Least urgent |
+
+## Actions mode (optional)
+
+The same pipeline can run from labels on GitHub Actions, with a click from you at every step. It needs `/install-github-app` (run in Claude Code, pick this repo) and the `CLAUDE_CODE_OAUTH_TOKEN` secret that saves.
+
+1. Open an issue with the **Factory task** template.
+2. Add `factory:design`. The design agent writes `.factory/designs/issue-N.md` and opens a draft design PR.
+3. Review it; iterate with `@claude …` comments or edit it yourself.
+4. Add `design:approved` to the design PR. The build agent implements it on `factory/issue-N`, runs the checks until green and opens a PR.
+5. The review agent checks the PR against the design and `CLAUDE.md`.
+6. Merge. Releases stay manual.
+
+## Changing the factory itself
 
 - **Workflow changes go in their own PR.** `claude-code-action` refuses to run from a workflow file that differs from `main`'s, so on a PR that edits `.github/workflows/factory-*.yml` the affected agent stage skips itself (the job still shows success). The change takes effect once merged. Don't bundle it with feature work.
 - **After merging a workflow change, update open factory PRs before re-triggering them.** PR-triggered runs use the PR's merge commit, which GitHub doesn't rebuild when `main` moves, so an older design or implementation PR keeps running the old workflow. Click **Update branch** on the PR (or `gh api -X PUT repos/[[ maintainer_github ]]/[[ project_name ]]/pulls/N/update-branch`), then re-add the label or push.
