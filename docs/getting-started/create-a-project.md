@@ -27,8 +27,8 @@ are filled in.
 
 !!! note "Private fork"
     The template repo is public, so Copier needs no credentials. If you copy from a private fork, Copier needs your
-    GitHub credentials. Run `gh auth setup-git` so the `gh:`
-    shortcut (HTTPS) uses your `gh` login, or use `git@github.com:rahmansunny071/amplifactory.git`.
+    GitHub credentials: run `gh auth setup-git` so the `gh:` shortcut (HTTPS) uses your `gh` login, or use the
+    fork's `git@github.com:…` URL.
 
 ## 2. Give `gh` the scopes it needs
 
