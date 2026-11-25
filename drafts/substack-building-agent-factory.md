@@ -13,7 +13,7 @@ Before publishing: settle every [link if public], [if public] and [verify] mark 
 
 *How a safe but slow label-driven workflow became a Copier template, got beaten into shape by a real project, and learned to run with me in the loop only by exception.*
 
-I spent a few months building something I now call agent-factory: a way to take a feature from idea to merged pull request using Claude Code agents, with GitHub issues as the only source of truth. This post is the story of how it got there. It is less about the final design than about the things that broke along the way, because the breakage is where all the useful decisions came from.
+I have been building something I now call agent-factory: a way to take a feature from idea to merged pull request using Claude Code agents, with GitHub issues as the only source of truth. This post is the story of how it got there. It is less about the final design than about the things that broke along the way, because the breakage is where all the useful decisions came from.
 
 Repo: [link if public]. Docs: https://rahmansunny071.github.io/agent-factory/ [if public].
 
@@ -41,13 +41,13 @@ That was v0.1.0, generalized from the project I had been using. And then I did t
 
 You cannot design a factory in the abstract. I picked a real project, pensieve-traces (a tool that turns agent traces into datasets), and drove it through the template. It is public: you can read its issues and PRs [link if public].
 
-The rule I set was simple. **Every factory problem becomes a `lesson` issue in the template repo, immediately.** Not a note in my head, not a fix in the project only. Then I batch the lessons into a tagged release, and projects pick the release up with `copier update`. Over the first few days that produced v0.1.1 through v0.5.0, and the lesson issues are still there as a record of what went wrong.
+The rule I set was simple. **Every factory problem becomes a `lesson` issue in the template repo, immediately.** Not a note in my head, not a fix in the project only. Then I batch the lessons into a tagged release, and projects pick the release up with `copier update`. That produced v0.1.1 through v0.5.0, and the lesson issues are still there as a record of what went wrong.
 
 This is the loop I would recommend to anyone building tooling for agents: a real project that hurts, plus a place where the hurt is written down the moment it happens.
 
 ## What broke, and what it taught
 
-Here is a sample of the early failures. Each one cost me an afternoon, and each one is now a guardrail.
+Here is a sample of the early failures. Each one is now a guardrail.
 
 **Bot-authored PRs were blocked, and the run still said "success".** The agent opens PRs as `claude[bot]`, and the action's `restrict_untrusted_prs` default blocked its own build step on them. The job went green. There was no artifact. Nothing had happened. The lesson was twofold: configure the bot allowlists on purpose, and treat "green but no artifact" as a failure, not a pass. The fix also needed a safety net, a build step that refuses design branches touching anything outside the designs folder, because relaxing a restriction should come with a guard.
 
@@ -55,7 +55,7 @@ Here is a sample of the early failures. Each one cost me an afternoon, and each 
 
 **A reviewer that invented scope.** This one taught me the most about agents. A reviewer suggested a cross-file merge, a plausible improvement nobody had asked for. The builder implemented it. It then broke in every following round, and each round's review found a new defect in it. Speculative scope from a reviewer is a bug factory. Now reviewers may not add scope they cannot verify; it becomes a question to me instead. And if two rounds find defects in the same area, the run stops and asks rather than looping.
 
-**A privacy rubric gap.** Later, a reviewer rubric did not treat irreversible data loss as a blocker. A plan that overwrites or deletes a user's files on a plausible, even mistaken, invocation is now a blocker whenever a cheap guard would prevent it (v0.5.1).
+**A rubric gap.** Later, a reviewer rubric did not treat irreversible data loss as a blocker. A plan that overwrites or deletes a user's files on a plausible, even mistaken, invocation is now a blocker whenever a cheap guard would prevent it (v0.5.1).
 
 The common thread: agents are good at following a process and bad at noticing that the process itself is wrong. Everything that mattered was a rule I had to add after watching it fail.
 
