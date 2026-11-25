@@ -73,9 +73,6 @@ markdown_extensions:
 nav:
   - Documentation:
       - Overview: index.md
-      - Get started:
-          - Create a project: getting-started/create-a-project.md
-          - Your first run: getting-started/first-run.md
       - Concepts:
           - Lanes and priorities: concepts/lanes.md
           - The pipeline: concepts/pipeline.md
@@ -84,6 +81,9 @@ nav:
           - Docs ship with the code: concepts/docs-with-code.md
           - Where knowledge lives: concepts/where-knowledge-lives.md
           - The GitHub Actions mode: concepts/actions-mode.md
+  - Get started:
+      - Create a project: getting-started/create-a-project.md
+      - Your first run: getting-started/first-run.md
   - Guides:
       - Day-to-day: guides/day-to-day.md
       - Adopt in an existing repo: guides/adopt-in-existing-repo.md

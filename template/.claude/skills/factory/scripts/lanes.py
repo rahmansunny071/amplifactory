@@ -5,7 +5,7 @@ Dependencies are native **"blocked by"** links. Priority is exactly one `P0`–`
 wrap the GitHub REST calls (which need internal issue ids, not numbers) so the orchestrator doesn't
 improvise them. Stdlib only; uses `gh`.
 
-    python3 .claude/skills/factory/scripts/lanes.py sub-add 40 4 6        # lane #40: append #4, #6 (last)
+    python3 .claude/skills/factory/scripts/lanes.py sub-add 40 4 6  # lane #40: append #4, #6 (last)
     python3 .claude/skills/factory/scripts/lanes.py order 40 6 4          # move #6 to the front
     python3 .claude/skills/factory/scripts/lanes.py block 8 --by 5        # #8 blocked by #5
     python3 .claude/skills/factory/scripts/lanes.py priority 4 P0         # exactly one P label
@@ -16,10 +16,11 @@ improvise them. Stdlib only; uses `gh`.
 Documentation debt: one open issue titled exactly "Documentation tech-debt" (labels `documentation`,
 `P2`) tracks doc todos as native sub-issues (labels `documentation`, `improvement`, `P2`).
 
-    python3 .claude/skills/factory/scripts/lanes.py doc-debt find         # find or create; prints #N
-    python3 .claude/skills/factory/scripts/lanes.py doc-debt add --title "README: …" --body-file f.md
-    python3 .claude/skills/factory/scripts/lanes.py doc-debt add --issue 44   # link an existing issue
-    python3 .claude/skills/factory/scripts/lanes.py doc-debt list         # open todos, for ride-alongs
+    python3 .claude/skills/factory/scripts/lanes.py doc-debt find  # find or create; prints #N
+    python3 .claude/skills/factory/scripts/lanes.py doc-debt add \\
+        --title "README: …" --body-file f.md
+    python3 .claude/skills/factory/scripts/lanes.py doc-debt add --issue 44  # link existing issue
+    python3 .claude/skills/factory/scripts/lanes.py doc-debt list  # open todos, for ride-alongs
 """
 
 from __future__ import annotations
