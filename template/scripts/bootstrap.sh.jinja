@@ -155,11 +155,14 @@ cat <<EOF
 Done: https://github.com/$REPO
 
 Remaining (manual):
-  1. In Claude Code, run /install-github-app, pick $REPO and choose your subscription.
-     That saves the CLAUDE_CODE_OAUTH_TOKEN secret. If it needs the workflow scope first:
+  1. Run claude in this repo, on Opus, then say "brainstorm X into issues" or "run the factory".
+     The factory skill works from here and needs no secret.
+  2. Keep yourself the only collaborator with Triage access or higher.
+  3. Optional, last, only for Actions mode: in Claude Code, run /install-github-app, pick $REPO
+     and choose your subscription. That saves the CLAUDE_CODE_OAUTH_TOKEN secret. If it needs the
+     workflow scope first:
        gh auth refresh -h github.com -s repo,workflow
      Decline (close) the installer's own claude.yml / claude-code-review.yml PR:
      factory-chat.yml and factory-review.yml already cover those, with sender and fork checks.
-  2. Keep yourself the only collaborator with Triage access or higher.
-  3. Dry run: open an issue with the Factory task template and add factory:design.
+     Dry run: open an issue with the Factory task template and add factory:design.
 EOF

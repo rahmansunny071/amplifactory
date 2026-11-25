@@ -13,17 +13,25 @@ Either way you stay the only one who can start work, approve it, merge to `main`
 
 ## Create a project
 
+You need Python 3.9 or newer (the skill's scripts run as `python3`), [uv](https://docs.astral.sh/uv/), git, the [GitHub CLI](https://cli.github.com/) (`gh`, logged in) and [Claude Code](https://claude.com/claude-code). One path, in this order:
+
 ```bash
-uvx copier copy gh:rahmansunny071/amplifactory my-project   # answers a few questions
+uvx copier copy gh:rahmansunny071/amplifactory my-project   # 1. answers a few questions
 cd my-project
-./scripts/bootstrap.sh --public                              # or --private
+gh auth refresh -h github.com -s repo,workflow,project       # 2. gh scopes
+./scripts/bootstrap.sh --public                              # 3. or --private
+claude                                                       # 4. on Opus, then the factory skill
 ```
 
 The repo is private, so Copier needs your GitHub credentials. `gh auth setup-git` lets the `gh:` shortcut (HTTPS) use your `gh` login; or use `git@github.com:rahmansunny071/amplifactory.git`.
 
-`bootstrap.sh` does what a template can't: `uv lock` and the first commit, creating and pushing the GitHub repo, the factory labels (including `improvement`, `lane`, `P0`–`P3` and `documentation`), the **"Documentation tech-debt"** tracking issue, a **GitHub Project board** with a Priority field (needs the `project` scope: `gh auth refresh -h github.com -s project`), a ruleset protecting `main` (no deletion or force push, PR with your approval, required checks `Tests (Python X)` and `Lint`, admin bypass for PRs only), and fork-PR approval. Rulesets need a **public** repo or GitHub Pro.
+The scopes: `repo` creates and pushes the repo, `workflow` lets that push include the Actions workflows, and `project` is for the Project board and `queue.py`.
 
-For the GitHub Actions mode, once per repo in Claude Code: `/install-github-app` → pick the repo → choose your subscription. That saves the `CLAUDE_CODE_OAUTH_TOKEN` secret. If it says the GitHub CLI lacks the `workflow` scope, run `gh auth refresh -h github.com -s repo,workflow` first. **Close the installer's PR** (`claude.yml`, `claude-code-review.yml`): `factory-chat.yml` and `factory-review.yml` already cover those, with the sender and fork checks the installer's versions lack. The skill needs no secret: it runs in your session.
+`bootstrap.sh` does what a template can't: `uv lock` and the first commit, creating and pushing the GitHub repo, the factory labels (including `improvement`, `lane`, `P0`–`P3` and `documentation`), the **"Documentation tech-debt"** tracking issue, a **GitHub Project board** with a Priority field, a ruleset protecting `main` (no deletion or force push, PR with your approval, required checks `Tests (Python X)` and `Lint`, admin bypass for PRs only), and fork-PR approval. Rulesets need a **public** repo or GitHub Pro.
+
+From step 4 the skill works and needs no secret: it runs in your session.
+
+**Optional, last: Actions mode.** Only for the GitHub Actions mode, once per repo in Claude Code: `/install-github-app` → pick the repo → choose your subscription. That saves the `CLAUDE_CODE_OAUTH_TOKEN` secret. **Close the installer's PR** (`claude.yml`, `claude-code-review.yml`): `factory-chat.yml` and `factory-review.yml` already cover those, with the sender and fork checks the installer's versions lack.
 
 ## Run the factory from Claude Code (the `factory` skill)
 

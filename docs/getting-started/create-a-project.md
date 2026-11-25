@@ -5,8 +5,15 @@ description: "Generate a repo from the template, then run bootstrap.sh to set up
 
 # Create a project
 
-You need [uv](https://docs.astral.sh/uv/), [git](https://git-scm.com/), the [GitHub CLI](https://cli.github.com/)
-(`gh`, logged in) and [Claude Code](https://claude.com/claude-code).
+You need:
+
+- Python 3.9 or newer (the skill's scripts run as `python3`)
+- [uv](https://docs.astral.sh/uv/)
+- [git](https://git-scm.com/)
+- the [GitHub CLI](https://cli.github.com/) (`gh`, logged in)
+- [Claude Code](https://claude.com/claude-code)
+
+The path is: copier, `gh` scopes, bootstrap, then `claude`. The Actions mode comes last and is optional.
 
 ## 1. Generate the repo
 
@@ -28,8 +35,9 @@ are filled in.
 gh auth refresh -h github.com -s repo,workflow,project
 ```
 
-- `workflow`: creating a repo that contains GitHub Actions workflows.
-- `project`: the factory's Project board.
+- `repo`: creating the repo and pushing to it.
+- `workflow`: pushing a repo that contains GitHub Actions workflows.
+- `project`: the factory's Project board, and `queue.py`.
 
 ## 3. Run the bootstrap
 
@@ -53,17 +61,24 @@ cd my-project
 !!! warning "Rulesets need a public repo or GitHub Pro"
     On GitHub Free, rulesets aren't enforced on private repos. Then `main` isn't protected, and the script says so.
 
-## 4. Optional: the GitHub Actions mode
+## 4. Start Claude Code
 
-The [Actions mode](../concepts/actions-mode.md) runs agents on GitHub's servers when you add labels. It needs the
-Claude GitHub App and a token secret:
+```bash
+claude          # on Opus
+```
+
+The `factory` skill works from here and needs no secret: it runs in your Claude Code session. Continue with
+[your first run](first-run.md).
+
+## 5. Optional, last: the GitHub Actions mode
+
+The [Actions mode](../concepts/actions-mode.md) runs agents on GitHub's servers when you add labels. Only this mode
+needs the Claude GitHub App and a token secret:
 
 1. In Claude Code, run `/install-github-app`, pick the repo, and choose your subscription. That saves
    `CLAUDE_CODE_OAUTH_TOKEN`.
 2. **Close the PR the installer opens** (`claude.yml`, `claude-code-review.yml`). The template's `factory-chat.yml`
    and `factory-review.yml` already cover those, with sender and fork checks.
-
-The `factory` skill doesn't need any of this. It runs in your Claude Code session.
 
 ## Next
 
