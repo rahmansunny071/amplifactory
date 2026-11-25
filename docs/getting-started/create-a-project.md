@@ -25,8 +25,9 @@ Copier asks a few [questions](../reference/questions.md): the project and packag
 agents should know about the project, project-specific hard rules, Python versions, the release phase and whether agents may read your real data (`never` by default). Defaults
 are filled in.
 
-!!! note "Private template"
-    If the template repo is private, Copier needs your GitHub credentials. Run `gh auth setup-git` so the `gh:`
+!!! note "Private fork"
+    The template repo is public, so Copier needs no credentials. If you copy from a private fork, Copier needs your
+    GitHub credentials. Run `gh auth setup-git` so the `gh:`
     shortcut (HTTPS) uses your `gh` login, or use `git@github.com:rahmansunny071/amplifactory.git`.
 
 ## 2. Give `gh` the scopes it needs

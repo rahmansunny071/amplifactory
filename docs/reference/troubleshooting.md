@@ -44,13 +44,16 @@ description: "Problems met while running the factory for real, and their fixes."
     `python3 .claude/skills/factory/scripts/lanes.py doc-debt find` prints its number and creates it if missing.
 
 ??? question "`sync.py` prints `refused: …`"
-    A guard fired and nothing was written. The common ones:
+    A guard fired. Unless the message says otherwise, nothing was written. The common ones:
 
     - **`working tree is not clean`**: commit or stash, then rerun.
     - **`branch local/adopt-<tag> already exists`** (locally or on origin): an earlier sync left it. Continue on it,
       or delete it and rerun.
-    - **`differs: <file>`** or an `extra:` file in a skill folder: your local copy no longer matches the tag it
-      claims, so the sync won't overwrite your edits. Restore the file, or move your own changes out, then rerun.
+    - **`the skill folders differ from <tag>`** (items `modified:`, `missing locally:`, `untracked:`, `only local:`):
+      your local copy no longer matches the tag it claims, so the sync won't overwrite your edits. Restore the files
+      from that tag, or move your own changes out, then rerun.
+    - **`diff -rq after apply failed`** (items `differs:`, `extra:`): files *were* written but don't match the tag.
+      Run the undo command the message prints, then report it.
     - **`<tag> is not an annotated tag`**: syncs trust only annotated release tags. Use a real `vX.Y.Z` release.
     - **`_src_path … is not … on GitHub (a local clone or a fork?)`**: `copier-check` wants `_src_path: gh:rahmansunny071/amplifactory`
       in `.copier-answers.yml` (edit the existing line, don't add a second). The old repo name is also accepted.
