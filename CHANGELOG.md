@@ -1,5 +1,7 @@
 # Changelog
 
+- Unreleased: **`lanes.py` follow-ups** (#63).
+  - **#63: pagination, fallback test, Python 3.9.** `lanes.py` reads every page of a lane's sub-issues (`gh api --paginate`), so `sub-add`/`order` work in lanes of more than 30. `--self-test` now covers `sub-add`'s `order` fallback (a fake whose POST prepends) and a multi-page lane. Every skill script runs on Python 3.9 (`lanes.py` used `itertools.pairwise`); Template CI runs all four self-tests under 3.9 as well, and the docs state 3.9 as the minimum. The `sub-add` line in the `factory` SKILL.md is rewrapped.
 - v0.11.0 (2026-11-25): **`lanes.py sub-add` appends** (#60): adding an issue to a lane no longer jumps it ahead of the lane's next step.
   - **#60: `lanes.py sub-add` appends.** It used to put the newly added issues first in the lane (via `order`); it now keeps the lane's order and puts new issues last, in the order given. Issues already in the lane stay put. `order` is still how to move issues to the front. `--self-test` covers it with a fake `_gh` that models GitHub.
 - v0.10.0 (2026-11-25): **Proposals become issues** (#56): work the orchestrator offers outside a run's own routes is proposed as issues, sub-issues or lanes, not as an ad-hoc fix.
