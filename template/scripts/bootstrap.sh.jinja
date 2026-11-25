@@ -12,7 +12,7 @@ set -euo pipefail
 
 REPO="[[ maintainer_github ]]/[[ project_name ]]"
 DESCRIPTION="[[ description ]]"
-LABELS=(factory:design factory:designing design:approved factory:building factory:review factory:blocked factory:needs-maintainer improvement lane P0 P1 P2 P3 documentation)
+LABELS=(factory:design factory:designing design:approved factory:building factory:review factory:blocked factory:needs-maintainer factory:ready-to-merge improvement lane P0 P1 P2 P3 documentation)
 DOC_DEBT_TITLE="Documentation tech-debt"   # the factory skill finds this issue by its exact title
 PROJECT_TITLE="[[ project_name ]] factory"
 CHECKS=([% for v in python_versions %]"Tests (Python [[ v ]])" [% endfor %]"Lint")

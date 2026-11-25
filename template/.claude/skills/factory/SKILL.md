@@ -184,8 +184,11 @@ linking the sub-issue.
 
 **8. Merge.** Check every gate in `references/gates.md` on the PR's current commit, **including "all
 review threads resolved"**. Append the Handoff's gist to `.factory/designs/issue-N.md` (one commit on the
-branch, so the rationale lands on `main` next to the code). Then `gh pr merge <PR> --merge --admin
---delete-branch`, post the merge note, log it, pull `main`, remove the worktree, and run `queue.py` again.
+branch, so the rationale lands on `main` next to the code). Then try the merge (the command and when
+`--admin` applies are in `references/gates.md` → "Merge"). If it goes through, post the merge note, log it,
+pull `main`, remove the worktree, and run `queue.py` again. **If it is refused** (the harness denies the
+command, or GitHub rejects it), that is not an error: follow "Ready to merge and continue" below. **Never
+work around a refusal**: no retry through `gh api .../pulls/N/merge`, other flags or another tool.
 
 ### Flag and continue
 
@@ -211,6 +214,25 @@ These go to the maintainer this way:
 - two consecutive rounds with blockers in the same area (the premise may be wrong);
 - an unverifiable assumption about real data (see "Reality check");
 - a subagent that added `factory:blocked`.
+
+### Ready to merge and continue
+
+When every gate passes but the merge itself is refused, the maintainer merges it, not you:
+
+1. Re-check `gh pr view <PR> --json state` once. If the PR is still open, hand it off. **Do not try any
+   other way to merge it.**
+2. Add `factory:ready-to-merge` to the **issue and the PR**. Remove the in-progress label.
+3. Post **one** PR comment: the line `Ready to merge: all gates pass on <sha>.`, the exact merge command in
+   a code block (the one that fits `mergeStateStatus`, see `references/gates.md` → "Merge"), and the
+   gate summary from the merge note.
+4. Log a `ready-to-merge` step.
+5. **Move on.** The issue stays open, so its lane's later issues wait; other lanes carry on.
+   `queue.py` lists these under "Waiting for you to merge", and "When you're done" reports them so the
+   maintainer can merge them in one batch. Once the PR is merged the issue closes and the lane advances;
+   if the label is still on a closed issue, remove it.
+
+The maintainer can let the skill merge itself by opting in to a permission rule (README → "Letting the
+factory merge for you"). The template never ships it.
 
 ### Resume
 
@@ -266,6 +288,8 @@ answer right away; resume handles it.
 model and role. Report:
 - issues merged (PR links);
 - **issues waiting on the maintainer**, with links to their open threads;
+- **PRs ready to merge** (`factory:ready-to-merge`), with the merge command for each, so the maintainer
+  can merge them in one batch;
 - improvements and doc-debt sub-issues filed;
 - decisions made on the maintainer's behalf;
 - the cost summary.
@@ -279,9 +303,9 @@ template as a `lesson` issue.
 - `references/briefs.md`: prompts for every subagent, the builder's follow-up messages, and the Handoff
   format.
 - `references/gates.md`: merge gates (including all threads resolved), bounded CI waits, posting and
-  resolving review threads, and the merge command.
+  resolving review threads, and the merge command and what to do when it is refused.
 - `scripts/queue.py`: the lane-aware queue (each lane's current issue and state, "Work now" for
-  `--lanes N`, issues outside lanes; the doc-debt tracking issue is left out).
+  `--lanes N`, PRs waiting for you to merge, issues outside lanes; the doc-debt tracking issue is left out).
 - `scripts/lanes.py`: create and maintain lanes with native GitHub features (`sub-add`, `order`, `block`,
   `priority`, `project-add`, `show`), and the documentation tech-debt issue (`doc-debt find|add|list`).
 - `scripts/runlog.py`: the run log (`add`, `status`, `summary`).

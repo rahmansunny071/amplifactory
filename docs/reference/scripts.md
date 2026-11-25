@@ -25,7 +25,9 @@ python .claude/skills/factory/scripts/queue.py --json
 | `--maintainer LOGIN` | whose replies count (default: the logged-in `gh` user) |
 
 Lane states, from the lane's current issue: `active` (a PR in progress), `replied` (you answered a question),
-`ready`, `asked` (waiting on you; uses no slot), `blocked`, `waiting` (on another lane or issue), `done`.
+`merge` (every gate passed but the merge was refused, so you merge it; uses no slot, and the lane's later issues wait), `ready`, `asked` (waiting on you; uses no slot), `blocked`, `waiting` (on another lane or issue), `done`.
+
+PRs labelled `factory:ready-to-merge` are also listed under "Waiting for you to merge".
 
 The "Documentation tech-debt" tracking issue is never listed as work; its open sub-issues appear under "Not in a
 lane" as improvements.
@@ -63,4 +65,4 @@ python .claude/skills/factory/scripts/runlog.py summary    # wall time, rounds, 
 ```
 
 Steps: `plan`, `plan-check`, `design-review`, `build`, `review`, `fix`, `handoff-written`, `needs-maintainer`,
-`resume`, `merge`, `blocked`, `decision`, `improvement-filed`.
+`resume`, `merge`, `ready-to-merge`, `blocked`, `decision`, `improvement-filed`.

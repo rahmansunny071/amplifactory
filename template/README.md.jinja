@@ -23,6 +23,7 @@ Work happens through an issue-driven factory on Claude Code GitHub Actions. Agen
 | `factory:building` | agent | Implementation in progress |
 | `factory:review` | agent | Implementation PR open, awaiting merge |
 | `factory:blocked` | agent | Agent hit something it shouldn't decide |
+| `factory:ready-to-merge` | factory skill | Every gate passed but the merge was refused: you merge it |
 
 Agent rules live in [`CLAUDE.md`](CLAUDE.md); the stage prompts in [`.claude/commands/`](.claude/commands/).
 
@@ -36,10 +37,19 @@ The labels above wait for you at every step. The **`factory` skill** (`.claude/s
 - **Urgency first:** in the `mvp` release phase (`CLAUDE.md`), only blockers are fixed in-PR; everything else is filed as an `improvement` issue.
 - **Flags and continues:** when it needs you (it's unsure, a gate fails, or it would rely on an unverified assumption about real data), it asks **inline on the PR** with options and a recommendation, labels it `factory:needs-maintainer`, and works on other issues. Reply in the threads, then say "resume the factory".
 - **Docs ship with the code:** every PR updates the docs its change affects, and its Handoff says which (or why none). Docs that disagree with the PR's code block the merge; older mismatches become sub-issues of the "Documentation tech-debt" issue, fixed when a later PR touches that file.
+- **Ready to merge:** if every gate passes but the merge is refused (the harness denies it or GitHub rejects it), the skill never works around it. It labels the PR `factory:ready-to-merge`, comments the merge command and carries on; `queue.py` and the end-of-run report list what waits for you.
 - **Handoffs:** every PR keeps a "## Handoff" section, so a new session or reviewer starts from it. Its gist is saved to `.factory/designs/` at merge.
 - **Run log:** `.factory/runs/` records each step, so a fresh session resumes mid-issue; `scripts/runlog.py summary` reports time and tokens per issue.
 
 Start it by asking Claude Code to "brainstorm X into issues" or "run the factory". It never adds `factory:design` or `design:approved`, so the Actions workflows don't duplicate the work.
+
+**Letting the factory merge for you (opt-in).** By default, when every gate passes and the merge is refused, the skill labels the PR `factory:ready-to-merge`, comments the exact merge command and moves on; you merge them in one batch. If you would rather it merged itself, you can add a Claude Code permission rule yourself, in `.claude/settings.json` or your user `~/.claude/settings.json`:
+
+```json
+{ "permissions": { "allow": ["Bash(gh pr merge * --merge --admin --delete-branch)"] } }
+```
+
+This uses the wildcard syntax from the [Claude Code permissions docs](https://code.claude.com/docs/en/permissions). The rule lets the agent use your ruleset bypass (`--admin`), so it is your choice and the template does not ship it. A project rule applies only after you accept the workspace trust prompt. The docs don't say whether an allow rule also lets the command run in auto mode, so check that in your session. Even with the rule, a merge GitHub itself refuses is still handed off.
 
 ### Changing the factory itself
 
