@@ -1190,7 +1190,7 @@
 
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
 <ul>
-<li>Unreleased:</li>
+<li>v0.11.0 (2026-11-25): <strong><code>lanes.py sub-add</code> appends</strong> (#60): adding an issue to a lane no longer jumps it ahead of the lane's next step.</li>
 <li><strong>#60: <code>lanes.py sub-add</code> appends.</strong> It used to put the newly added issues first in the lane (via <code>order</code>); it now keeps the lane's order and puts new issues last, in the order given. Issues already in the lane stay put. <code>order</code> is still how to move issues to the front. <code>--self-test</code> covers it with a fake <code>_gh</code> that models GitHub.</li>
 <li>v0.10.0 (2026-11-25): <strong>Proposals become issues</strong> (#56): work the orchestrator offers outside a run's own routes is proposed as issues, sub-issues or lanes, not as an ad-hoc fix.</li>
 <li><strong>#56: proposals become issues.</strong> The <code>factory</code> skill gains a fifth principle: work the orchestrator proposes beyond a run's own routes (audit results, recommended follow-ups, fixes it would offer) is proposed as a sub-issue, lane or doc-debt issue (created with <code>gh issue create</code>, wired with <code>lanes.py</code>) instead of an ad-hoc fix, and "When you're done" reports follow-ups that way.</li>
