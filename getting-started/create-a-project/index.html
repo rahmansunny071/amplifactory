@@ -574,10 +574,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#4-optional-the-github-actions-mode" class="md-nav__link">
+  <a href="#4-start-claude-code" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. Optional: the GitHub Actions mode
+        4. Start Claude Code
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-optional-last-the-github-actions-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Optional, last: the GitHub Actions mode
       
     </span>
   </a>
@@ -1310,10 +1321,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#4-optional-the-github-actions-mode" class="md-nav__link">
+  <a href="#4-start-claude-code" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. Optional: the GitHub Actions mode
+        4. Start Claude Code
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-optional-last-the-github-actions-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Optional, last: the GitHub Actions mode
       
     </span>
   </a>
@@ -1356,8 +1378,15 @@
 
 
 <h1 id="create-a-project">Create a project<a class="headerlink" href="#create-a-project" title="Permanent link">&para;</a></h1>
-<p>You need <a href="https://docs.astral.sh/uv/">uv</a>, <a href="https://git-scm.com/">git</a>, the <a href="https://cli.github.com/">GitHub CLI</a>
-(<code>gh</code>, logged in) and <a href="https://claude.com/claude-code">Claude Code</a>.</p>
+<p>You need:</p>
+<ul>
+<li>Python 3.9 or newer (the skill's scripts run as <code>python3</code>)</li>
+<li><a href="https://docs.astral.sh/uv/">uv</a></li>
+<li><a href="https://git-scm.com/">git</a></li>
+<li>the <a href="https://cli.github.com/">GitHub CLI</a> (<code>gh</code>, logged in)</li>
+<li><a href="https://claude.com/claude-code">Claude Code</a></li>
+</ul>
+<p>The path is: copier, <code>gh</code> scopes, bootstrap, then <code>claude</code>. The Actions mode comes last and is optional.</p>
 <h2 id="1-generate-the-repo">1. Generate the repo<a class="headerlink" href="#1-generate-the-repo" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>uvx<span class="w"> </span>copier<span class="w"> </span>copy<span class="w"> </span>gh:rahmansunny071/amplifactory<span class="w"> </span>my-project
 </code></pre></div>
@@ -1373,8 +1402,9 @@ shortcut (HTTPS) uses your <code>gh</code> login, or use <code>git@github.com:ra
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>gh<span class="w"> </span>auth<span class="w"> </span>refresh<span class="w"> </span>-h<span class="w"> </span>github.com<span class="w"> </span>-s<span class="w"> </span>repo,workflow,project
 </code></pre></div>
 <ul>
-<li><code>workflow</code>: creating a repo that contains GitHub Actions workflows.</li>
-<li><code>project</code>: the factory's Project board.</li>
+<li><code>repo</code>: creating the repo and pushing to it.</li>
+<li><code>workflow</code>: pushing a repo that contains GitHub Actions workflows.</li>
+<li><code>project</code>: the factory's Project board (bootstrap and <code>lanes.py project-add</code>).</li>
 </ul>
 <h2 id="3-run-the-bootstrap">3. Run the bootstrap<a class="headerlink" href="#3-run-the-bootstrap" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nb">cd</span><span class="w"> </span>my-project
@@ -1423,16 +1453,20 @@ shortcut (HTTPS) uses your <code>gh</code> login, or use <code>git@github.com:ra
 <p class="admonition-title">Rulesets need a public repo or GitHub Pro</p>
 <p>On GitHub Free, rulesets aren't enforced on private repos. Then <code>main</code> isn't protected, and the script says so.</p>
 </div>
-<h2 id="4-optional-the-github-actions-mode">4. Optional: the GitHub Actions mode<a class="headerlink" href="#4-optional-the-github-actions-mode" title="Permanent link">&para;</a></h2>
-<p>The <a href="../../concepts/actions-mode/">Actions mode</a> runs agents on GitHub's servers when you add labels. It needs the
-Claude GitHub App and a token secret:</p>
+<h2 id="4-start-claude-code">4. Start Claude Code<a class="headerlink" href="#4-start-claude-code" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>claude<span class="w">          </span><span class="c1"># on Opus</span>
+</code></pre></div>
+<p>The <code>factory</code> skill works from here and needs no secret: it runs in your Claude Code session. Continue with
+<a href="../first-run/">your first run</a>.</p>
+<h2 id="5-optional-last-the-github-actions-mode">5. Optional, last: the GitHub Actions mode<a class="headerlink" href="#5-optional-last-the-github-actions-mode" title="Permanent link">&para;</a></h2>
+<p>The <a href="../../concepts/actions-mode/">Actions mode</a> runs agents on GitHub's servers when you add labels. Only this mode
+needs the Claude GitHub App and a token secret:</p>
 <ol>
 <li>In Claude Code, run <code>/install-github-app</code>, pick the repo, and choose your subscription. That saves
    <code>CLAUDE_CODE_OAUTH_TOKEN</code>.</li>
 <li><strong>Close the PR the installer opens</strong> (<code>claude.yml</code>, <code>claude-code-review.yml</code>). The template's <code>factory-chat.yml</code>
    and <code>factory-review.yml</code> already cover those, with sender and fork checks.</li>
 </ol>
-<p>The <code>factory</code> skill doesn't need any of this. It runs in your Claude Code session.</p>
 <h2 id="next">Next<a class="headerlink" href="#next" title="Permanent link">&para;</a></h2>
 <p><a href="../first-run/">Your first run →</a></p>
 

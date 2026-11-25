@@ -569,6 +569,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#0-check-bootstraps-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0. Check bootstrap's output
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#1-brainstorm-into-lanes" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1266,6 +1277,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#0-check-bootstraps-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0. Check bootstrap's output
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#1-brainstorm-into-lanes" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1339,6 +1361,16 @@ it's on Opus:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nb">cd</span><span class="w"> </span>my-project
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>claude<span class="w">          </span><span class="c1"># then /model to confirm Opus</span>
 </code></pre></div>
+<h2 id="0-check-bootstraps-output">0. Check bootstrap's output<a class="headerlink" href="#0-check-bootstraps-output" title="Permanent link">&para;</a></h2>
+<p>Before you start, confirm <code>./scripts/bootstrap.sh</code> finished cleanly (it's safe to re-run):</p>
+<ul>
+<li>The factory labels exist in the repo, including <code>improvement</code>, <code>lane</code>, <code>P0</code>–<code>P3</code> and <code>documentation</code>.</li>
+<li>The Project board "&lt;project&gt; factory" exists, is linked to the repo and has a <strong>Priority</strong> field (P0–P3). If bootstrap said the board was skipped,
+  run <code>gh auth refresh -h github.com -s project</code> and re-run it.</li>
+<li>The "Documentation tech-debt" tracking issue exists.</li>
+<li>On a private repo, look for the ruleset warning: on GitHub Free, rulesets aren't enforced on private repos, so
+  <code>main</code> isn't protected. Make the repo public or use GitHub Pro if you want the protection.</li>
+</ul>
 <h2 id="1-brainstorm-into-lanes">1. Brainstorm into lanes<a class="headerlink" href="#1-brainstorm-into-lanes" title="Permanent link">&para;</a></h2>
 <blockquote>
 <p>brainstorm a CLI that converts session logs into a dataset into issues</p>
