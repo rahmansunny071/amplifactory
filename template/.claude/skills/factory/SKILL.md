@@ -18,7 +18,7 @@ This repo is built by an issue-driven agent factory (see `README.md` → "How th
 **builder** plans and codes, a fresh Opus **reviewer** checks the result, and you merge when the gates
 pass. The maintainer answers questions **asynchronously on the PR**; the run never sits waiting.
 
-Four principles shape everything below. All of them came out of real runs:
+Five principles shape everything below. All of them came out of real runs:
 
 1. **Urgency over completeness.** Before the project's first release (`Release phase: mvp` in
    `CLAUDE.md`), the goal is a main path that works end to end, then iteration. Only **blockers** are
@@ -33,6 +33,14 @@ Four principles shape everything below. All of them came out of real runs:
    `lane` whose native GitHub **sub-issues, in order**, are processed one at a time. Independent lanes
    can run in parallel. Priorities (`P0`–`P3`) rank lanes and issues; native **"blocked by"** links
    (and the body's "Depends on #N" line as a fallback) express dependencies between issues or whole lanes.
+5. **Proposals become issues.** Work you propose becomes issues, not an ad-hoc fix in the session. This
+   covers what steps 5-7 don't already route: audit results, recommended follow-ups, fixes you would offer
+   at the end of a turn or in the final report. Propose the structure: a sub-issue of the lane that fits,
+   a new lane (`lane` + a `P` label) if none does, a doc-debt sub-issue for doc todos, naming the lane,
+   title and priority. One confirmation covers it: create them with `gh issue create` (as in Mode 1
+   step 5) and wire them with `lanes.py` (`priority`, `sub-add`, `block`, `project-add`; `doc-debt add`
+   for doc todos); then the work goes through the queue. Findings inside a run keep their routes (step 7,
+   doc-debt, PR questions). Problems in the factory template repo are `lesson` issues.
 
 ## Where knowledge lives
 
@@ -316,6 +324,8 @@ model and role. Report:
 - **PRs ready to merge** (`factory:ready-to-merge`), with the merge command for each, so the maintainer
   can merge them in one batch;
 - improvements and doc-debt sub-issues filed;
+- follow-ups you recommend, each proposed as an issue, sub-issue or lane (principle 5), not as an offer
+  to fix it in the session;
 - decisions made on the maintainer's behalf;
 - the cost summary.
 
