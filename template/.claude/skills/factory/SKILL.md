@@ -318,7 +318,8 @@ model and role. Report:
 - the cost summary.
 
 If a problem was a factory problem rather than a project problem, say so: it belongs in the factory
-template as a `lesson` issue.
+template as a `lesson` issue. Use the `factory-lesson` skill to file it (it checks for duplicates,
+keeps real data out of the body and asks the maintainer once); don't file it by hand.
 
 ## Reference files
 

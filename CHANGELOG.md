@@ -1,5 +1,7 @@
 # Changelog
 
+- Unreleased:
+  - **`factory-lesson` skill (#41).** Ships in every generated repo (`.claude/skills/factory-lesson/`). "File a factory lesson: ..." files a `lesson` issue in the template repo instead of by hand: it reads the template slug from `.copier-answers.yml` `_src_path` (default `rahmansunny071/agent-factory`, confirmed with `gh repo view`; never the current repo), searches open lessons for a duplicate and offers to comment there, drafts the lesson format (What happened, Fix applied, Template files to change, Options, Takeaway), checks the draft against the `Real data` rules (no data values, secrets or private paths), asks for one confirmation, creates it with the `lesson` label, and offers a back-link comment. No lessons lane or board. The `factory` skill's "When you're done" now points to it. Template CI guards the skill file.
 - v0.7.0 (2026-11-25): **Real-data access is a per-repo choice** (#33, from pensieve-traces, which allows reading real data shapes), plus ready-to-merge follow-ups (#35).
   - The skill no longer hard-codes "agents may not read real user data".
   - **Question:** `real_data_access` (`never`, `with-approval`, `allowed`; default `never`, so `copier update` changes behaviour for no one). It renders a `## Real data` section in `CLAUDE.md` whose first line is `Real data: <level>.`.
