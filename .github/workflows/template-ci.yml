@@ -198,6 +198,7 @@ jobs:
           uv run --no-project --python 3.12 python .claude/skills/sync-root-factory/scripts/sync.py --self-test || fail=1
           exit $fail
       - name: skill scripts run on Python 3.9 (macOS system python3)
+        working-directory: ${{ runner.temp }}/out
         run: |
           fail=0
           for s in factory/scripts/queue factory/scripts/lanes factory/scripts/runlog sync-root-factory/scripts/sync; do

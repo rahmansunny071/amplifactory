@@ -115,7 +115,7 @@ def order(r: str, lane: int, wanted: list[int]) -> None:
             "-F",
             f"before_id={ids[front]}",
         )
-    for prev, n in zip(wanted, wanted[1:]):
+    for prev, n in zip(wanted, wanted[1:]):  # noqa: RUF007 (itertools.pairwise is 3.10+)
         _gh(
             "api",
             "-X",
