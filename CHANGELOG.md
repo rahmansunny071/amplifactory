@@ -1,7 +1,8 @@
 # Changelog
 
-- Unreleased: **Docs state the right facts** (#69).
+- Unreleased: **Docs state the right facts** (#69); **generated README leads with the skill** (#70).
   - **#69: wrong facts fixed.** Gate 13 (not 12) is "Not unsure"; every documented skill-script command uses `python3` (stock macOS has no `python`); `questions.md` says the design's Risks section; `scripts.md` lists all 11 `sync.py` subcommands and calls runlog steps free-form, with `--dir` and `--self-test`; `sync-root-factory` names the old `_src_path` that `copier-check` accepts; a repeated `gh repo view` and an over-long line in `factory-lesson` are tidied.
+  - **#70: generated README leads with the skill.** "Getting started" comes first (bootstrap is done, no `/install-github-app` for the skill, `claude` on Opus, "brainstorm X into issues" or "run the factory", Python 3.9+ as `python3`). The label-by-label flow moves to "Actions mode (optional)", which needs `/install-github-app` and the OAuth secret. The label table now lists every label bootstrap creates, grouped by skill, progress, Actions, lanes and priority.
 - v0.13.0 (2026-11-25): **Renamed to amplifactory** (#67): the repo is `rahmansunny071/amplifactory`; the name changes in URLs, prose and generated text.
   - **#67: rename agent-factory to amplifactory.** `sync.py` accepts the old and new names (gh, https, ssh) as the official `_src_path`, still refuses local clones and forks, and `is_template_repo` detects the template repo under either name; `factory-lesson` files into the new repo when the answers file names the old one; `site_url`, `repo_url` and `repo_name` follow. The skill folder names stay. Existing repos may update `_src_path` (optional; GitHub redirects the old URL).
 - v0.12.0 (2026-11-25): **Skill scripts run on Python 3.9; `lanes.py` reads every page** (#63): macOS's system `python3` works, template CI runs every self-test under 3.9, and lanes with more than 30 sub-issues work.
