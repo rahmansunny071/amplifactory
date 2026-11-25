@@ -351,18 +351,18 @@ def render(lanes: list[Lane], loose: list[Issue], slots: int) -> str:
             )
         asked = [f"#{lane.number}" for lane in lanes if lane.state == "asked"]
         lines.append(f"Paused, waiting on the maintainer: {', '.join(asked) if asked else 'none'}")
-    if loose:
+    loose_listed = [i for i in loose if i.state != "merge"]  # merge ones show under "Waiting"
+    if loose_listed:
         if lines:
             lines.append("")
         lines.append("Not in a lane:")
-        for issue in loose:
+        for issue in loose_listed:
             mark = " (improvement)" if issue.improvement else ""
             lines.append(
                 f"{'#' + str(issue.number):>6}  P{issue.priority:<2}  {issue.state:<8}  "
                 f"{issue.title}{mark}"
             )
-    waiting = [lane.current for lane in lanes if lane.current and lane.current.state == "merge"]
-    waiting += [i for i in loose if i.state == "merge"]
+    waiting = waiting_to_merge(lanes, loose)
     if waiting:
         if lines:
             lines.append("")
@@ -371,6 +371,12 @@ def render(lanes: list[Lane], loose: list[Issue], slots: int) -> str:
             pr = f"PR #{issue.pr}" if issue.pr else "no open PR found"
             lines.append(f"{'#' + str(issue.number):>6}  {pr}  {issue.title}")
     return "\n".join(lines) if lines else "No open issues."
+
+
+def waiting_to_merge(lanes: list[Lane], loose: list[Issue]) -> list[Issue]:
+    """Issues whose gates all passed but whose merge was refused: lane currents, then loose ones."""
+    waiting = [lane.current for lane in lanes if lane.current and lane.current.state == "merge"]
+    return waiting + [i for i in loose if i.state == "merge"]
 
 
 def _self_test() -> None:
@@ -461,6 +467,10 @@ def _self_test() -> None:
     out4 = render(lanes4, loose4, 1)
     assert "Waiting for you to merge" in out4 and "PR #70" in out4 and "PR #71" in out4, out4
     assert "Waiting for you to merge" not in render(lanes, loose, 1)
+    # #35: a loose merge issue is listed once (under "Waiting"), and --json lists the PRs
+    assert out4.count("#53 ") == 1, out4
+    assert [(i.number, i.pr) for i in waiting_to_merge(lanes4, loose4)] == [(51, 70), (53, 71)]
+    assert waiting_to_merge(lanes, loose) == []
     print("queue.py self-test: ok")
 
 
@@ -502,6 +512,9 @@ def main(argv: list[str] | None = None) -> int:
                 {
                     "lanes": [asdict(lane) for lane in lanes],
                     "not_in_a_lane": [asdict(i) for i in loose],
+                    "waiting_to_merge": [
+                        {"issue": i.number, "pr": i.pr} for i in waiting_to_merge(lanes, loose)
+                    ],
                     "work_now": [lane.number for lane in now],
                     "ready_waiting_for_slot": [lane.number for lane in queued],
                 },
