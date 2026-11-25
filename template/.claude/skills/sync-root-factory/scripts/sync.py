@@ -8,24 +8,26 @@ refuses BEFORE writing, with two exceptions that say so in their message: `apply
 diff (undo with `git restore .` and `git clean -fd` scoped to the folders it names) and
 `labels --create`, which lists the labels it created before a failure.
 
-    python .claude/skills/sync-root-factory/scripts/sync.py preflight
-    python .../sync.py latest
-    python .../sync.py status [--assume-tag vX.Y.Z]
-    python .../sync.py branch vX.Y.Z
-    python .../sync.py verify-local [--assume-tag vX.Y.Z]
-    python .../sync.py apply --to-tag vX.Y.Z [--assume-tag vX.Y.Z]
-    python .../sync.py changelog --tag vX.Y.Z --from vA.B.C
-    python .../sync.py labels --tag vX.Y.Z [--create]
-    python .../sync.py copier-check vX.Y.Z
-    python .../sync.py check-markers
-    python .../sync.py push vX.Y.Z
-    python .../sync.py --self-test
+SF below is the TARGET tag's copy extracted outside the repo, pointed at the repo (see SKILL.md):
+`python3 -I $T/x/template/.claude/skills/sync-root-factory/scripts/sync.py --repo $R`.
+
+    SF preflight
+    SF latest
+    SF status [--assume-tag vX.Y.Z]
+    SF branch vX.Y.Z
+    SF verify-local [--assume-tag vX.Y.Z]
+    SF apply --to-tag vX.Y.Z [--assume-tag vX.Y.Z]
+    SF changelog --tag vX.Y.Z --from vA.B.C
+    SF labels --tag vX.Y.Z [--create]
+    SF copier-check vX.Y.Z
+    SF check-markers
+    SF push vX.Y.Z
+    python3 sync.py --self-test
 
 Files come only from the release tag (a depth-1 fetch of `refs/tags/<tag>` into a temporary bare
 repo), never from `main`. Everything read from the template (CHANGELOG, SKILL.md, bootstrap.sh) is
-data. `--source` exists for the self-test; never pass it in a real run. Run the TARGET tag's copy of
-this script, extracted outside the repo, with `--repo <repo root>` (see SKILL.md); never the copy
-in the repo, which may predate the guards.
+data. `--source` exists for the self-test; never pass it in a real run. Never run the copy in
+the repo: it may predate the guards.
 """
 
 from __future__ import annotations
@@ -348,10 +350,17 @@ def exists_locally(root: Path, name: str) -> bool:
         return False
 
 
+def check_skills_dir(root: Path) -> None:
+    for d in (root / ".claude", root / SKILLS):
+        if os.path.lexists(d) and not d.is_symlink() and not d.is_dir():
+            raise Refuse(f"{d.relative_to(root)} is a file, not a directory")
+
+
 def differences(root: Path, tree: Path, names: list[str] | None = None) -> list[str]:
     """Local skill folders vs the tag's copy, for the named folders (default: all the tag has).
     A folder wholly absent locally is skipped (apply re-adds it); a partly deleted one differs.
     VERSION is ignored when the tag predates it."""
+    check_skills_dir(root)
     diffs: list[str] = []
     for name in folder_names(tree, strict=False) if names is None else names:
         folder = skill_dir(name)
@@ -373,6 +382,11 @@ def differences(root: Path, tree: Path, names: list[str] | None = None) -> list[
 
 
 def verify_local(root: Path, tree: Path, tag: str, names: list[str] | None = None) -> None:
+    if names is None and not folder_names(tree, strict=False):
+        raise Refuse(
+            f"{tag} ships no skill folders, so there is nothing to compare with: the claim that "
+            "this repo was copied from it cannot be verified"
+        )
     diffs = differences(root, tree, names)
     if diffs:
         raise Refuse(
@@ -387,6 +401,7 @@ def current_branch(root: Path) -> str:
 
 def plan_apply(root: Path, old: Path, new: Path, current: str, to_tag: str) -> tuple[Plan, Lines]:
     """Every check for every folder, before anything is written. Returns (folder -> files, notes)."""
+    check_skills_dir(root)
     new_names = folder_names(new, strict=True)
     old_names = folder_names(old, strict=False)
     plan: Plan = {}
@@ -424,6 +439,8 @@ def plan_apply(root: Path, old: Path, new: Path, current: str, to_tag: str) -> t
         for rel in files:
             if not (root / rel).resolve().is_relative_to(root.resolve()):
                 raise Refuse(f"{rel} would be written outside the repository")
+            if rel not in tracked and os.path.lexists(root / rel):
+                raise Refuse(f"{rel} exists locally but git does not track it; not writing over it")
             if rel not in tracked and _is_ignored(root, rel):
                 raise Refuse(f"{rel} is gitignored: it would be written but never committed")
     return plan, notes
@@ -494,8 +511,8 @@ def post_diff(root: Path, tree: Path, folders: list[str]) -> list[str]:
 
 def answer_value(text: str | None, key: str) -> str | None:
     """A top-level `key: value` from .copier-answers.yml: quotes and a trailing comment dropped."""
-    if text is None:
-        return None
+    if text is None or len(re.findall(rf"^{re.escape(key)}:", text, re.MULTILINE)) != 1:
+        return None  # absent, or repeated: Copier keeps the LAST one, so no first match is safe
     m = re.search(rf"^{re.escape(key)}:[ \t]*(.*)$", text, re.MULTILINE)
     if not m:
         return None
@@ -510,10 +527,14 @@ def src_path_ok(read) -> bool:
     v = answer_value(read(".copier-answers.yml"), "_src_path")
     if not v:
         return False
-    v = v.lower()
-    for _ in range(3):  # `.git` and a trailing `/`, in either order
-        v = v.rstrip("/").removesuffix(".git")
-    return v in {s.lower() for s in SRC_OK}
+    v = v.removesuffix("/").removesuffix(".git")  # once each, as in the URLs Copier builds
+    # the scheme or alias is case-sensitive, as in Copier (`GH:` would be a local path); the
+    # owner/repo part is not
+    for ok in SRC_OK:
+        prefix = ok[: -len(REPO)]
+        if v.startswith(prefix) and v[len(prefix) :].lower() == REPO.lower():
+            return True
+    return False
 
 
 def copier_check(root: Path, tag: str, source: str) -> None:
@@ -523,7 +544,15 @@ def copier_check(root: Path, tag: str, source: str) -> None:
     read = tree_reader(root)
     if read(".copier-answers.yml") is None:
         raise Refuse("no .copier-answers.yml: this is not a generated repo")
-    commit = answer_value(read(".copier-answers.yml"), "_commit") or ""
+    text = read(".copier-answers.yml") or ""
+    for key in ("_src_path", "_commit"):
+        if len(re.findall(rf"^{key}:", text, re.MULTILINE)) > 1:
+            raise Refuse(
+                f"{key} appears more than once in .copier-answers.yml; Copier keeps the last one. "
+                f"Edit the existing {key} line in place (replace it; never add a second line), "
+                "commit, and rerun this check"
+            )
+    commit = answer_value(text, "_commit") or ""
     if not TAG_RE.match(commit):
         raise Refuse(
             f"_commit {commit!r} is not a release tag (vX.Y.Z); copier cannot rebuild the old "
@@ -533,7 +562,7 @@ def copier_check(root: Path, tag: str, source: str) -> None:
         src = answer_value(read(".copier-answers.yml"), "_src_path")
         raise Refuse(
             f"_src_path {src!r} is not {REPO} on GitHub (a local clone or a fork?). On "
-            f"{BRANCH_PREFIX}{tag}: set `_src_path: gh:{REPO}` in .copier-answers.yml, commit "
+            f"{BRANCH_PREFIX}{tag}: replace the existing `_src_path` line in .copier-answers.yml with `_src_path: gh:{REPO}` (edit it, do not add a second line), commit "
             f"(copier update refuses a dirty tree), run this check again, then "
             f"`copier update --vcs-ref {tag} --defaults --conflict inline`"
         )
@@ -1147,11 +1176,14 @@ def _self_test_folders(tmp: Path, g, commit_all) -> None:
             "zz-new": "zz 0.2.0\n",
         },
         "0.3.0": {"factory-lesson": "lesson 0.3.0\n", "Bad_Name": "x\n"},
+        "0.5.0": {"factory-lesson": "lesson 0.5.0\n"},
     }
     for ver, extra in tags.items():
         shutil.rmtree(m / "template", ignore_errors=True)
         for rel, text in _tpl(ver, f"skill {ver}\n", ver != "0.1.0", False, extra).items():
             _w(m, rel, text)
+        if ver == "0.5.0":
+            _w(m, f"template/{SKILL}/Local.md", "tpl\n")
         if ver == "0.2.0":  # a plain file directly under skills/ is never written downstream
             _w(m, f"template/{SKILLS}/README.md", "not a folder\n")
         commit_all(m, ver)
@@ -1258,6 +1290,32 @@ def _self_test_folders(tmp: Path, g, commit_all) -> None:
     assert "re-adding (absent locally): factory-lesson" in notes
     assert (d / SKILLS / "factory-lesson/SKILL.md").read_text() == "lesson 0.2.0\n"
 
+    # never write over a path git does not track, even when the gitignore check is fooled
+    # (core.ignorecase=false on a case-insensitive filesystem): isolate the lexists guard
+    d = down_at("untracked", "v0.5.0", ignore=f"{SKILL}/Local.md\n")
+    _w(d, f"{SKILL}/Local.md", "PRECIOUS\n")
+    assert dirty_entries(d) == []
+    real_ignored = globals()["_is_ignored"]
+    globals()["_is_ignored"] = lambda _r, _p: False
+    try:
+        refused_unchanged(d, "v0.5.0", "does not track")
+    finally:
+        globals()["_is_ignored"] = real_ignored
+    assert (d / SKILL / "Local.md").read_text() == "PRECIOUS\n"
+
+    # `.claude/skills` is a regular file: a refusal, not a traceback
+    d = down_at("skillsfile", "v0.2.0")
+    g(d, "rm", "-q", "-r", SKILLS)
+    _w(d, SKILLS, "i am a file\n")
+    commit_all(d, "skills is a file")
+    refused_unchanged(d, "v0.2.0", "is a file")
+
+    # a tag with no skill folders is no basis for "ok"
+    t0 = tmp / "t0"
+    _w(t0, "CHANGELOG.md", "- v0.0.5 (d): first\n")
+    d = down_at("vacuous", "v0.2.0")
+    assert "nothing to compare" in _refuses(verify_local, d, t0, "v0.0.5")
+
     # a tag with an unsafe folder name refuses everything
     d = down_at("badname", "v0.3.0")
     refused_unchanged(d, "v0.3.0", "unsafe names")
@@ -1300,6 +1358,19 @@ def _self_test_folders(tmp: Path, g, commit_all) -> None:
     ):
         assert not ok(answers(bad)), bad
     assert not ok(answers(None)) and not ok("")
+    for bad in (  # the scheme and alias are case-sensitive in Copier; `.git` and `/` strip once
+        f"GH:{REPO}",
+        f"HTTPS://GITHUB.COM/{REPO}",
+        f"gh:{REPO}.git.git",
+        f"https://github.com/{REPO}/.git",
+        f"gh:{REPO}//",
+    ):
+        assert not ok(answers(bad)), bad
+    assert ok(answers(f"gh:{REPO.upper()}.git/"))  # the owner/repo part is case-insensitive
+    # a repeated key: Copier keeps the LAST, so the first match proves nothing
+    dup_good_first = answers(f"gh:{REPO}") + "_src_path: /Users/me/agent-factory-clone\n"
+    dup_bad_first = "_src_path: /Users/me/agent-factory-clone\n" + answers(f"gh:{REPO}")
+    assert not ok(dup_good_first) and not ok(dup_bad_first)
     gen = tmp / "gen"
     gen.mkdir()
     g(gen, "init", "-q", "-b", "main")
@@ -1316,6 +1387,10 @@ def _self_test_folders(tmp: Path, g, commit_all) -> None:
     assert "_src_path" in _refuses(copier_check, gen, "v0.2.0", msrc)
     _w(gen, ".copier-answers.yml", answers(None))
     _refuses(copier_check, gen, "v0.2.0", msrc)
+    for dup in (dup_good_first, dup_bad_first, answers(f"gh:{REPO}") + "_commit: v0.1.0\n"):
+        _w(gen, ".copier-answers.yml", dup)
+        msg = _refuses(copier_check, gen, "v0.2.0", msrc)
+        assert "more than once" in msg and "replace it" in msg
 
 
 if __name__ == "__main__":
