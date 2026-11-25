@@ -1,11 +1,11 @@
 ---
 title: "Scripts"
-description: "The skill’s three helper scripts: queue.py, lanes.py and runlog.py. Stdlib only, using gh."
+description: "The skills’ helper scripts: queue.py, lanes.py, runlog.py and sync.py. Stdlib only, using gh and git."
 ---
 
 # Scripts
 
-All three live in `.claude/skills/factory/scripts/`, need only Python ≥3.10 and `gh`, and have a `--self-test`.
+The first three live in `.claude/skills/factory/scripts/`, need only Python ≥3.10 and `gh`, and have a `--self-test`. `sync.py` belongs to the `sync-root-factory` skill and is described at the end.
 
 ## queue.py
 
@@ -66,3 +66,30 @@ python .claude/skills/factory/scripts/runlog.py summary    # wall time, rounds, 
 
 Steps: `plan`, `plan-check`, `design-review`, `build`, `review`, `fix`, `handoff-written`, `needs-maintainer`,
 `resume`, `merge`, `ready-to-merge`, `blocked`, `decision`, `improvement-filed`.
+
+## sync.py
+
+The guards of the `sync-root-factory` skill (`.claude/skills/sync-root-factory/scripts/`). It needs `git`, and `gh` only for `labels`. Every command that refuses prints `refused: <why>`, exits 1 and has written nothing.
+
+```bash
+python .claude/skills/sync-root-factory/scripts/sync.py preflight
+python .claude/skills/sync-root-factory/scripts/sync.py status [--assume-tag vX.Y.Z]
+python .claude/skills/sync-root-factory/scripts/sync.py branch vX.Y.Z
+python .claude/skills/sync-root-factory/scripts/sync.py verify-local [--assume-tag vX.Y.Z]
+python .claude/skills/sync-root-factory/scripts/sync.py apply --to-tag vX.Y.Z [--assume-tag vX.Y.Z]
+```
+
+| Command | What it does |
+|---|---|
+| `preflight` | refuses inside agent-factory or on a dirty tree (`git status --porcelain --untracked-files=all` not empty); prints `generated` or `shadowing` |
+| `latest` | the highest `vX.Y.Z` tag of the template |
+| `status` | current version (`_commit`, or `factory/VERSION`), latest tag and `behind` / `up-to-date`; refuses a downgrade or a non-tag `_commit` |
+| `branch TAG` | creates `local/adopt-TAG` from a fresh `origin/<default>`; refuses if it exists locally or on origin |
+| `verify-local` | compares the two skill folders with the recorded tag; any difference stops, listed |
+| `apply --to-tag` | replaces only tracked files in `.claude/skills/factory/` and `.claude/skills/sync-root-factory/` from the tag, then diffs |
+| `changelog --tag --from` | CHANGELOG entries after `--from`, up to `--tag`, quoted as data |
+| `labels --tag [--create]` | labels in the tag's `bootstrap.sh` the repo lacks; `--create` adds only those, never `--force` |
+| `check-markers` | refuses if any file has conflict markers or a `*.rej` file exists |
+| `push TAG` | pushes `local/adopt-TAG` only, with an explicit refspec, never `--force` |
+
+Files are fetched only from the annotated release tag (a depth-1 fetch into a temporary bare repo). `--self-test` uses only temp directories and local bare repos.

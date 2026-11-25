@@ -24,7 +24,7 @@ File it **when it happens**, not at the end of the run.
 Lessons are batched into a release:
 
 1. a branch `release/vX.Y.Z` and a PR that closes the lessons;
-2. a `CHANGELOG.md` entry saying what changed **and why**;
+2. a `CHANGELOG.md` entry saying what changed **and why**, and `template/.claude/skills/factory/VERSION` set to `X.Y.Z`. Rename the `Unreleased` entry to `vX.Y.Z (date)` in the **same commit** as the bump; template CI's `version` job compares `VERSION` with the first `- vX.Y.Z` bullet, so a forgotten bump fails the PR;
 3. template CI green: it renders three variants, runs each generated project's checks, and asserts every guardrail
    is present;
 4. you merge, then tag `vX.Y.Z`. Copier only sees tags.
@@ -35,8 +35,12 @@ Lessons are batched into a release:
 cd my-project && uvx copier update
 ```
 
-Copier does a three-way merge and marks conflicts. For a project that only carries the skill, copy it from the tag
-(see [Adopt in an existing repo](adopt-in-existing-repo.md#option-2-just-the-skill)) in a PR you merge.
+Copier does a three-way merge and marks conflicts. Or, in Claude Code inside the project, say
+**"sync the factory to the latest release"**: the `sync-root-factory` skill does it on a `local/adopt-<tag>` branch
+and opens a PR (mechanical conflicts resolved, the rest listed for you; it never merges). It also works for a
+project that only carries the skill: it replaces `.claude/skills/factory/` from the tag after checking it matches
+the version it claims, and builds a hand-port checklist from the CHANGELOG entries. See
+[Adopt in an existing repo](adopt-in-existing-repo.md#option-2-just-the-skill) for the first-time setup.
 
 ## Developing the template
 

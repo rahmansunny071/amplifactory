@@ -173,6 +173,17 @@ jobs:
           if grep -qF 'Agents may not read real user data' .claude/skills/factory/SKILL.md; then
             echo "::error::SKILL.md still hard-codes the real-data ban (#33)"; fail=1
           fi
+          # #40: sync-root-factory
+          for f in SKILL.md references/checklist.md scripts/sync.py; do
+            test -f ".claude/skills/sync-root-factory/$f" || { echo "::error::missing .claude/skills/sync-root-factory/$f"; fail=1; }
+          done
+          test -f .claude/skills/factory/VERSION || { echo "::error::missing .claude/skills/factory/VERSION"; fail=1; }
+          need .claude/skills/sync-root-factory/SKILL.md 'name: sync-root-factory'
+          need .claude/skills/sync-root-factory/SKILL.md 'Never run `gh pr merge`'
+          need .claude/skills/sync-root-factory/SKILL.md 'local/adopt-<tag>'
+          need .claude/skills/sync-root-factory/scripts/sync.py 'def verify_local'
+          need .claude/skills/sync-root-factory/scripts/sync.py 'BRANCH_PREFIX = "local/adopt-"'
+          uv run --no-project --python 3.12 python .claude/skills/sync-root-factory/scripts/sync.py --self-test || fail=1
           exit $fail
       - name: bootstrap.sh is executable and parses
         working-directory: ${{ runner.temp }}/out
@@ -188,3 +199,17 @@ jobs:
           ruff=$(uvx --from pyyaml python -c "import yaml; print(yaml.safe_load(open('.copier-answers.yml'))['ruff_version'])")
           uvx "ruff@$ruff" format --check .
           uvx "ruff@$ruff" check .
+
+  # #40: sync-root-factory. Shadowing repos read the skill's VERSION file, so it must name the
+  # release the tag points at. The release PR renames the Unreleased entry and bumps VERSION together.
+  version:
+    name: VERSION matches the changelog
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: factory/VERSION equals the first released changelog bullet
+        run: |
+          want=$(grep -m1 -oE '^- v[0-9]+\.[0-9]+\.[0-9]+ ' CHANGELOG.md | sed -E 's/^- v([0-9.]+) $/\1/')
+          have=$(tr -d '[:space:]' < template/.claude/skills/factory/VERSION)
+          echo "CHANGELOG says $want, VERSION says $have"
+          test -n "$want" && test "$want" = "$have" || { echo "::error::template/.claude/skills/factory/VERSION must equal the first '- vX.Y.Z' CHANGELOG bullet"; exit 1; }
