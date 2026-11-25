@@ -54,7 +54,8 @@ FETCH_PATHS = [f"template/{t}" for t in TARGETS] + [
 ]
 
 
-Entry = tuple[str, list[str]]  # (version, lines); an alias keeps two brackets from touching
+Lines = list[str]
+Entry = tuple[str, Lines]  # (version, lines); aliases keep closing brackets apart
 
 
 class Refuse(Exception):
