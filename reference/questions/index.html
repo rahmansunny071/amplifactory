@@ -1266,6 +1266,11 @@
 <td><code>CLAUDE.md</code> "Release phase": <code>mvp</code> fixes only blockers in-PR; <code>hardening</code> reviews thoroughly</td>
 </tr>
 <tr>
+<td><code>real_data_access</code></td>
+<td><code>never</code></td>
+<td><code>CLAUDE.md</code> "Real data": <code>never</code> (you run shapes-only scripts), <code>with-approval</code> (agents ask per issue, then read locally) or <code>allowed</code>. Real data is never committed or quoted at any level</td>
+</tr>
+<tr>
 <td><code>agent_model</code></td>
 <td><code>sonnet</code></td>
 <td><code>--model</code> for the Actions-mode agents (the skill picks its own models)</td>
@@ -1273,7 +1278,7 @@
 </tbody>
 </table>
 <p>Answers are stored in <code>.copier-answers.yml</code> and reused by <code>copier update</code>. Change one with
-<code>uvx copier update --data release_phase=hardening</code>.</p>
+<code>uvx copier update --data release_phase=hardening</code>. The same works for <code>real_data_access</code> (<code>uvx copier update --data real_data_access=&lt;level&gt;</code>); make the change in its own PR. Editing <code>CLAUDE.md</code> by hand also works, but then <code>.copier-answers.yml</code> disagrees with it.</p>
 
 
 

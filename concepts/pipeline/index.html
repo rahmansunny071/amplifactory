@@ -699,6 +699,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#real-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Real data
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#urgency-triage" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1277,6 +1288,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#real-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Real data
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#urgency-triage" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1391,6 +1413,11 @@ verify findings and merge. The heavy lifting goes to two subagents per issue.</p
    moves on. If the merge is refused, it hands the PR to you instead (see <a href="../flag-and-continue/#ready-to-merge">Ready to
    merge</a>).</li>
 </ol>
+<h2 id="real-data">Real data<a class="headerlink" href="#real-data" title="Permanent link">&para;</a></h2>
+<p><code>CLAUDE.md</code> has a <strong>Real data</strong> line: <code>never</code> (the default), <code>with-approval</code> or <code>allowed</code>. The skill reads it from
+<code>main</code>; a missing or unrecognised line means <code>never</code>. Under <code>with-approval</code>, the maintainer approves one named
+source on the issue or PR, for that issue or PR only. At every level, real data is never committed or quoted
+(shapes only) and tests use synthetic fixtures.</p>
 <h2 id="urgency-triage">Urgency triage<a class="headerlink" href="#urgency-triage" title="Permanent link">&para;</a></h2>
 <p><code>CLAUDE.md</code> has a <strong>Release phase</strong> line. In <strong><code>mvp</code></strong> (until a first formal release), only <strong>blockers</strong> are fixed in
 a PR:</p>

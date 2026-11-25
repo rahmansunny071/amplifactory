@@ -1322,6 +1322,7 @@ pass" list in <code>CLAUDE.md</code>, which must stay identical. Run <code>./scr
 <p>Then add to your <code>CLAUDE.md</code>:</p>
 <ul>
 <li>a <strong>Release phase</strong> line (<code>mvp</code> or <code>hardening</code>) and the blocker definition;</li>
+<li>a <strong>Real data</strong> section whose first line is <code>Real data: never.</code> (or <code>with-approval</code> / <code>allowed</code>); without it the skill treats the repo as <code>never</code>;</li>
 <li>a <strong>"checks pass"</strong> list identical to your CI;</li>
 <li>the <strong>hard rules</strong> you want enforced (see the template's <code>CLAUDE.md.jinja</code>), including "every code change
   ships its docs in the same PR";</li>

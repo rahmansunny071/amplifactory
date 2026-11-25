@@ -1190,6 +1190,13 @@
 
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
 <ul>
+<li>Unreleased: <strong>Real-data access is a per-repo choice (#33).</strong> The skill no longer hard-codes "agents may not read real user data".</li>
+<li><strong>Question:</strong> <code>real_data_access</code> (<code>never</code>, <code>with-approval</code>, <code>allowed</code>; default <code>never</code>, so <code>copier update</code> changes behaviour for no one). It renders a <code>## Real data</code> section in <code>CLAUDE.md</code> whose first line is <code>Real data: &lt;level&gt;.</code>.</li>
+<li><strong>Always on:</strong> never commit real data; never quote values from it (field names, counts and shapes only); tests use synthetic fixtures only; read data where it lives and never copy it into the repo or worktree; a stricter hard rule overrides the level.</li>
+<li><strong><code>with-approval</code>:</strong> the maintainer approves one named source on the issue or PR, for that issue or PR only. Standing access means <code>allowed</code>.</li>
+<li><strong>Skill:</strong> "Reality check" reads the line from <code>CLAUDE.md</code> on <code>main</code>. A missing or unrecognised line means <code>never</code>. Briefs carry the rule to every subagent; reviewers tag real-data values in the diff or text as a blocker.</li>
+<li><strong>Repos that adopted the skill by hand</strong> (such as pensieve-traces) must add a <code>Real data: &lt;level&gt;.</code> line, or run <code>copier update --data real_data_access=&lt;level&gt;</code>; until then they read as <code>never</code>.</li>
+<li>Template CI renders <code>with-approval</code> and <code>allowed</code> and guards the rendered text.</li>
 <li>v0.6.0 (2026-11-25): Two lessons from pensieve-traces. <strong>Docs ship with the code</strong> (#30), whose README still called a built feature "planned", and a <strong>ready-to-merge hand-off</strong> (#32), because Claude Code's auto mode refused the skill's <code>--admin</code> merge.</li>
 <li><strong>Docs ship with the code (#30).</strong></li>
 <li><strong>Hard rule</strong> in <code>CLAUDE.md</code>, replacing "every user-visible change updates README.md and CHANGELOG.md": every code change ships its docs in the same PR, both new docs and updates to any README, CHANGELOG, docstring or <code>.factory/designs/</code> text it makes wrong or stale. Docs that disagree with the PR's code break a hard rule, so they're a <strong>blocker even in <code>mvp</code></strong>. Mismatches outside the PR's diff are filed, not fixed.</li>
