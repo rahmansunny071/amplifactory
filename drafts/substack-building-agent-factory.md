@@ -133,7 +133,7 @@ Here is the whole arc, one row per release. The pattern is that each row exists 
 | v0.1.1 | Bot PRs blocked; green but no artifact | Allowlists, a design-branch guard, failures reported | #3, #4, #5, #6, #7 |
 | v0.2.0 | Label by label, me at every step | `factory` skill: brainstorm, then run issues end to end | #10-#12, #16 |
 | v0.3.0 | About 1.4M tokens for two issues | Urgency triage, one builder, one fresh reviewer | #13-#15, #17 |
-| v0.3.1 | Actions review duplicated the skill's review | Skill uses `local/issue-N` branches | #12 |
+| v0.3.1 | Actions review duplicated the skill's review | Skill uses `local/issue-N` branches | #12 (duplicate review) |
 | v0.4.0 | Agent waits on me; context lost between agents | Flag and continue, resume, PR handoffs | #21 |
 | v0.5.0 | Flat backlog | Swim lanes, priorities, native dependencies, board | #23 |
 | v0.5.1 | Data-loss risk only an "improvement" | Irreversible data loss is a blocker | #27 |
