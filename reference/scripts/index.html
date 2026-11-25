@@ -1329,9 +1329,9 @@
 <p>The first three live in <code>.claude/skills/factory/scripts/</code>, need only Python ≥3.9 (macOS's system <code>python3</code> works) and <code>gh</code>, and have a <code>--self-test</code>. <code>sync.py</code> (also Python ≥3.9) belongs to the <code>sync-root-factory</code> skill and is described at the end.</p>
 <h2 id="queuepy">queue.py<a class="headerlink" href="#queuepy" title="Permanent link">&para;</a></h2>
 <p>The lane-aware queue: what to work on now.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>python<span class="w"> </span>.claude/skills/factory/scripts/queue.py<span class="w">              </span><span class="c1"># table + "Work now"</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>python<span class="w"> </span>.claude/skills/factory/scripts/queue.py<span class="w"> </span>--lanes<span class="w"> </span><span class="m">2</span><span class="w">    </span><span class="c1"># two lanes in parallel</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>python<span class="w"> </span>.claude/skills/factory/scripts/queue.py<span class="w"> </span>--json
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>python3<span class="w"> </span>.claude/skills/factory/scripts/queue.py<span class="w">              </span><span class="c1"># table + "Work now"</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>python3<span class="w"> </span>.claude/skills/factory/scripts/queue.py<span class="w"> </span>--lanes<span class="w"> </span><span class="m">2</span><span class="w">    </span><span class="c1"># two lanes in parallel</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>python3<span class="w"> </span>.claude/skills/factory/scripts/queue.py<span class="w"> </span>--json
 </code></pre></div>
 <table>
 <thead>
@@ -1421,13 +1421,15 @@ lane" as improvements.</p>
 oldest wins.</p>
 <h2 id="runlogpy">runlog.py<a class="headerlink" href="#runlogpy" title="Permanent link">&para;</a></h2>
 <p>The run log in <code>.factory/runs/&lt;date&gt;.jsonl</code>: a local cache and cost ledger that <strong>points at</strong> GitHub.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>python<span class="w"> </span>.claude/skills/factory/scripts/runlog.py<span class="w"> </span>add<span class="w"> </span>--issue<span class="w"> </span><span class="m">4</span><span class="w"> </span>--step<span class="w"> </span>plan<span class="w"> </span>--actor<span class="w"> </span>builder<span class="w"> </span><span class="se">\</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>python3<span class="w"> </span>.claude/skills/factory/scripts/runlog.py<span class="w"> </span>add<span class="w"> </span>--issue<span class="w"> </span><span class="m">4</span><span class="w"> </span>--step<span class="w"> </span>plan<span class="w"> </span>--actor<span class="w"> </span>builder<span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">    </span>--model<span class="w"> </span>sonnet<span class="w"> </span>--tokens<span class="w"> </span><span class="m">41000</span><span class="w"> </span>--ms<span class="w"> </span><span class="m">52000</span><span class="w"> </span>--pr<span class="w"> </span><span class="m">29</span><span class="w"> </span>--note<span class="w"> </span><span class="s2">"plan pushed"</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>python<span class="w"> </span>.claude/skills/factory/scripts/runlog.py<span class="w"> </span>status<span class="w">     </span><span class="c1"># last step per issue</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>python<span class="w"> </span>.claude/skills/factory/scripts/runlog.py<span class="w"> </span>summary<span class="w">    </span><span class="c1"># wall time, rounds, tokens by model</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>python3<span class="w"> </span>.claude/skills/factory/scripts/runlog.py<span class="w"> </span>status<span class="w">     </span><span class="c1"># last step per issue</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>python3<span class="w"> </span>.claude/skills/factory/scripts/runlog.py<span class="w"> </span>summary<span class="w">    </span><span class="c1"># wall time, rounds, tokens by model</span>
 </code></pre></div>
-<p>Steps: <code>plan</code>, <code>plan-check</code>, <code>design-review</code>, <code>build</code>, <code>review</code>, <code>fix</code>, <code>handoff-written</code>, <code>needs-maintainer</code>,
-<code>resume</code>, <code>merge</code>, <code>ready-to-merge</code>, <code>blocked</code>, <code>decision</code>, <code>improvement-filed</code>.</p>
+<p><code>--step</code> is free-form. The factory uses <code>plan</code>, <code>plan-check</code>, <code>design-review</code>, <code>build</code>, <code>review</code>, <code>fix</code>,
+<code>handoff-written</code>, <code>needs-maintainer</code>, <code>resume</code>, <code>merge</code>, <code>ready-to-merge</code>, <code>blocked</code>, <code>decision</code> and
+<code>improvement-filed</code>. Two options go before the subcommand: <code>--dir DIR</code> uses that log directory instead of the
+repo's, for <code>add</code>, <code>status</code> and <code>summary</code> alike (<code>runlog.py --dir DIR status</code>), and <code>--self-test</code> runs offline checks.</p>
 <h2 id="syncpy">sync.py<a class="headerlink" href="#syncpy" title="Permanent link">&para;</a></h2>
 <p>The guards of the <code>sync-root-factory</code> skill (<code>.claude/skills/sync-root-factory/scripts/</code>). It needs <code>git</code>, and <code>gh</code> only for <code>labels</code>. Run the <strong>target tag's</strong> copy, extracted outside the repo, with <code>--repo &lt;repo root&gt;</code> (see the adopt guide), not the one in the repo. Every command that refuses prints <code>refused: &lt;why&gt;</code>, exits 1. Each refuses before writing, with two exceptions that say so: <code>apply</code>'s post-write diff (undo with <code>git restore .</code> and <code>git clean -fd</code> on the folders it names) and <code>labels --create</code>, which reports the labels created before a failure.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># sf = python3 -I "$T/x/template/.claude/skills/sync-root-factory/scripts/sync.py" --repo "$R"</span>
@@ -1438,6 +1440,11 @@ oldest wins.</p>
 <a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>sf<span class="w"> </span>verify-local<span class="w"> </span><span class="o">[</span>--assume-tag<span class="w"> </span>vX.Y.Z<span class="o">]</span>
 <a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>sf<span class="w"> </span>apply<span class="w"> </span>--to-tag<span class="w"> </span>vX.Y.Z<span class="w"> </span><span class="o">[</span>--assume-tag<span class="w"> </span>vX.Y.Z<span class="o">]</span>
 <a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>sf<span class="w"> </span>copier-check<span class="w"> </span>vX.Y.Z
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>sf<span class="w"> </span>latest
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>sf<span class="w"> </span>check-markers
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>sf<span class="w"> </span>push<span class="w"> </span>vX.Y.Z
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>sf<span class="w"> </span>changelog<span class="w"> </span>--tag<span class="w"> </span>vX.Y.Z<span class="w"> </span>--from<span class="w"> </span>vA.B.C
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>sf<span class="w"> </span>labels<span class="w"> </span>--tag<span class="w"> </span>vX.Y.Z<span class="w"> </span><span class="o">[</span>--create<span class="o">]</span>
 </code></pre></div>
 <table>
 <thead>
