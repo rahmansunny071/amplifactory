@@ -1293,6 +1293,8 @@
 
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
 <ul>
+<li>Unreleased: <strong>Root <code>CLAUDE.md</code> and <code>scripts/check.sh</code></strong> (#86).</li>
+<li><strong>#86: guide for working on the template, and a local "checks pass".</strong> The repo gets a root <code>CLAUDE.md</code> (context, release phase, layout, checks, CI gotchas, release procedure, hard rules; it never ships, since <code>_subdirectory</code> is <code>template</code>) and <code>scripts/check.sh</code>, which reads the Template CI variants and render steps from <code>template-ci.yml</code>, renders each with <code>--vcs-ref HEAD</code>, runs the steps and <code>mkdocs build --strict</code>. <code>evolving-the-template.md</code> and <code>scripts.md</code> point at both.</li>
 <li>v0.15.0 (2026-11-25): <strong>sync.py creates the progress labels</strong> (#77).</li>
 <li><strong>#77: <code>sync.py labels</code> no longer skips <code>factory:designing</code> and <code>factory:building</code>.</strong> In a shadowing repo it skipped them as Actions-only, but the factory skill sets both; only <code>factory:design</code> and <code>design:approved</code> (which the skill never sets) are skipped now. <code>sync-root-factory/SKILL.md</code>, <code>docs/reference/labels.md</code> and the self-test follow.</li>
 <li>v0.14.0 (2026-11-25): <strong>Docs state the right facts</strong> (#69); <strong>generated README leads with the skill</strong> (#70); <strong>one getting-started path</strong> (#71); <strong>pages for real data, docs-with-code, keeping up to date</strong> (#72); <strong>slim README, troubleshooting entries</strong> (#73).</li>

@@ -1176,6 +1176,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#repo-scripts-working-on-the-template" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Repo scripts (working on the template)
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1404,6 +1415,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#repo-scripts-working-on-the-template" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Repo scripts (working on the template)
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1604,6 +1626,8 @@ repo's, for <code>add</code>, <code>status</code> and <code>summary</code> alike
 </tbody>
 </table>
 <p>Files are fetched only from the annotated release tag (a depth-1 fetch into a temporary bare repo). <code>--self-test</code> uses only temp directories and local bare repos.</p>
+<h2 id="repo-scripts-working-on-the-template">Repo scripts (working on the template)<a class="headerlink" href="#repo-scripts-working-on-the-template" title="Permanent link">&para;</a></h2>
+<p><code>scripts/check.sh [repo-path]</code> in the amplifactory repo (not shipped to generated projects) is the local "checks pass": it reads the Template CI variants and render steps from <code>template-ci.yml</code>, renders each with <code>--vcs-ref HEAD</code> (commit first), runs each step with <code>bash -eo pipefail</code> (the first failing command fails the step), then <code>mkdocs build --strict</code> and the <code>version</code> check (VERSION vs the first CHANGELOG bullet). It exits non-zero on any failure, warns when the tree is dirty, and keeps its temp dir (printing the path) only on failure. See the root <code>CLAUDE.md</code> for the full definition, including the skill scripts' <code>--self-test</code> runs.</p>
 
 
 

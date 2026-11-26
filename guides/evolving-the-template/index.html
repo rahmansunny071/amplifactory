@@ -1438,7 +1438,7 @@ template changes.</p>
 <ol>
 <li>a branch <code>release/vX.Y.Z</code> and a PR that closes the lessons;</li>
 <li>a <code>CHANGELOG.md</code> entry saying what changed <strong>and why</strong>, and <code>template/.claude/skills/factory/VERSION</code> set to <code>X.Y.Z</code>. Rename the <code>Unreleased</code> entry to <code>vX.Y.Z (date)</code> in the <strong>same commit</strong> as the bump; template CI's <code>version</code> job compares <code>VERSION</code> with the first <code>- vX.Y.Z</code> bullet, so a forgotten bump fails the PR;</li>
-<li>template CI green: it renders three variants, runs each generated project's checks, and asserts every guardrail
+<li>template CI green: it renders five variants, runs each generated project's checks, and asserts every guardrail
    is present;</li>
 <li>you merge, then tag <code>vX.Y.Z</code>. Copier only sees tags.</li>
 </ol>
@@ -1446,6 +1446,8 @@ template changes.</p>
 <p>Projects pick the release up with <code>copier update</code> or the <code>sync-root-factory</code> skill: see <a href="../keep-up-to-date/">Keep up to date</a>.</p>
 <h2 id="developing-the-template">Developing the template<a class="headerlink" href="#developing-the-template" title="Permanent link">&para;</a></h2>
 <ul>
+<li>Working on the template itself? Start with the repo's root <code>CLAUDE.md</code> (layout, release procedure, hard rules). It never ships to generated projects.</li>
+<li>Run the local "checks pass" with <code>scripts/check.sh</code> (commit first): it renders every Template CI variant, runs the same steps, then <code>mkdocs build --strict</code>. Skill scripts' <code>--self-test</code> runs are listed in <code>CLAUDE.md</code>.</li>
 <li>Template files live in <code>template/</code>; files ending in <code>.jinja</code> are rendered.</li>
 <li>Copier variables use <code>[[ … ]]</code> and blocks <code>[% … %]</code>, so GitHub Actions expressions (<code>${{ … }}</code>) stay untouched.</li>
 <li>The guardrail check also scans rendered files for leftover template syntax. Python code must avoid sequences that
