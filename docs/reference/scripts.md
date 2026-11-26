@@ -104,3 +104,7 @@ sf labels --tag vX.Y.Z [--create]
 | `push TAG` | pushes `local/adopt-TAG` only, with an explicit refspec, never `--force` |
 
 Files are fetched only from the annotated release tag (a depth-1 fetch into a temporary bare repo). `--self-test` uses only temp directories and local bare repos.
+
+## Repo scripts (working on the template)
+
+`scripts/check.sh [repo-path]` in the amplifactory repo (not shipped to generated projects) is the local "checks pass": it reads the Template CI variants and render steps from `template-ci.yml`, renders each with `--vcs-ref HEAD` (commit first), runs each step with `bash -eo pipefail` (the first failing command fails the step), then `mkdocs build --strict` and the `version` check (VERSION vs the first CHANGELOG bullet). It exits non-zero on any failure, warns when the tree is dirty, and keeps its temp dir (printing the path) only on failure. See the root `CLAUDE.md` for the full definition, including the skill scripts' `--self-test` runs.

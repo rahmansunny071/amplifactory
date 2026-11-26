@@ -1,5 +1,7 @@
 # Changelog
 
+- Unreleased: **Root `CLAUDE.md` and `scripts/check.sh`** (#86).
+  - **#86: guide for working on the template, and a local "checks pass".** The repo gets a root `CLAUDE.md` (context, release phase, layout, checks, CI gotchas, release procedure, hard rules; it never ships, since `_subdirectory` is `template`) and `scripts/check.sh`, which reads the Template CI variants and render steps from `template-ci.yml`, renders each with `--vcs-ref HEAD`, runs the steps and `mkdocs build --strict`. `evolving-the-template.md` and `scripts.md` point at both.
 - v0.15.0 (2026-11-25): **sync.py creates the progress labels** (#77).
   - **#77: `sync.py labels` no longer skips `factory:designing` and `factory:building`.** In a shadowing repo it skipped them as Actions-only, but the factory skill sets both; only `factory:design` and `design:approved` (which the skill never sets) are skipped now. `sync-root-factory/SKILL.md`, `docs/reference/labels.md` and the self-test follow.
 - v0.14.0 (2026-11-25): **Docs state the right facts** (#69); **generated README leads with the skill** (#70); **one getting-started path** (#71); **pages for real data, docs-with-code, keeping up to date** (#72); **slim README, troubleshooting entries** (#73).
