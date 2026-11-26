@@ -38,7 +38,7 @@ it, and never quote values from it in issues, PRs or commits. Tests use syntheti
 ## Definition of "checks pass"
 Commit first: the render uses `--vcs-ref HEAD`. Then run all of these:
 1. `scripts/check.sh`: renders every Template CI variant (read from `template-ci.yml`), runs every
-   render step on each, then `mkdocs build --strict`.
+   render step on each, then `mkdocs build --strict` and the `version` check.
 2. Each skill script's `--self-test`, under Python 3.9 and 3.12:
    ```
    for py in 3.9 3.12; do
@@ -56,9 +56,10 @@ a guard or skipping a check.
 - Two adjacent closing square brackets in a rendered script trip the unrendered-syntax guard. Use a
   type alias or split them.
 - Template CI greps some rendered text (`need FILE 'text'`). Change the guard together with the text.
-- ruff runs with `--line-length 100`, on changed files only.
+- Generated projects run `ruff format --check .` and `ruff check .` on the whole rendered project; the
+  line length of 100 comes from `[tool.ruff]` in `template/pyproject.toml.jinja`. For hand edits to the
+  skill scripts (not rendered by that file), use `uvx ruff format --line-length 100 <file>`.
 - `copier copy .` renders the latest tag, not your work. Use `--vcs-ref HEAD` (and commit).
-- A PR that changes a workflow takes effect only after merge; agent stages skip it.
 
 ## Release procedure
 1. Unreleased work goes under one `- Unreleased:` entry at the top of `CHANGELOG.md`, with a sub-bullet
@@ -77,7 +78,8 @@ names stay as they are.
 - Never commit secrets, credentials, personal data or private datasets. No local absolute paths or
   personal names in committed files.
 - Every code change ships its docs in the same PR (`docs/`, README, CHANGELOG, `SKILL.md` text).
-- Workflow changes (`.github/workflows/`) go in a PR of their own.
+- Changes to workflow behaviour (triggers, permissions, jobs, secrets) go in a PR of their own. Text
+  guards in `template-ci.yml` change together with the text they check.
 - No new dependencies without a plan. The skill scripts are stdlib only, Python 3.9+.
 - Never bump `VERSION` or tag outside a release PR.
 - Never add the labels `factory:design` or `design:approved`.
