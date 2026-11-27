@@ -6,7 +6,7 @@ it if it's mechanical, otherwise **flag and continue** (SKILL.md).
 
 | # | Gate | How to check |
 |---|---|---|
-| 1 | **CI green** | Run-level watch (below): every required check `pass`, none pending |
+| 1 | **CI green** | Run-level watch (below) of the run for the PR's head commit, never an older run: every required check `pass`, none pending |
 | 2 | **Up to date with `main`** | `gh pr view <PR> --json mergeStateStatus` isn't `BEHIND` or `DIRTY`. If it's `BEHIND`: `gh api -X PUT repos/<owner/repo>/pulls/<PR>/update-branch`, then re-check gate 1. `BLOCKED` alone just means "needs approval": the merge needs the maintainer's bypass or approval (see "Merge") |
 | 3 | **No open blockers** | The Opus code review returned `READY`, or every blocker was fixed by the builder **and** you verified each one with its reproduction on the current commit. Improvements don't block in the mvp phase |
 | 4 | **Deviations disclosed and minor** | The PR body's "Deviations" plus the review's `undisclosed_deviations`. Scope, interface or dependency changes aren't minor |
@@ -22,19 +22,34 @@ it if it's mechanical, otherwise **flag and continue** (SKILL.md).
 
 ## Bounded CI waits (gate 1)
 
-Watch the **workflow run**, not the PR's checks. `gh pr checks --watch` follows individual checks, and
-GitHub sometimes leaves one "pending" after its job has finished, which hangs the whole run. A run-level
-watch ends when the run completes:
+Watch the **workflow run for the PR's head commit**, not the PR's checks and not the newest run on the
+branch. `gh pr checks --watch` follows individual checks, and GitHub sometimes leaves one "pending" after
+its job has finished, which hangs the whole run. The newest run on the branch can belong to an older
+commit: GitHub starts no `pull_request` run while the PR conflicts with `main`. A run-level watch ends
+when the run completes:
 
 ```bash
-id=$(gh run list -R <owner/repo> --branch <branch> --workflow ci.yml --limit 1 --json databaseId -q '.[0].databaseId')
-gh run watch "$id" -R <owner/repo> --interval 15 --exit-status
-gh run view "$id" -R <owner/repo> --json conclusion,jobs -q '.conclusion, (.jobs[] | "\(.name)=\(.conclusion)")'
+gh pr view <PR> -R <owner/repo> --json headRefOid,mergeStateStatus   # the head <sha>, and whether it's DIRTY
+gh run list -R <owner/repo> --commit <sha> --workflow ci.yml --limit 1 --json databaseId -q '.[0].databaseId // "none"'
+gh run watch <run-id> -R <owner/repo> --interval 15 --exit-status
+gh run view <run-id> -R <owner/repo> --json conclusion,jobs -q '.conclusion, (.jobs[] | "\(.name)=\(.conclusion)")'
 ```
+
+Paste the `<sha>` and `<run-id>` each command printed into the next one. `--commit` needs the full
+40-character sha that `headRefOid` prints, not a short one. If there's no run for the head commit
+(`none`), say so, and never watch an older commit's run instead:
+- **`DIRTY`:** GitHub runs no `pull_request` workflow until the conflict is resolved. Merge `main` into
+  the branch and resolve it. Before committing, run `git diff --cached --check`, which flags leftover
+  conflict markers. Push, then read `headRefOid` again and look for that commit's run.
+- **Otherwise** the run may not have started yet: look again shortly. If a few looks over several
+  minutes still find none (a `[skip ci]` commit, say), stop waiting: flag and continue (SKILL.md).
+
+The verdict holds for that `<sha>` only. Just before merging, read `headRefOid` again: if it has
+changed, gate 1 starts over.
 
 Run it with a tool timeout (or in the background), not an open-ended wait. Don't use `sleep` loops: Claude
 Code blocks foreground `sleep`, and macOS has no `timeout` command. If the run is `success` but a PR check
-still shows pending, `gh run rerun <id>` clears it.
+still shows pending, `gh run rerun <run-id>` clears it.
 
 ## Posting questions (and other review comments) inline
 
@@ -84,6 +99,16 @@ implemented, an improvement filed as an issue, or a `doc-debt` finding filed as 
 Before merging, append the Handoff's gist to `.factory/designs/issue-<N>.md` under a final
 "## Implementation notes" heading (what was built and why, decisions from review threads, follow-up
 issues), commit it on the branch ("docs: implementation notes (#<N>)"), push, and let CI pass. Then:
+
+**Stacked PRs first.** `--delete-branch` deletes this PR's branch, and GitHub then closes every open PR
+based on it rather than retargeting it. Before merging, list them and move each to `main`:
+
+```bash
+gh pr list -R <owner/repo> --base <this PR's branch> --json number -q '.[].number'
+gh pr edit <N> -R <owner/repo> --base main
+```
+
+A retargeted PR then needs `main` merged in (gate 2) before its own merge.
 
 Pick the command from `gh pr view <PR> --json mergeStateStatus`:
 

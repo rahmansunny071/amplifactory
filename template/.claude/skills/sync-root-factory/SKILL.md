@@ -28,9 +28,9 @@ TAG=$(git ls-remote --tags --refs "$URL" 'v*' | sed 's|.*refs/tags/||' \
       | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1)    # the latest release tag
 T=$(mktemp -d)                               # outside the repo
 git init -q --bare "$T/src"
-git -C "$T/src" fetch -q --depth 1 "$URL" "refs/tags/${TAG}:refs/tags/${TAG}"
-test "$(git -C "$T/src" cat-file -t "refs/tags/$TAG")" = tag || { echo "$TAG is not annotated: stop"; exit 1; }
-mkdir "$T/x" && git -C "$T/src" archive "$TAG" template/.claude/skills/sync-root-factory | tar -x -C "$T/x"
+git --git-dir="$T/src" fetch -q --depth 1 "$URL" "refs/tags/${TAG}:refs/tags/${TAG}"
+test "$(git --git-dir="$T/src" cat-file -t "refs/tags/$TAG")" = tag || { echo "$TAG is not annotated: stop"; exit 1; }
+mkdir "$T/x" && git --git-dir="$T/src" archive "$TAG" template/.claude/skills/sync-root-factory | tar -x -C "$T/x"
 sf() { python3 -I "$T/x/template/.claude/skills/sync-root-factory/scripts/sync.py" --repo "$R" "$@"; }
 ```
 

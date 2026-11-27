@@ -196,11 +196,12 @@ linking the sub-issue.
 
 **8. Merge.** Check every gate in `references/gates.md` on the PR's current commit, **including "all
 review threads resolved"**. Append the Handoff's gist to `.factory/designs/issue-N.md` (one commit on the
-branch, so the rationale lands on `main` next to the code). Then try the merge (the command and when
-`--admin` applies are in `references/gates.md` → "Merge"). If it goes through, post the merge note, log it,
-pull `main`, remove the worktree, and run `queue.py` again. **If it is refused** (the harness denies the
-command, or GitHub rejects it), that is not an error: follow "Ready to merge and continue" below. **Never
-work around a refusal**: no retry through `gh api .../pulls/N/merge`, other flags or another tool.
+branch, so the rationale lands on `main` next to the code). Then try the merge (the stacked-PR check, the
+command and when `--admin` applies are in `references/gates.md` → "Merge"). If it goes through, post the
+merge note, log it, pull `main`, remove the worktree, and run `queue.py` again. **If it is refused** (the
+harness denies the command, or GitHub rejects it), that is not an error: follow "Ready to merge and
+continue" below. **Never work around a refusal**: no retry through `gh api .../pulls/N/merge`, other flags
+or another tool.
 
 ### Flag and continue
 

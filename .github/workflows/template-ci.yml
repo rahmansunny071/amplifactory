@@ -61,6 +61,41 @@ jobs:
           for f in .github/workflows/*.yml .github/ISSUE_TEMPLATE/*.yml .copier-answers.yml; do
             uvx --from pyyaml python -c "import sys, yaml; yaml.safe_load(open(sys.argv[1]))" "$f"
           done
+      # #91: one job per required check name (a matrix job skipped by if: posts only its unexpanded
+      # name), drafts skipped, ready_for_review runs it, and timeouts on every job
+      - name: ci.yml has one job per check name, skips drafts, has timeouts
+        working-directory: ${{ runner.temp }}/out
+        run: |
+          uvx --from pyyaml python - <<'PY'
+          import sys
+          import yaml
+
+          wf = yaml.safe_load(open(".github/workflows/ci.yml"))
+          versions = yaml.safe_load(open(".copier-answers.yml"))["python_versions"]
+          jobs = wf["jobs"]
+          bad = []
+          names = sorted(job.get("name", "") for job in jobs.values())
+          want = sorted([f"Tests (Python {v})" for v in versions] + ["Lint"])
+          if names != want:
+              bad.append(f"check names {names}, want {want} (bootstrap's ruleset requires them)")
+          # "$" + "{{" keeps GitHub from evaluating it in this live workflow
+          gate = "$" + "{{ !github.event.pull_request.draft }}"
+          for jid, job in jobs.items():
+              if "strategy" in job:
+                  bad.append(f"{jid}: a matrix job skipped by if: never posts its check names")
+              if job.get("if") != gate:
+                  bad.append(f"{jid}: if must be {gate!r}")
+              if not isinstance(job.get("timeout-minutes"), int):
+                  bad.append(f"{jid}: needs timeout-minutes")
+          on = wf.get("on", wf.get(True))
+          if "ready_for_review" not in on["pull_request"]["types"]:
+              bad.append("pull_request types must include ready_for_review")
+          if wf["concurrency"].get("cancel-in-progress") is not True:
+              bad.append("concurrency must keep cancel-in-progress")
+          for b in bad:
+              print(f"::error file=.github/workflows/ci.yml::{b}")
+          sys.exit(1 if bad else 0)
+          PY
       # Regression guards for lessons learned driving generated factories (amplifactory#3–#7).
       - name: Factory guardrails present
         working-directory: ${{ runner.temp }}/out
@@ -108,6 +143,17 @@ jobs:
           need .claude/skills/factory/SKILL.md '### Parallel lanes'
           need .claude/skills/factory/references/issue-format.md '## Lane issue'
           need scripts/bootstrap.sh 'gh project field-create'
+          # under pipefail, a pipe ending in grep -q fails when the writer gets SIGPIPE (the 'project'
+          # scope check read as missing). Comments are skipped.
+          if grep -nE '^[^#]*\|[[:space:]]*grep[^|]* -[a-zA-Z]*q' scripts/bootstrap.sh; then
+            echo "::error::scripts/bootstrap.sh ends a pipe in grep -q, which breaks under pipefail"; fail=1
+          fi
+          # a re-run, or adopting into an existing repo, never force-pushes over origin/main (#70)
+          need scripts/bootstrap.sh 'git merge-base --is-ancestor origin/main main'
+          # gate 1 watches the run for the PR's head commit; stacked PRs move to main before a merge
+          need .claude/skills/factory/references/gates.md "gh run list -R <owner/repo> --commit <sha>"
+          need .claude/skills/factory/references/gates.md 'git diff --cached --check'
+          need .claude/skills/factory/references/gates.md '**Stacked PRs first.**'
           test -f .claude/skills/factory/scripts/lanes.py || { echo "::error::missing lanes.py"; fail=1; }
           python3 .claude/skills/factory/scripts/lanes.py --self-test || fail=1
           # v0.6.0: docs ship with the code; Documentation tech-debt tracker (#30)
@@ -219,6 +265,42 @@ jobs:
           ruff=$(uvx --from pyyaml python -c "import yaml; print(yaml.safe_load(open('.copier-answers.yml'))['ruff_version'])")
           uvx "ruff@$ruff" format --check .
           uvx "ruff@$ruff" check .
+
+      # project_name defaults to the destination folder's name, so the cd line and the repo bootstrap
+      # creates agree; the message names the repo when they differ
+      - name: Copier's after-copy message matches the folder name
+        if: matrix.variant == 'with-cli'
+        run: |
+          fail=0
+          uvx --from 'copier>=9,<10' copier copy --defaults --vcs-ref HEAD --data "description=x" \
+            . "$RUNNER_TEMP/My_Folder-x" > "$RUNNER_TEMP/msg.txt" 2>&1
+          grep -qxF 'project_name: my-folder-x' "$RUNNER_TEMP/My_Folder-x/.copier-answers.yml" \
+            || { echo "::error::project_name did not default to the kebab-cased folder name"; fail=1; }
+          if grep -q 'bootstrap creates the GitHub repo' "$RUNNER_TEMP/msg.txt"; then
+            echo "::error::the message warns of a folder/repo mismatch when the name is the default"; fail=1
+          fi
+          uvx --from 'copier>=9,<10' copier copy --defaults --vcs-ref HEAD --data "description=x" \
+            --data project_name=other . "$RUNNER_TEMP/diff-folder" > "$RUNNER_TEMP/msg2.txt" 2>&1
+          grep -qF 'rahmansunny071/other' "$RUNNER_TEMP/msg2.txt" \
+            || { echo "::error::the message doesn't name the repo when it differs from the folder"; fail=1; }
+          exit $fail
+
+  # scripts/check.sh's own tests (scripts/test-check.sh), against fake repos. check.sh is the local
+  # "checks pass", so a change that breaks it must fail here too. On macOS they also run under
+  # /bin/bash, macOS's bash 3.2, which check.sh supports.
+  check-sh:
+    name: scripts/check.sh's tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      # each step says which bash it ran, so a host whose PATH bash is /bin/bash shows it
+      - name: scripts/test-check.sh
+        run: bash -c 'echo "bash $BASH_VERSION"' && bash scripts/test-check.sh
+      - name: scripts/test-check.sh under /bin/bash (macOS's bash 3.2)
+        if: runner.os == 'macOS'
+        run: /bin/bash -c 'echo "bash $BASH_VERSION"' && /bin/bash scripts/test-check.sh
 
   # #40: sync-root-factory. Shadowing repos read the skill's VERSION file, so it must name the
   # release the tag points at. The release PR renames the Unreleased entry and bumps VERSION together.

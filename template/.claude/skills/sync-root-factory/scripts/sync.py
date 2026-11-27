@@ -89,6 +89,17 @@ def git(root: Path, *args: str, check: bool = True) -> str:
     return proc.stdout
 
 
+def git_dir(bare: Path, *args: str, check: bool = True) -> str:
+    """git on a bare repo, named with --git-dir. With safe.bareRepository=explicit (Copilot sessions
+    set it), git refuses a bare repo that it finds through -C."""
+    proc = subprocess.run(
+        ["git", f"--git-dir={bare}", *args], capture_output=True, text=True, check=False
+    )
+    if check and proc.returncode:
+        raise Refuse(f"git {' '.join(args)} failed: {proc.stderr.strip() or proc.stdout.strip()}")
+    return proc.stdout
+
+
 def repo_root(path: str) -> Path:
     proc = subprocess.run(
         ["git", "-C", path, "rev-parse", "--show-toplevel"],
@@ -224,10 +235,10 @@ def latest_tag(source: str) -> str:
 def _fetch_bare(bare: Path, tag: str, source: str) -> str:
     """Depth-1 fetch of refs/tags/<tag> into a fresh bare repo; refuse unless it is annotated."""
     parse_tag(tag)
-    git(bare, "init", "--bare", "-q")
+    git_dir(bare, "init", "--bare", "-q")
     ref = f"refs/tags/{tag}"
-    git(bare, "fetch", "-q", "--depth", "1", source, f"{ref}:{ref}")
-    if git(bare, "cat-file", "-t", ref).strip() != "tag":
+    git_dir(bare, "fetch", "-q", "--depth", "1", source, f"{ref}:{ref}")
+    if git_dir(bare, "cat-file", "-t", ref).strip() != "tag":
         raise Refuse(f"{tag} is not an annotated tag")
     return ref
 
@@ -246,12 +257,12 @@ def fetch_tag(tag: str, dest: Path, source: str) -> list[str]:
         bare = Path(tmp)
         ref = _fetch_bare(bare, tag, source)
         present = [
-            p for p in FETCH_PATHS if git(bare, "ls-tree", "--name-only", ref, "--", p).strip()
+            p for p in FETCH_PATHS if git_dir(bare, "ls-tree", "--name-only", ref, "--", p).strip()
         ]
         if not present:  # `git archive <ref> --` with no paths would archive the whole tree
             raise Refuse(f"{tag} has none of the paths this script reads")
         proc = subprocess.run(
-            ["git", "-C", str(bare), "archive", "--format=tar", ref, "--", *present],
+            ["git", f"--git-dir={bare}", "archive", "--format=tar", ref, "--", *present],
             capture_output=True,
             check=False,
         )
@@ -903,8 +914,17 @@ def _tpl(
 
 
 def from_self_test() -> None:
-    saved = {k: os.environ.get(k) for k in ("GIT_CONFIG_GLOBAL", "GIT_CONFIG_NOSYSTEM")}
+    # #24: run as a Copilot session does, with safe.bareRepository=explicit appended to the
+    # GIT_CONFIG_COUNT list: it beats earlier entries there (a parent `git -c` would still win), so a
+    # bare repo reached through -C fails the test.
+    n = int(os.environ.get("GIT_CONFIG_COUNT") or 0)
+    key, value = f"GIT_CONFIG_KEY_{n}", f"GIT_CONFIG_VALUE_{n}"
+    names = ("GIT_CONFIG_GLOBAL", "GIT_CONFIG_NOSYSTEM", "GIT_CONFIG_COUNT", key, value)
+    saved = {k: os.environ.get(k) for k in names}
     os.environ.update(GIT_CONFIG_GLOBAL=os.devnull, GIT_CONFIG_NOSYSTEM="1")
+    os.environ.update(
+        {"GIT_CONFIG_COUNT": str(n + 1), key: "safe.bareRepository", value: "explicit"}
+    )
     for k, v in {"NAME": "t", "EMAIL": "t@example.invalid"}.items():
         os.environ.setdefault(f"GIT_AUTHOR_{k}", v)
         os.environ.setdefault(f"GIT_COMMITTER_{k}", v)

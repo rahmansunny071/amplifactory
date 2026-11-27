@@ -9,6 +9,8 @@
 # plan allows it), a Project board, and fork-PR approval.
 # Does NOT: add the Claude token. That's only for Actions mode (/install-github-app in Claude Code).
 set -euo pipefail
+# Under pipefail, never end a pipe in grep -q: it exits at the first match, the writer gets SIGPIPE and
+# the pipeline reads as a failure. Send grep's output to /dev/null so it reads all its input.
 
 REPO="[[ maintainer_github ]]/[[ project_name ]]"
 DESCRIPTION="[[ description ]]"
@@ -57,7 +59,17 @@ step "GitHub repository ($visibility)"
 if gh repo view "$REPO" >/dev/null 2>&1; then
   echo "$REPO already exists"
   git remote get-url origin >/dev/null 2>&1 || git remote add origin "git@github.com:$REPO.git"
-  git push -u origin main
+  git fetch -q origin main 2>/dev/null || true
+  if ! git rev-parse -q --verify origin/main >/dev/null; then
+    git push -u origin main
+  elif git merge-base --is-ancestor main origin/main; then
+    echo "local main has nothing to push (origin/main is up to date or ahead; git pull to catch up)"
+  elif git merge-base --is-ancestor origin/main main; then
+    git push -u origin main
+  else
+    echo "local main and origin/main have diverged: reconcile them (git pull --rebase), then re-run" >&2
+    exit 1
+  fi
 else
   gh repo create "$REPO" "--$visibility" --source . --remote origin --push --description "$DESCRIPTION"
 fi
@@ -84,7 +96,7 @@ finds the issue by it.")
 fi
 
 step "Ruleset protecting main"
-if gh api "repos/$REPO/rulesets" --jq '.[].name' 2>/dev/null | grep -qx "Protect main"; then
+if gh api "repos/$REPO/rulesets" --jq '.[].name' 2>/dev/null | grep -x "Protect main" >/dev/null; then
   echo "already present"
 else
   checks_json=$(printf '{"context":"%s"},' "${CHECKS[@]}")
@@ -120,7 +132,7 @@ JSON
 fi
 
 step "Project board"
-if ! gh auth status 2>&1 | grep -q "'project'"; then
+if ! gh auth status 2>&1 | grep "'project'" >/dev/null; then
   echo "skipped: your gh login lacks the 'project' scope. Run: gh auth refresh -h github.com -s project"
   echo "         then re-run this script (it's safe to re-run)."
 else
@@ -133,7 +145,7 @@ else
     echo "project #$num already exists: $PROJECT_TITLE"
   fi
   gh project link "$num" --owner "$OWNER" --repo "$REPO" >/dev/null 2>&1 || true
-  if ! gh project field-list "$num" --owner "$OWNER" --format json --jq '.fields[].name' | grep -qx Priority; then
+  if ! gh project field-list "$num" --owner "$OWNER" --format json --jq '.fields[].name' | grep -x Priority >/dev/null; then
     gh project field-create "$num" --owner "$OWNER" --name Priority --data-type SINGLE_SELECT \
       --single-select-options "P0,P1,P2,P3" >/dev/null
     echo "added the Priority field (P0–P3)"
