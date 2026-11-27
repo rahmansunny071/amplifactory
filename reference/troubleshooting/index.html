@@ -245,7 +245,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../getting-started/create-a-project/" class="md-tabs__link">
+        <a href="../../getting-started/quick-start/" class="md-tabs__link">
           
   
   
@@ -657,6 +657,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../concepts/lessons/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lessons
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../concepts/actions-mode/" class="md-nav__link">
         
   
@@ -665,6 +693,34 @@
     
   
     The GitHub Actions mode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/local-ci/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local CI
   
 
     
@@ -744,6 +800,34 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/quick-start/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -895,6 +979,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../guides/copilot-and-claude/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Copilot and Claude Code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../guides/adopt-in-existing-repo/" class="md-nav__link">
         
   
@@ -931,6 +1043,34 @@
     
   
     Keep up to date
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/local-ci-setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local CI setup
   
 
     
@@ -1079,6 +1219,62 @@
     
   
     Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ci-variables/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI variables
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../runner-pool/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runner pool details
   
 
     
@@ -1305,12 +1501,38 @@ developing the template.</p>
 </details>
 <details class="question">
 <summary>The ruleset isn't enforced</summary>
-<p>On GitHub Free, rulesets don't apply to private repos. Make the repo public or use GitHub Pro.</p>
+<p>On GitHub Free, rulesets don't apply to private repos. Make the repo public or use GitHub Pro. EMU
+(enterprise-managed) accounts can only create private repos.</p>
+</details>
+<details class="question">
+<summary><code>bootstrap.sh --public</code> fails on a work account</summary>
+<p>EMU (enterprise-managed) accounts can't create public repos. Re-run <code>./scripts/bootstrap.sh --private</code>: the script
+is safe to re-run.</p>
+</details>
+<details class="question">
+<summary>The repo has no <code>factory-*.yml</code> workflows</summary>
+<p>It was generated with <code>actions_agent: none</code>, the default, so the factory runs from the skill. To add the Actions
+mode, run <code>uvx copier update --data actions_agent=copilot</code> (or <code>=claude</code>) in a PR of its own. With <code>copilot</code>,
+then run the command the update prints, which lets workflows open pull requests.</p>
 </details>
 <details class="question">
 <summary>An Actions stage didn't run on a PR</summary>
 <p>A PR that changes a workflow skips that workflow's stage. Merge workflow changes in their own PR, then click
 <strong>Update branch</strong> on the open PRs: PR runs use the merge ref from their last update.</p>
+</details>
+<details class="question">
+<summary>Actions mode with Copilot: a build PR shows workflows awaiting approval</summary>
+<p>GitHub holds the runs of a PR the workflow token opens until someone approves them, and <code>factory-build</code>'s
+<code>approve-runs</code> job approves them. If that job failed or didn't run, or warned that runs were still appearing
+after 3 minutes, click <strong>Approve workflows to run</strong> on the PR.</p>
+<p>Only those runs count as the PR's required checks: a CI run you start with <code>gh workflow run</code> doesn't.</p>
+</details>
+<details class="question">
+<summary>Actions mode with Copilot: the design job, or the build's <code>approve-runs</code> job, fails with \"opened no PR\"</summary>
+<p>The agent stopped without its PR. Its log and the issue (or design PR) comments say why. If its <code>gh pr create</code>
+failed with "GitHub Actions is not permitted to create or approve pull requests", turn on <strong>Allow GitHub Actions
+to create and approve pull requests</strong> (Settings → Actions → General), or run
+<code>gh api -X PUT repos/OWNER/REPO/actions/permissions/workflow -F can_approve_pull_request_reviews=true</code>.</p>
 </details>
 <details class="question">
 <summary>The Actions review job is green but posted nothing</summary>
@@ -1349,21 +1571,35 @@ and make sure Python 3.9 or newer is installed.</p>
 <li><strong><code>working tree is not clean</code></strong>: commit or stash, then rerun.</li>
 <li><strong><code>branch local/adopt-&lt;tag&gt; already exists</code></strong> (locally or on origin): an earlier sync left it. Continue on it,
   or delete it and rerun.</li>
-<li><strong><code>the skill folders differ from &lt;tag&gt;</code></strong> (items <code>modified:</code>, <code>missing locally:</code>, <code>untracked:</code>, <code>only local:</code>):
-  your local copy no longer matches the tag it claims, so the sync won't overwrite your edits. Restore the files
-  from that tag, or move your own changes out, then rerun.</li>
+<li><strong><code>the skill folders differ from &lt;tag&gt;</code></strong> (items <code>modified:</code>, <code>missing locally:</code>, <code>untracked:</code>, <code>only local:</code>): your local copy no longer matches the tag it claims. Restore the files from that tag, or move your own changes out, then rerun.</li>
 <li><strong><code>diff -rq after apply failed</code></strong> (items <code>differs:</code>, <code>extra:</code>): files <em>were</em> written but don't match the tag.
   Run the undo command the message prints, then report it.</li>
-<li><strong><code>&lt;tag&gt; is not an annotated tag</code></strong>: syncs trust only annotated release tags. Use a real <code>vX.Y.Z</code> release.</li>
+<li><strong><code>&lt;tag&gt; is not an annotated tag</code></strong>: use a real <code>vX.Y.Z</code> release tag.</li>
 <li><strong><code>_src_path … is not … on GitHub (a local clone or a fork?)</code></strong>: <code>copier-check</code> wants <code>_src_path: gh:rahmansunny071/amplifactory</code>
   in <code>.copier-answers.yml</code> (edit the existing line, don't add a second). The old repo name is also accepted.</li>
 <li><strong><code>this is amplifactory itself (or a fork of it)</code></strong>: the sync never runs in the template repo.</li>
 </ul>
 </details>
 <details class="question">
-<summary><code>/install-github-app</code> fails with a workflow-scope error</summary>
+<summary>Actions mode with Claude: <code>/install-github-app</code> fails with a workflow-scope error</summary>
 <p>The installer pushes workflow files, which needs the <code>workflow</code> scope on your <code>gh</code> login. Run
 <code>gh auth refresh -h github.com -s repo,workflow</code>, then run <code>/install-github-app</code> again.</p>
+</details>
+<details class="question">
+<summary>CI jobs wait forever (<code>Queued</code>) on a repo that uses the runner pool</summary>
+<p>Run <code>python3 .claude/skills/factory-ci/scripts/setup.py doctor --repo OWNER/REPO</code> and
+<code>python3 .claude/skills/factory-ci/scripts/runners.py status</code>.</p>
+<ul>
+<li><strong>Container mode and Docker isn't running</strong> (<code>doctor</code> or <code>status</code> shows a <code>docker:</code> line; the pool also looks
+  down): start Docker Desktop, or <code>setup.py container off --yes</code>. Skip the next bullet.</li>
+<li><strong>Pool down</strong> (exit code 3, no heartbeat for 2 minutes): <code>python3 .claude/skills/factory-ci/scripts/setup.py service install --yes</code>
+  restarts it, once the runner is installed (<code>runners.py base --install</code>).</li>
+<li><strong>Paused</strong>: <code>runners.py resume</code>.</li>
+<li><strong>Repo not registered, or <code>FACTORY_RUNNER</code> not <code>local</code></strong>: <code>setup.py apply register --repo OWNER/REPO</code>, then
+  <code>setup.py apply route --repo OWNER/REPO --yes</code>.</li>
+<li><strong>PR from a fork</strong>: it never runs on the pool.</li>
+<li><strong>Draft PR</strong>: CI skips drafts; mark it ready.</li>
+</ul>
 </details>
 
 

@@ -247,7 +247,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../getting-started/create-a-project/" class="md-tabs__link">
+        <a href="../../getting-started/quick-start/" class="md-tabs__link">
           
   
   
@@ -658,6 +658,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Ready to merge">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#let-the-factory-merge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Let the factory merge
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -771,6 +788,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../lessons/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lessons
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../actions-mode/" class="md-nav__link">
         
   
@@ -779,6 +824,34 @@
     
   
     The GitHub Actions mode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../local-ci/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local CI
   
 
     
@@ -858,6 +931,34 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/quick-start/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -1009,6 +1110,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../guides/copilot-and-claude/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Copilot and Claude Code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../guides/adopt-in-existing-repo/" class="md-nav__link">
         
   
@@ -1045,6 +1174,34 @@
     
   
     Keep up to date
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/local-ci-setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local CI setup
   
 
     
@@ -1188,6 +1345,62 @@
     
   
     Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/ci-variables/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI variables
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/runner-pool/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runner pool details
   
 
     
@@ -1418,6 +1631,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Ready to merge">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#let-the-factory-merge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Let the factory merge
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1456,7 +1686,7 @@
 
 
 <h1 id="flag-and-continue">Flag and continue<a class="headerlink" href="#flag-and-continue" title="Permanent link">&para;</a></h1>
-<p>The factory never stops the run to wait for you, unless nothing else can proceed.</p>
+<p>The factory doesn't stop the run to wait for you unless nothing else can proceed.</p>
 <h2 id="when-it-asks">When it asks<a class="headerlink" href="#when-it-asks" title="Permanent link">&para;</a></h2>
 <ul>
 <li>A plan or review raises a question only you can answer (scope, an interface, a dependency, a data source).</li>
@@ -1466,23 +1696,22 @@
 </ul>
 <h2 id="how-it-asks">How it asks<a class="headerlink" href="#how-it-asks" title="Permanent link">&para;</a></h2>
 <ol>
-<li>An <strong>inline review comment</strong> on the exact line, tagged <code>[question]</code>, with <strong>options and a recommendation</strong>.</li>
+<li>An <strong>inline review comment</strong> tagged <code>[question]</code>, with <strong>options and a recommendation</strong>.</li>
 <li>The label <strong><code>factory:needs-maintainer</code></strong> on the PR.</li>
 <li>The run log records it as <code>asked</code>, with a link to the thread.</li>
-<li><strong>Only that lane pauses.</strong> Other lanes, and anything that doesn't depend on this issue, carry on.</li>
+<li><strong>Only that lane pauses.</strong> Other lanes carry on.</li>
 </ol>
 <h2 id="how-you-answer">How you answer<a class="headerlink" href="#how-you-answer" title="Permanent link">&para;</a></h2>
-<p>Reply in the thread on GitHub, whenever you like: from your phone, the next day, in a different session. Then, in
-Claude Code:</p>
+<p>Reply in the thread on GitHub, whenever you like. Then, in Copilot or Claude Code:</p>
 <blockquote>
 <p>resume the factory</p>
 </blockquote>
-<p><code>queue.py</code> detects <strong>your reply after the question</strong> and lists that lane as <code>replied</code>, ahead of new work. The
-orchestrator reads your answer, applies it (via the builder), resolves the thread, removes the label and continues
-to the gates.</p>
+<p><code>queue.py</code> lists the lane as <code>replied</code>, ahead of new work. The orchestrator applies your answer (via the builder),
+resolves the thread, removes the label and continues to the gates.</p>
 <h2 id="ready-to-merge">Ready to merge<a class="headerlink" href="#ready-to-merge" title="Permanent link">&para;</a></h2>
-<p>A refused merge is not a question, so it isn't <code>factory:needs-maintainer</code>. When every gate passes but the merge is
-refused (the harness denies <code>gh pr merge</code>, or GitHub rejects it), the factory:</p>
+<p>A refused merge is not a question, so it doesn't get <code>factory:needs-maintainer</code>. When every gate passes but the merge
+is refused (the harness denies <code>gh pr merge</code>, or GitHub rejects it; in Copilot that includes a "No" at the approval
+prompt and a denial in autopilot or a <code>-p</code> run), the factory:</p>
 <ol>
 <li>labels the PR and issue <strong><code>factory:ready-to-merge</code></strong> and removes the in-progress label;</li>
 <li>posts one PR comment: the exact merge command and the gate summary;</li>
@@ -1490,18 +1719,56 @@ refused (the harness denies <code>gh pr merge</code>, or GitHub rejects it), the
 </ol>
 <p>It never works around the refusal. <code>queue.py</code> lists these under "Waiting for you to merge", and the end-of-run
 report lists them so you can merge in one batch.</p>
-<p><strong>Opt in to merging itself.</strong> You can add a permission rule to the repo's <code>.claude/settings.json</code> or your user
-<code>~/.claude/settings.json</code>:</p>
+<h3 id="let-the-factory-merge">Let the factory merge<a class="headerlink" href="#let-the-factory-merge" title="Permanent link">&para;</a></h3>
+<p>Opt in with a permission rule. The template doesn't ship one.</p>
+<p><strong>Claude Code.</strong> Add this to the repo's <code>.claude/settings.json</code> or your user <code>~/.claude/settings.json</code>:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="p">{</span><span class="w"> </span><span class="nt">"permissions"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"allow"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"Bash(gh pr merge * --merge --admin --delete-branch)"</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
 </code></pre></div>
-<p>The syntax follows the <a href="https://code.claude.com/docs/en/permissions">Claude Code permissions docs</a>. The rule lets
-the agent use your ruleset bypass, so it is your choice and the template doesn't ship it. The rule matches only commands that end in <code>--delete-branch</code>, which is how the skill runs the merge (gates.md "Merge"); variants with <code>-R</code> or other trailing flags aren't covered. A project rule applies only
-after you accept the workspace trust prompt. How allow rules interact with auto mode is described in the <a href="https://code.claude.com/docs/en/permission-modes">permission modes docs</a>; check it, and try it in your own session.</p>
+<ul>
+<li>The rule lets the agent use your ruleset bypass.</li>
+<li>It matches only commands ending in <code>--delete-branch</code>, which is how the skill runs the merge (gates.md "Merge");
+  variants with <code>-R</code> or other trailing flags aren't covered.</li>
+<li>A project rule applies only after you accept the workspace trust prompt.</li>
+<li>For how allow rules interact with auto mode, see the <a href="https://code.claude.com/docs/en/permissions">permissions</a>
+  and <a href="https://code.claude.com/docs/en/permission-modes">permission modes</a> docs, and try it in your own session.</li>
+</ul>
+<p><strong>GitHub Copilot.</strong> The rule above does nothing: Copilot doesn't read <code>permissions</code> from <code>.claude/settings.json</code>, and
+its own rules can't single out the merge (<code>--allow-tool='shell(gh pr)'</code>, or "Yes, and don't ask again" on a
+<code>gh pr merge</code> prompt, approves every <code>gh pr</code> command, <code>gh pr close</code> included). Use a personal hook that runs the
+skill's <code>merge_hook.py</code> (<a href="../../reference/scripts/#merge_hookpy">scripts</a>). It approves only
+<code>gh pr merge &lt;N&gt; --merge [--admin] --delete-branch</code>, typed exactly so, and leaves every other request to the normal
+prompt.</p>
+<ol>
+<li>Copy the script out of the repo, so no branch or file edit can change what it approves. Copy it again after a
+   factory update.</li>
+</ol>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>mkdir<span class="w"> </span>-p<span class="w"> </span>~/.copilot/hooks<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>cp<span class="w"> </span>.claude/skills/factory/scripts/merge_hook.py<span class="w"> </span>~/.copilot/hooks/
+</code></pre></div>
+<p>On Windows, in PowerShell:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nb">New-Item</span> <span class="n">-ItemType</span> <span class="n">Directory</span> <span class="n">-Force</span> <span class="p">~/.</span><span class="n">copilot</span><span class="p">/</span><span class="n">hooks</span> <span class="p">|</span> <span class="nb">Out-Null</span><span class="p">;</span> <span class="nb">Copy-Item</span> <span class="p">.</span><span class="n">claude</span><span class="p">/</span><span class="n">skills</span><span class="p">/</span><span class="n">factory</span><span class="p">/</span><span class="n">scripts</span><span class="p">/</span><span class="n">merge_hook</span><span class="p">.</span><span class="n">py</span> <span class="p">~/.</span><span class="n">copilot</span><span class="p">/</span><span class="n">hooks</span><span class="p">/</span>
+</code></pre></div>
+<ol>
+<li>Save this as <code>~/.copilot/hooks/factory-merge.json</code>. If you set <code>COPILOT_HOME</code>, Copilot reads personal hooks from
+   <code>$COPILOT_HOME/hooks/</code> instead, so put both files there.</li>
+</ol>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="p">{</span><span class="w"> </span><span class="nt">"version"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nt">"hooks"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"permissionRequest"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"command"</span><span class="p">,</span><span class="w"> </span><span class="nt">"matcher"</span><span class="p">:</span><span class="w"> </span><span class="s2">"bash|powershell"</span><span class="p">,</span><span class="w"> </span><span class="nt">"timeoutSec"</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="nt">"bash"</span><span class="p">:</span><span class="w"> </span><span class="s2">"test -f \"$COPILOT_HOOK_DIR/merge_hook.py\" &amp;&amp; python3 \"$COPILOT_HOOK_DIR/merge_hook.py\" || true"</span><span class="p">,</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">  </span><span class="nt">"powershell"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$f = Join-Path $env:COPILOT_HOOK_DIR 'merge_hook.py'; if (Test-Path $f) { [Console]::In.ReadToEnd() | python $f }; exit 0"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+</code></pre></div>
+<ul>
+<li>The <code>bash</code> command runs on macOS and Linux, the <code>powershell</code> one on Windows (as <code>python</code>; use <code>py</code> if that's how
+  Python runs there).</li>
+<li>It applies in every repo you use Copilot in, for that one command. A missing script or any error falls back to the
+  normal prompt, and a merge that is still refused is handed off.</li>
+<li>Don't commit it as a repository hook (<code>.github/hooks/</code>): that would run the working tree's copy of the script,
+  which any file edit could turn into an allow-all.</li>
+<li>See the <a href="https://docs.github.com/en/copilot/reference/hooks-reference">Copilot hooks reference</a>.</li>
+</ul>
 <h2 id="what-never-happens">What never happens<a class="headerlink" href="#what-never-happens" title="Permanent link">&para;</a></h2>
 <ul>
 <li>The skill never adds the Actions-mode trigger labels (<code>factory:design</code>, <code>design:approved</code>) and never writes
   <code>@claude</code>. Those would start GitHub Actions agents.</li>
-<li>PRs that change <code>.github/</code>, <code>CLAUDE.md</code> or <code>.claude/</code> are never merged by the factory. You merge those.</li>
+<li>The factory never merges PRs that change <code>.github/</code>, <code>CLAUDE.md</code> or <code>.claude/</code>. You merge those.</li>
 </ul>
 
 

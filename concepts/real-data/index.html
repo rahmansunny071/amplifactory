@@ -247,7 +247,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../getting-started/create-a-project/" class="md-tabs__link">
+        <a href="../../getting-started/quick-start/" class="md-tabs__link">
           
   
   
@@ -760,6 +760,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../lessons/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lessons
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../actions-mode/" class="md-nav__link">
         
   
@@ -768,6 +796,34 @@
     
   
     The GitHub Actions mode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../local-ci/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local CI
   
 
     
@@ -847,6 +903,34 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/quick-start/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -998,6 +1082,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../guides/copilot-and-claude/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Copilot and Claude Code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../guides/adopt-in-existing-repo/" class="md-nav__link">
         
   
@@ -1034,6 +1146,34 @@
     
   
     Keep up to date
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/local-ci-setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local CI setup
   
 
     
@@ -1177,6 +1317,62 @@
     
   
     Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/ci-variables/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI variables
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/runner-pool/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runner pool details
   
 
     
@@ -1434,9 +1630,9 @@
 
 
 <h1 id="real-data">Real data<a class="headerlink" href="#real-data" title="Permanent link">&para;</a></h1>
-<p>Some projects work on data that must not leave the maintainer's machine. <code>CLAUDE.md</code> has a <strong>Real data</strong> section
-whose first line sets how far agents may go. It is chosen once, by the <code>real_data_access</code> question when you
-<a href="../../getting-started/create-a-project/">create the project</a>, and the skill reads it from <code>main</code>.</p>
+<p>The first line of the <strong>Real data</strong> section in <code>CLAUDE.md</code> sets how far agents may go. You choose it with the
+<code>real_data_access</code> question when you <a href="../../getting-started/create-a-project/">create the project</a>; the skill reads it
+from <code>main</code>.</p>
 <h2 id="the-three-levels">The three levels<a class="headerlink" href="#the-three-levels" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -1463,24 +1659,23 @@ whose first line sets how far agents may go. It is chosen once, by the <code>rea
 <h2 id="rules-at-every-level">Rules at every level<a class="headerlink" href="#rules-at-every-level" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Real data is <strong>never committed</strong> and <strong>never quoted</strong> in issues, PRs or commits; only field names, counts and
-  shapes.</li>
+  shapes. This includes what <a href="../../guides/keep-up-to-date/#file-a-factory-problem-upstream"><code>factory-lesson</code></a> files
+  upstream.</li>
 <li>Tests use <strong>synthetic fixtures</strong> only.</li>
 <li>Agents read data where it lives and never copy it into the repo or worktree (a scratch directory outside the repo
   is fine).</li>
 <li>A stricter hard rule in <code>CLAUDE.md</code> overrides the level.</li>
-<li>The same applies to what <a href="../../guides/keep-up-to-date/#file-a-factory-problem-upstream"><code>factory-lesson</code></a> files
-  upstream.</li>
 </ul>
 <h2 id="a-missing-or-malformed-line-reads-as-never">A missing or malformed line reads as <code>never</code><a class="headerlink" href="#a-missing-or-malformed-line-reads-as-never" title="Permanent link">&para;</a></h2>
-<p>If <code>CLAUDE.md</code> has no <code>Real data:</code> line, or the line is not one of the three values, the skill treats the repo
-as <code>never</code>. A repo that <a href="../../guides/adopt-in-existing-repo/">adopted just the skill</a> is therefore safe by default.</p>
+<p>If <code>CLAUDE.md</code> has no <code>Real data:</code> line, or the value isn't one of the three, the skill treats the repo as <code>never</code>.
+A repo that <a href="../../guides/adopt-in-existing-repo/">adopted just the skill</a> is safe by default.</p>
 <h2 id="changing-the-level">Changing the level<a class="headerlink" href="#changing-the-level" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>Copier answer:</strong> <code>uvx copier update --data real_data_access=&lt;level&gt;</code>, in a PR of its own.</li>
-<li><strong>By hand:</strong> edit the <code>Real data:</code> line in <code>CLAUDE.md</code>. Then <code>.copier-answers.yml</code> still records the old level, and
-  a later <code>copier update</code> can render the old line back, so prefer the Copier answer.</li>
+<li><strong>Copier answer (preferred):</strong> <code>uvx copier update --data real_data_access=&lt;level&gt;</code>, in a PR of its own.</li>
+<li><strong>By hand:</strong> edit the <code>Real data:</code> line in <code>CLAUDE.md</code>. <code>.copier-answers.yml</code> then still records the old level, and
+  a later <code>copier update</code> can render the old line back.</li>
 </ul>
-<p><a href="../../guides/keep-up-to-date/"><code>sync-root-factory</code></a> never changes this value for you; it lists it under "Open".
+<p><a href="../../guides/keep-up-to-date/"><code>sync-root-factory</code></a> never changes this value; it lists it under "Open".
 See also <a href="../../reference/questions/"><code>real_data_access</code></a> in the Copier questions.</p>
 
 

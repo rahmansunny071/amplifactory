@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="GitHub and the repo are the source of truth; the run log and Claude’s memory only point at them.">
+        <meta name="description" content="GitHub and the repo are the source of truth; the run log and the agent's memory only point at them.">
       
       
       
@@ -16,7 +16,7 @@
         <link rel="prev" href="../docs-with-code/">
       
       
-        <link rel="next" href="../actions-mode/">
+        <link rel="next" href="../lessons/">
       
       
         
@@ -247,7 +247,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../getting-started/create-a-project/" class="md-tabs__link">
+        <a href="../../getting-started/quick-start/" class="md-tabs__link">
           
   
   
@@ -738,6 +738,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../lessons/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lessons
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../actions-mode/" class="md-nav__link">
         
   
@@ -746,6 +774,34 @@
     
   
     The GitHub Actions mode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../local-ci/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local CI
   
 
     
@@ -825,6 +881,34 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/quick-start/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -976,6 +1060,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../guides/copilot-and-claude/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Copilot and Claude Code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../guides/adopt-in-existing-repo/" class="md-nav__link">
         
   
@@ -1012,6 +1124,34 @@
     
   
     Keep up to date
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/local-ci-setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local CI setup
   
 
     
@@ -1155,6 +1295,62 @@
     
   
     Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/ci-variables/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI variables
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/runner-pool/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runner pool details
   
 
     
@@ -1420,7 +1616,7 @@
 <td>every agent, every session</td>
 </tr>
 <tr>
-<td><strong><code>lesson</code> issues</strong> in amplifactory</td>
+<td><strong><a href="../lessons/"><code>lesson</code> issues</a></strong> in amplifactory</td>
 <td>factory problems found while driving a project</td>
 <td>the template's next release</td>
 </tr>
@@ -1430,25 +1626,30 @@
 <td>the orchestrator, for resume and cost</td>
 </tr>
 <tr>
-<td><strong>Claude's memory</strong> (<code>~/.claude/projects/…</code>)</td>
+<td><strong>Claude Code's memory</strong> (<code>~/.claude/projects/…</code>)</td>
 <td>your preferences, how you like to work</td>
-<td>your Claude sessions on this machine</td>
+<td>your Claude Code sessions on this machine</td>
+</tr>
+<tr>
+<td><strong>Copilot Memory</strong> (on GitHub)</td>
+<td>facts and preferences Copilot stores as it works; repository memories are shared with everyone who uses Copilot Memory in the repo</td>
+<td>Copilot sessions. Listed in the repo's Settings &gt; Copilot &gt; Memory, and yours at <a href="https://github.com/settings/copilot/memory">github.com/settings/copilot/memory</a>. Off in <code>-p</code> runs unless <code>--enable-memory</code>; unused memories expire after 90 days by default (<a href="https://docs.github.com/copilot/concepts/prompting-and-context/copilot-memory">docs</a>)</td>
 </tr>
 </tbody>
 </table>
+<p>A preference that is really a project rule belongs in <code>CLAUDE.md</code>, not in memory.</p>
 <h2 id="the-run-log-only-points">The run log only points<a class="headerlink" href="#the-run-log-only-points" title="Permanent link">&para;</a></h2>
-<p>The run log never holds a decision. It says things like "PR #34 asked a question, thread <code>…</code>" or "issue #4 merged
-at <code>e24eea1</code>, 410k tokens". If the run log is deleted, nothing is lost but the cost history: the state can be
-rebuilt from GitHub.</p>
+<p>The run log holds no decisions, only entries like "PR #34 asked a question, thread <code>…</code>" or "issue #4 merged at
+<code>e24eea1</code>, 410k tokens". If you delete it you lose only the cost history; state is rebuilt from GitHub.</p>
 <h2 id="the-handoff">The Handoff<a class="headerlink" href="#the-handoff" title="Permanent link">&para;</a></h2>
-<p>Every PR body has a <strong><code>## Handoff</code></strong> section, kept current by the builder after every change:</p>
+<p>Every PR body has a <strong><code>## Handoff</code></strong> section, which the builder keeps current after every change:</p>
 <ul>
 <li>what changed and why;</li>
 <li>key decisions;</li>
 <li>how to test;</li>
 <li>what's open.</li>
 </ul>
-<p>A fresh session, a fresh reviewer or you start from it, instead of from a transcript.</p>
+<p>A fresh session or reviewer starts from it, not from a transcript.</p>
 
 
 
@@ -1507,13 +1708,13 @@ rebuilt from GitHub.</p>
         
         
           
-          <a href="../actions-mode/" class="md-footer__link md-footer__link--next" aria-label="Next: The GitHub Actions mode">
+          <a href="../lessons/" class="md-footer__link md-footer__link--next" aria-label="Next: Lessons">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                The GitHub Actions mode
+                Lessons
               </div>
             </div>
             <div class="md-footer__button md-icon">

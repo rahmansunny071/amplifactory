@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="What every generated repo enforces, and what the template CI checks is still there.">
+        <meta name="description" content="What every generated repo enforces, and what the template checks confirm is still there.">
       
       
       
@@ -245,7 +245,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../getting-started/create-a-project/" class="md-tabs__link">
+        <a href="../../getting-started/quick-start/" class="md-tabs__link">
           
   
   
@@ -657,6 +657,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../concepts/lessons/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lessons
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../concepts/actions-mode/" class="md-nav__link">
         
   
@@ -665,6 +693,34 @@
     
   
     The GitHub Actions mode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/local-ci/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local CI
   
 
     
@@ -744,6 +800,34 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/quick-start/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -895,6 +979,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../guides/copilot-and-claude/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Copilot and Claude Code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../guides/adopt-in-existing-repo/" class="md-nav__link">
         
   
@@ -931,6 +1043,34 @@
     
   
     Keep up to date
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/local-ci-setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local CI setup
   
 
     
@@ -1079,6 +1219,62 @@
     
   
     Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ci-variables/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI variables
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../runner-pool/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runner pool details
   
 
     
@@ -1295,21 +1491,28 @@
 
 <h1 id="guardrails">Guardrails<a class="headerlink" href="#guardrails" title="Permanent link">&para;</a></h1>
 <ul>
-<li><strong>Only you advance work.</strong> Every Actions trigger checks the sender is <code>maintainer_github</code>, and a label guard strips
-  trigger labels anyone else adds. The skill runs in your session.</li>
-<li><strong>Forks can't run agents.</strong> Build, review and chat refuse PRs from forks, and fork-PR workflows need your approval.</li>
-<li><strong>Least privilege per stage.</strong> Reviewers can't push. The build step refuses design branches that touch anything
-  outside <code>.factory/designs/</code>. Per-stage tool allowlists apply.</li>
+<li><strong>Only you advance work.</strong> The skill runs in your session. In the Actions mode (<code>actions_agent: claude</code> or <code>copilot</code>), every
+  trigger checks the sender is <code>maintainer_github</code>, and a label guard strips trigger labels anyone else adds. With
+  <code>none</code> (the default) no agent workflow is rendered.</li>
+<li><strong>Forks can't run agents.</strong> In the Actions mode, build, review and chat refuse PRs from forks (with Copilot, an
+  on-demand review runs only for you, on a same-repo <code>factory/issue-N</code> PR). Fork-PR workflows, including
+  <code>ci.yml</code>, need your approval.</li>
+<li><strong>Least privilege per stage</strong> (Actions mode). Reviewers can't push. The build step refuses design branches that touch
+  anything outside <code>.factory/designs/</code>. Per-stage tool allowlists apply.</li>
 <li><strong>Merge gates</strong> (skill): see <a href="../gates/">Merge gates</a>.</li>
 <li><strong>Protected <code>main</code>.</strong> A ruleset: PRs with approval and code-owner review, <strong>all conversations resolved</strong>, required
   checks, no force push or deletion.</li>
-<li><strong>Bounded cost.</strong> <code>timeout-minutes</code>, <code>--max-turns</code> and per-issue <code>concurrency</code> on every Actions job; pinned
+<li><strong>Bounded cost.</strong> <code>timeout-minutes</code>, <code>--max-turns</code> and per-issue <code>concurrency</code> on every Actions-mode job; pinned
   models; urgency triage; the run log's cost report.</li>
-<li><strong>Hard rules in <code>CLAUDE.md</code>:</strong> no secrets or personal data, a per-repo real-data level (<code>never</code> by default; real data is never committed or quoted, tests use synthetic fixtures), no uploads, no paid model endpoints, dependencies
-  only as planned, no version bumps or releases, no workflow changes unless planned (and then in their own PR).</li>
+<li><strong>Hard rules in <code>CLAUDE.md</code>:</strong> no secrets or personal data; a per-repo <a href="../../concepts/real-data/">real-data level</a>
+  (<code>never</code> by default; real data is never committed or quoted, tests use synthetic fixtures); no uploads; no paid
+  model endpoints; dependencies only as planned; no version bumps or releases; no workflow changes unless planned
+  (and then in their own PR).</li>
 <li><strong>You merge the factory itself.</strong> PRs touching <code>.github/</code>, <code>CLAUDE.md</code> or <code>.claude/</code> are never merged by the skill.</li>
 </ul>
-<p>The template CI renders three variants and fails if any of these is missing from a generated repo.</p>
+<p>Template CI (<code>.github/workflows/template-ci.yml</code>, also run locally by <code>scripts/check.sh</code>) renders every variant and
+fails if any of these is missing from a generated repo. The Actions-mode guardrails are checked in the <code>actions_agent: claude</code>
+and <code>actions_agent: copilot</code> variants; the other variants check that no agent workflow is rendered.</p>
 
 
 

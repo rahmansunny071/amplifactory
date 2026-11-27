@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://rahmansunny071.github.io/amplifactory/reference/gates/">
       
       
-        <link rel="prev" href="../scripts/">
+        <link rel="prev" href="../runner-pool/">
       
       
         <link rel="next" href="../labels/">
@@ -245,7 +245,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../getting-started/create-a-project/" class="md-tabs__link">
+        <a href="../../getting-started/quick-start/" class="md-tabs__link">
           
   
   
@@ -657,6 +657,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../concepts/lessons/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lessons
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../concepts/actions-mode/" class="md-nav__link">
         
   
@@ -665,6 +693,34 @@
     
   
     The GitHub Actions mode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/local-ci/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local CI
   
 
     
@@ -744,6 +800,34 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/quick-start/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -895,6 +979,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../guides/copilot-and-claude/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Copilot and Claude Code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../guides/adopt-in-existing-repo/" class="md-nav__link">
         
   
@@ -931,6 +1043,34 @@
     
   
     Keep up to date
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/local-ci-setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local CI setup
   
 
     
@@ -1079,6 +1219,62 @@
     
   
     Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ci-variables/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI variables
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../runner-pool/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runner pool details
   
 
     
@@ -1385,8 +1581,8 @@
 
 
 <h1 id="merge-gates">Merge gates<a class="headerlink" href="#merge-gates" title="Permanent link">&para;</a></h1>
-<p>The orchestrator merges only when <strong>every</strong> gate holds on the PR's <strong>current</strong> commit. A reviewer's summary is
-evidence, not proof. If a gate fails and the fix isn't mechanical, the factory <a href="../../concepts/flag-and-continue/">flags and continues</a>.</p>
+<p>The orchestrator merges only when <strong>every</strong> gate holds on the PR's <strong>current</strong> commit. If a gate fails and the fix
+isn't mechanical, the factory <a href="../../concepts/flag-and-continue/">flags and continues</a>.</p>
 <table>
 <thead>
 <tr>
@@ -1399,12 +1595,12 @@ evidence, not proof. If a gate fails and the fix isn't mechanical, the factory <
 <tr>
 <td>1</td>
 <td><strong>CI green</strong></td>
-<td>A run-level watch: every required check passes, none pending</td>
+<td>Watches the run for the PR's head commit (not the newest run on the branch): every required check passes, none pending. With <code>FACTORY_RUNNER=local</code>, a pool that's down or paused is offered a start or resume first; if the pool runs in container mode and Docker doesn't answer, you're asked to start Docker Desktop. With <code>FACTORY_CI=off</code>, the orchestrator runs the <code>CLAUDE.md</code> checks on the PR's head and records them as a <code>factory/local-checks</code> commit status (<a href="../ci-variables/#the-factorys-ci-gate">CI variables</a>)</td>
 </tr>
 <tr>
 <td>2</td>
 <td><strong>Up to date with <code>main</code></strong></td>
-<td><code>mergeStateStatus</code> isn't <code>BEHIND</code> or <code>DIRTY</code>; if behind, update the branch and re-check gate 1. <code>BLOCKED</code> alone means the merge needs your bypass or approval</td>
+<td><code>mergeStateStatus</code> isn't <code>BEHIND</code> or <code>DIRTY</code>; if behind, update the branch and re-check gate 1. On <code>DIRTY</code> GitHub runs no CI until the conflict is resolved: merge <code>main</code> into the branch and run <code>git diff --cached --check</code> for leftover conflict markers before committing. <code>BLOCKED</code> alone means the merge needs your bypass or approval</td>
 </tr>
 <tr>
 <td>3</td>
@@ -1454,15 +1650,16 @@ evidence, not proof. If a gate fails and the fix isn't mechanical, the factory <
 <tr>
 <td>12</td>
 <td><strong>Docs ship with the code</strong></td>
-<td>The Handoff has a <strong>Docs</strong> line naming the docs updated, or "none needed" with a reason; a diff that changes code but no docs needs that reason, and it must hold up</td>
+<td>The Handoff has a <strong>Docs</strong> line naming the docs updated, or "none needed" with a reason that holds up (required when code changes but docs don't)</td>
 </tr>
 <tr>
 <td>13</td>
 <td><strong>Not unsure</strong></td>
-<td>The orchestrator skims the diff; if anything still bothers it, it asks instead of merging</td>
+<td>If anything still bothers the orchestrator after skimming the diff, it asks instead of merging</td>
 </tr>
 </tbody>
 </table>
+<p>Gate 1 starts from the head commit: <code>gh pr view &lt;PR&gt; --json headRefOid,mergeStateStatus</code>, then <code>gh run list --commit &lt;sha&gt; --workflow ci.yml</code> (the full 40-character sha) and <code>gh run watch &lt;run-id&gt; --exit-status</code>. The verdict holds for that sha only: the head is read again just before merging, and if it changed, gate 1 starts over.</p>
 <p>Merges use <strong>merge commits</strong>, so release tags stay on <code>main</code>, and happen <strong>one at a time</strong>.</p>
 <h2 id="the-merge-command">The merge command<a class="headerlink" href="#the-merge-command" title="Permanent link">&para;</a></h2>
 <table>
@@ -1483,11 +1680,11 @@ evidence, not proof. If a gate fails and the fix isn't mechanical, the factory <
 </tr>
 </tbody>
 </table>
+<p><strong>Stacked PRs first.</strong> <code>--delete-branch</code> makes GitHub close, not retarget, any open PR based on the deleted branch. So before merging, the orchestrator lists the PRs based on this one (<code>gh pr list --base &lt;branch&gt;</code>) and moves each to <code>main</code> (<code>gh pr edit &lt;N&gt; --base main</code>).</p>
 <h2 id="when-the-merge-is-refused">When the merge is refused<a class="headerlink" href="#when-the-merge-is-refused" title="Permanent link">&para;</a></h2>
-<p>If the harness denies the command or GitHub rejects it, the factory stops there. It never retries through
-<code>gh api</code>, other flags or another tool. Instead it labels the PR and issue <code>factory:ready-to-merge</code>, removes the
-in-progress label, posts one comment (<code>Ready to merge: all gates pass on &lt;sha&gt;.</code>, the merge command that fits,
-the gate summary) and moves on. See <a href="../../concepts/flag-and-continue/#ready-to-merge">Flag and continue</a>.</p>
+<p>If the harness denies the command or GitHub rejects it, the factory does not retry through <code>gh api</code>, other flags or
+another tool. It labels the PR and issue <code>factory:ready-to-merge</code>, removes the in-progress label, posts one comment
+(<code>Ready to merge: all gates pass on &lt;sha&gt;.</code>, the fitting merge command, the gate summary) and moves on. See <a href="../../concepts/flag-and-continue/#ready-to-merge">Flag and continue</a>.</p>
 
 
 
@@ -1529,7 +1726,7 @@ the gate summary) and moves on. See <a href="../../concepts/flag-and-continue/#r
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../scripts/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Scripts">
+          <a href="../runner-pool/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Runner pool details">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -1539,7 +1736,7 @@ the gate summary) and moves on. See <a href="../../concepts/flag-and-continue/#r
                 Previous
               </span>
               <div class="md-ellipsis">
-                Scripts
+                Runner pool details
               </div>
             </div>
           </a>

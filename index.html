@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="An issue-driven agent factory on Claude Code, packaged as a Copier template. You plan with Claude; agents design, build and review; you stay in the loop by exception.">
+        <meta name="description" content="An issue-driven agent factory for GitHub Copilot and Claude Code, packaged as a Copier template. You plan with the agent; agents design, build and review; you stay in the loop by exception.">
       
       
       
@@ -245,7 +245,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="getting-started/create-a-project/" class="md-tabs__link">
+        <a href="getting-started/quick-start/" class="md-tabs__link">
           
   
   
@@ -497,17 +497,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#where-it-came-from" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Where it came from
-      
-    </span>
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -747,6 +736,34 @@
   
   
     <li class="md-nav__item">
+      <a href="concepts/lessons/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lessons
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="concepts/actions-mode/" class="md-nav__link">
         
   
@@ -755,6 +772,34 @@
     
   
     The GitHub Actions mode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="concepts/local-ci/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local CI
   
 
     
@@ -834,6 +879,34 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="getting-started/quick-start/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -985,6 +1058,34 @@
   
   
     <li class="md-nav__item">
+      <a href="guides/copilot-and-claude/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Copilot and Claude Code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="guides/adopt-in-existing-repo/" class="md-nav__link">
         
   
@@ -1021,6 +1122,34 @@
     
   
     Keep up to date
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="guides/local-ci-setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local CI setup
   
 
     
@@ -1164,6 +1293,62 @@
     
   
     Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reference/ci-variables/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI variables
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reference/runner-pool/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runner pool details
   
 
     
@@ -1376,17 +1561,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#where-it-came-from" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Where it came from
-      
-    </span>
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -1412,25 +1586,64 @@
 
 
 <h1 id="amplifactory">amplifactory<a class="headerlink" href="#amplifactory" title="Permanent link">&para;</a></h1>
-<p>amplifactory turns a repository into an <strong>issue-driven agent factory</strong>. You and Claude (Opus) turn an idea into
-prioritized <strong>lanes</strong> of ordered GitHub issues. Then the factory takes each issue from plan to merged pull request:
-a Sonnet <strong>builder</strong> plans, builds and fixes, a fresh Opus <strong>reviewer</strong> checks the work, and Opus <strong>merges</strong> when every
-gate passes. When it needs a decision from you, it asks <strong>on the pull request</strong> and keeps working on other lanes.</p>
-<p>It's a <a href="https://copier.readthedocs.io/">Copier</a> template: one command creates a repo with the rules, the skill, CI,
-labels, branch protection and a Project board. <code>copier update</code> brings later releases into existing projects.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>idea ──► brainstorm with Opus ──► lanes (P0–P3) of ordered issues ──► you confirm once
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>                                                                          │
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>         ┌────────────────────────────────────────────────────────────────┘
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>         ▼   per lane, one issue at a time, in order
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>   Sonnet builder: plan ──► (Opus checks the plan) ──► build ──► PR
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>                                                                  │
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>   fresh Opus reviewer ∥ CI ──► builder fixes blockers ──► gates ──► merge
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>         │
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>         └─ needs you? question inline on the PR, lane paused, other lanes continue
-</code></pre></div>
+<p>amplifactory turns a repository into an <strong>issue-driven agent factory</strong>. In a GitHub Copilot or Claude Code
+session (the <strong>orchestrator</strong>) you turn an idea into prioritized <strong>lanes</strong> of ordered GitHub issues. The factory then
+takes each issue to a merged PR: a <strong>builder</strong> plans, builds and fixes, a fresh <strong>reviewer</strong> checks, and the
+orchestrator merges when every gate passes. When it needs you, it asks on the PR and keeps working on other lanes.</p>
+<p>It's a <a href="https://copier.readthedocs.io/">Copier</a> template: one command creates a repo with the rules, the <code>factory</code>
+skill, CI, labels, branch protection and a Project board. <code>copier update</code> brings in later releases.</p>
+<pre class="mermaid"><code>%%{init: {"themeCSS": ".node.you .nodeLabel, .node.you .nodeLabel p, .node.agent .nodeLabel, .node.agent .nodeLabel p, .node.gh .nodeLabel, .node.gh .nodeLabel p, .node.done .nodeLabel, .node.done .nodeLabel p { color: #fff !important; } .node.ci .nodeLabel, .node.ci .nodeLabel p { color: #1F1300 !important; } .flowchart-link { stroke: var(--md-mermaid-edge-color) !important; } .marker { fill: var(--md-mermaid-edge-color) !important; stroke: var(--md-mermaid-edge-color) !important; } .edgeLabel, .edgeLabel p { background-color: var(--md-mermaid-label-bg-color) !important; color: var(--md-mermaid-label-fg-color) !important; } .cluster-label .nodeLabel, .cluster-label p { color: var(--md-mermaid-label-fg-color) !important; }"}}%%
+flowchart LR
+    you(["&lt;b&gt;You&lt;/b&gt;&lt;br/&gt;idea, answers, final say"]):::you
+    orch["&lt;b&gt;Orchestrator&lt;/b&gt;&lt;br/&gt;your Copilot or Claude session"]:::agent
+    lanes["&lt;b&gt;Lanes P0–P3&lt;/b&gt;&lt;br/&gt;ordered issues"]:::gh
+
+    you --&gt;|"idea"| orch
+    orch --&gt;|"brainstorm"| lanes
+    lanes --&gt;|"you confirm&lt;br/&gt;once per lane"| builder
+
+    subgraph issue["Per issue, in order"]
+        direction LR
+        builder["&lt;b&gt;Builder&lt;/b&gt;&lt;br/&gt;plan, build, fix"]:::agent
+        pr["&lt;b&gt;Pull request&lt;/b&gt;&lt;br/&gt;with a Handoff"]:::gh
+        reviewer["&lt;b&gt;Fresh reviewer&lt;/b&gt;&lt;br/&gt;blocker, improvement,&lt;br/&gt;question comments"]:::agent
+        actions["&lt;b&gt;GitHub Actions&lt;/b&gt;&lt;br/&gt;queues ci.yml jobs"]:::gh
+        pool["&lt;b&gt;Runner pool&lt;/b&gt;&lt;br/&gt;on your Mac, one&lt;br/&gt;fresh runner per job"]:::ci
+        gates["&lt;b&gt;13 gates&lt;/b&gt;&lt;br/&gt;CI green, no blockers,&lt;br/&gt;Handoff, docs"]:::agent
+        merge(["&lt;b&gt;Merge&lt;/b&gt;"]):::done
+
+        builder --&gt;|"opens"| pr
+        pr --&gt; reviewer
+        reviewer --&gt;|"blockers"| builder
+        pr --&gt;|"pull_request"| actions
+        actions --&gt;|"self-hosted"| pool
+        pool --&gt;|"checks"| pr
+        pr --&gt; gates
+        gates --&gt;|"all pass"| merge
+    end
+
+    needs["&lt;b&gt;Needs you?&lt;/b&gt;&lt;br/&gt;question inline on the PR;&lt;br/&gt;the lane pauses, others continue"]:::you
+    builder -.-&gt;|"decision only you can make"| needs
+    gates -.-&gt;|"not sure, or a gate fails"| needs
+    needs -.-&gt;|"you answer, say resume"| orch
+    merge -.-&gt;|"next issue"| builder
+
+    classDef you fill:#00796B,stroke:#004D40,color:#fff,stroke-width:2px
+    classDef agent fill:#5C5CE0,stroke:#3D3DB8,color:#fff
+    classDef gh fill:#57606A,stroke:#30363D,color:#fff
+    classDef ci fill:#F59E0B,stroke:#B45309,color:#1F1300,stroke-width:2px
+    classDef done fill:#1A7F4B,stroke:#0F5132,color:#fff
+    style issue fill:none,stroke:#00796B,stroke-width:2px,stroke-dasharray:6 4</code></pre>
+<p><em>Blue: agents. Grey: GitHub. Amber: CI on the runner pool on your Mac. Teal: you. Dotted lines: when it needs you, and the next issue.</em></p>
 <h2 id="get-started">Get started<a class="headerlink" href="#get-started" title="Permanent link">&para;</a></h2>
 <div class="grid cards">
 <ul>
+<li>
+<p><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 2h10l-3.5 7H17l-7 13v-8H7zm2 2v8h3v2.66L14 11h-3.76l3.52-7z"/></svg></span> <strong>Quick start</strong></p>
+<hr />
+<p>One small CLI, from <code>copier copy</code> of the template to a merged PR with CI on your Mac's runner pool.</p>
+<p><a href="getting-started/quick-start/"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> Quick start</a></p>
+</li>
 <li>
 <p><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m13.13 22.19-1.63-3.83c1.57-.58 3.04-1.36 4.4-2.27zM5.64 12.5l-3.83-1.63 6.1-2.77C7 9.46 6.22 10.93 5.64 12.5M19.22 4c.28 0 .53 0 .74.05.17 1.39-.02 4.25-3.3 7.53-1.7 1.71-3.73 3.02-6.01 3.89l-2.15-2.1c.92-2.31 2.23-4.34 3.92-6.03C15.18 4.58 17.64 4 19.22 4m0-2c-1.98 0-4.98.69-8.22 3.93-2.19 2.19-3.5 4.6-4.35 6.71-.28.75-.09 1.57.46 2.13l2.13 2.12c.38.38.89.61 1.42.61.23 0 .47-.06.7-.15A19.1 19.1 0 0 0 18.07 13c5.66-5.66 3.54-10.61 3.54-10.61S20.7 2 19.22 2m-4.68 7.46c-.78-.78-.78-2.05 0-2.83s2.05-.78 2.83 0c.77.78.78 2.05 0 2.83s-2.05.78-2.83 0m-5.66 7.07-1.41-1.41zM6.24 22l3.64-3.64c-.34-.09-.67-.24-.97-.45L4.83 22zM2 22h1.41l4.77-4.76-1.42-1.41L2 20.59zm0-2.83 4.09-4.08c-.21-.3-.36-.62-.45-.97L2 17.76z"/></svg></span> <strong>Create a project</strong></p>
 <hr />
@@ -1456,43 +1669,46 @@ labels, branch protection and a Project board. <code>copier update</code> brings
 <tbody>
 <tr>
 <td><a href="concepts/lanes/"><strong>Lanes and priorities</strong></a></td>
-<td>Features become lanes, each a parent issue whose native sub-issues run in order. <code>P0</code>–<code>P3</code> priorities and "blocked by" links drive the schedule. One lane at a time unless you say otherwise.</td>
+<td>Features become lanes of ordered sub-issues; <code>P0</code>–<code>P3</code> and "blocked by" links set the schedule.</td>
 </tr>
 <tr>
 <td><a href="concepts/pipeline/"><strong>The pipeline</strong></a></td>
-<td>Two subagents per issue: one Sonnet builder reused for plan, build and fixes, and one fresh Opus reviewer. Only blockers are fixed in-PR before a first release; everything else becomes an <code>improvement</code> issue.</td>
+<td>One builder and one fresh reviewer per issue. Before a first release only blockers are fixed in the PR; the rest become <code>improvement</code> issues.</td>
 </tr>
 <tr>
 <td><a href="concepts/flag-and-continue/"><strong>Flag and continue</strong></a></td>
-<td>Questions go on the PR as inline comments with options and a recommendation. You answer whenever you like, then say "resume".</td>
-</tr>
-<tr>
-<td><a href="concepts/lanes/#proposals-become-issues"><strong>Proposals become issues</strong></a></td>
-<td>Follow-ups and audit results the orchestrator proposes are proposed as a sub-issue, lane or doc-debt issue, never as an ad-hoc fix. One confirmation creates it.</td>
+<td>Questions go on the PR with options and a recommendation. Answer whenever you like, then say "resume".</td>
 </tr>
 <tr>
 <td><a href="concepts/real-data/"><strong>Real data</strong></a></td>
-<td><code>never</code>, <code>with-approval</code> or <code>allowed</code>: how far agents may read real data. Never committed or quoted at any level; a missing line reads as <code>never</code>.</td>
+<td><code>never</code>, <code>with-approval</code> or <code>allowed</code>: how far agents may read real data. It is never committed or quoted.</td>
 </tr>
 <tr>
 <td><a href="concepts/docs-with-code/"><strong>Docs ship with the code</strong></a></td>
-<td>Every code change brings its docs. The Handoff's Docs line is a merge gate, and old mismatches go to the "Documentation tech-debt" tracker.</td>
+<td>Every code change brings its docs; the Handoff's Docs line is a merge gate.</td>
+</tr>
+<tr>
+<td><a href="concepts/lessons/"><strong>Lessons</strong></a></td>
+<td>A factory problem found in your project becomes a <code>lesson</code> issue here, then a release, then an update in every project.</td>
+</tr>
+<tr>
+<td><a href="guides/copilot-and-claude/"><strong>Copilot and Claude Code</strong></a></td>
+<td>Run the factory in either: setup, a model per role, what differs, and the Actions mode with each.</td>
 </tr>
 <tr>
 <td><a href="guides/keep-up-to-date/"><strong>Keep up to date</strong></a></td>
-<td><code>sync-root-factory</code> moves a generated or adopting repo to the latest release by PR; <code>factory-lesson</code> files factory problems upstream.</td>
+<td><code>sync-root-factory</code> moves a repo to the latest release by PR; <code>factory-lesson</code> files factory problems in this repo.</td>
+</tr>
+<tr>
+<td><a href="concepts/local-ci/"><strong>Local CI</strong></a></td>
+<td>One runner pool per Mac runs the CI of every factory repo on it, where GitHub-hosted runners are off.</td>
 </tr>
 <tr>
 <td><a href="concepts/where-knowledge-lives/"><strong>Where knowledge lives</strong></a></td>
-<td>GitHub and the repo are the source of truth: issues, PRs, review threads, plans, Handoffs. The run log and Claude's memory only point at them.</td>
+<td>Issues, PRs, review threads, plans and Handoffs are the source of truth; the run log (<code>.factory/runs/</code>) and agent memory only point at them.</td>
 </tr>
 </tbody>
 </table>
-<h2 id="where-it-came-from">Where it came from<a class="headerlink" href="#where-it-came-from" title="Permanent link">&para;</a></h2>
-<p>The factory started as a label-by-label GitHub Actions pipeline for one project. It was then generalized into this
-template and hardened by driving a real project, pensieve-traces, through it. Every factory problem found along the
-way became a <code>lesson</code> issue and then a release. The <a href="reference/changelog/">changelog</a> tells that story, one
-release at a time.</p>
 
 
 

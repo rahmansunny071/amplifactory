@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="What happens to one issue: a Sonnet builder reused for plan, build and fixes, a fresh Opus reviewer, urgency triage and thirteen merge gates.">
+        <meta name="description" content="What happens to one issue: a builder reused for plan, build and fixes, a fresh reviewer, urgency triage and thirteen merge gates.">
       
       
       
@@ -247,7 +247,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../getting-started/create-a-project/" class="md-tabs__link">
+        <a href="../../getting-started/quick-start/" class="md-tabs__link">
           
   
   
@@ -632,17 +632,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#why-this-shape" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Why this shape
-      
-    </span>
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -771,6 +760,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../lessons/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lessons
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../actions-mode/" class="md-nav__link">
         
   
@@ -779,6 +796,34 @@
     
   
     The GitHub Actions mode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../local-ci/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local CI
   
 
     
@@ -858,6 +903,34 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/quick-start/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -1009,6 +1082,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../guides/copilot-and-claude/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Copilot and Claude Code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../guides/adopt-in-existing-repo/" class="md-nav__link">
         
   
@@ -1045,6 +1146,34 @@
     
   
     Keep up to date
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/local-ci-setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local CI setup
   
 
     
@@ -1188,6 +1317,62 @@
     
   
     Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/ci-variables/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI variables
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/runner-pool/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runner pool details
   
 
     
@@ -1420,17 +1605,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#why-this-shape" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Why this shape
-      
-    </span>
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -1456,13 +1630,13 @@
 
 
 <h1 id="the-pipeline">The pipeline<a class="headerlink" href="#the-pipeline" title="Permanent link">&para;</a></h1>
-<p>The skill runs in <strong>your Claude Code session</strong>. You (Opus) are the orchestrator: you pick the work, check plans,
-verify findings and merge. The heavy lifting goes to two subagents per issue.</p>
+<p>The skill runs in <strong>your GitHub Copilot or Claude Code session</strong>, the orchestrator: it picks work, checks plans,
+verifies findings and merges. Subagents do the heavy lifting.</p>
 <table>
 <thead>
 <tr>
 <th>Role</th>
-<th>Model</th>
+<th>Default model (Claude Code / Copilot)</th>
 <th>Lifetime</th>
 <th>Does</th>
 </tr>
@@ -1470,47 +1644,76 @@ verify findings and merge. The heavy lifting goes to two subagents per issue.</p
 <tbody>
 <tr>
 <td><strong>Orchestrator</strong></td>
-<td>Opus (your session)</td>
+<td><code>opus</code> / <code>claude-opus-5.5</code> (your session)</td>
 <td>the run</td>
 <td>queue, plan check, gates, merge, run log</td>
 </tr>
 <tr>
 <td><strong>Builder</strong></td>
-<td>Sonnet</td>
-<td>one per issue, <strong>reused</strong> via SendMessage</td>
+<td><code>sonnet</code> / <code>claude-sonnet-5.5</code></td>
+<td>one per issue, <strong>reused</strong> for build and fixes</td>
 <td>plan → build → fixes, keeps the PR's Handoff current</td>
 </tr>
 <tr>
 <td><strong>Design reviewer</strong></td>
-<td>Opus, fresh</td>
+<td><code>opus</code> / <code>claude-opus-5.5</code>, fresh</td>
 <td>critical issues only</td>
 <td>reviews the plan before any code</td>
 </tr>
 <tr>
 <td><strong>Code reviewer</strong></td>
-<td>Opus, fresh</td>
+<td><code>opus</code> / <code>claude-opus-5.5</code>, fresh</td>
 <td>once per issue</td>
 <td>inline findings while CI runs</td>
 </tr>
 </tbody>
 </table>
+<p>Change the models in the generated <code>CLAUDE.md</code> ("Models"). The skill's "Claude Code and Copilot" table maps each
+action onto the harness's tools: the builder is reused with <code>SendMessage</code> in Claude Code, and in Copilot it is a
+background agent messaged with <code>write_agent</code>.</p>
 <h2 id="one-issue-step-by-step">One issue, step by step<a class="headerlink" href="#one-issue-step-by-step" title="Permanent link">&para;</a></h2>
+<pre class="mermaid"><code>%%{init: {"themeCSS": ".node.you .nodeLabel, .node.you .nodeLabel p, .node.agent .nodeLabel, .node.agent .nodeLabel p, .node.gh .nodeLabel, .node.gh .nodeLabel p, .node.done .nodeLabel, .node.done .nodeLabel p { color: #fff !important; } .node.ci .nodeLabel, .node.ci .nodeLabel p { color: #1F1300 !important; } .flowchart-link { stroke: var(--md-mermaid-edge-color) !important; } .marker { fill: var(--md-mermaid-edge-color) !important; stroke: var(--md-mermaid-edge-color) !important; } .edgeLabel, .edgeLabel p { background-color: var(--md-mermaid-label-bg-color) !important; color: var(--md-mermaid-label-fg-color) !important; } .cluster-label .nodeLabel, .cluster-label p { color: var(--md-mermaid-label-fg-color) !important; }"}}%%
+flowchart LR
+    plan["&lt;b&gt;1. Plan&lt;/b&gt;&lt;br/&gt;design file and&lt;br/&gt;draft PR"]:::agent
+    check["&lt;b&gt;2. Plan check&lt;/b&gt;&lt;br/&gt;you read it; critical issues&lt;br/&gt;get a design reviewer"]:::agent
+    build["&lt;b&gt;3. Build&lt;/b&gt;&lt;br/&gt;code, docs, checks,&lt;br/&gt;Handoff, PR ready"]:::agent
+    review["&lt;b&gt;4a. Fresh reviewer&lt;/b&gt;&lt;br/&gt;inline comments"]:::agent
+    ci["&lt;b&gt;4b. CI&lt;/b&gt;&lt;br/&gt;on the runner pool&lt;br/&gt;or GitHub-hosted"]:::ci
+    fix["&lt;b&gt;5. Fix&lt;/b&gt;&lt;br/&gt;same builder fixes blockers;&lt;br/&gt;you verify each one"]:::agent
+    gates["&lt;b&gt;6. 13 gates&lt;/b&gt;&lt;br/&gt;on the PR's current commit"]:::agent
+    merge(["&lt;b&gt;Merge&lt;/b&gt;&lt;br/&gt;next issue in the lane"]):::done
+    ready["&lt;b&gt;factory:ready-to-merge&lt;/b&gt;&lt;br/&gt;you merge"]:::you
+    ask["&lt;b&gt;Question on the PR&lt;/b&gt;&lt;br/&gt;the lane pauses"]:::you
+
+    plan --&gt; check --&gt; build
+    build --&gt; review
+    build --&gt; ci
+    review --&gt; fix
+    ci --&gt; fix
+    fix --&gt; gates
+    gates --&gt;|"all pass"| merge
+    gates -.-&gt;|"merge refused"| ready
+    gates -.-&gt;|"a gate fails, not mechanical"| ask
+
+    classDef you fill:#00796B,stroke:#004D40,color:#fff,stroke-width:2px
+    classDef agent fill:#5C5CE0,stroke:#3D3DB8,color:#fff
+    classDef ci fill:#F59E0B,stroke:#B45309,color:#1F1300,stroke-width:2px
+    classDef done fill:#1A7F4B,stroke:#0F5132,color:#fff</code></pre>
 <ol>
 <li><strong>Plan.</strong> The builder writes <code>.factory/designs/issue-N.md</code> (goal, approach, files and interfaces touched,
    dependencies, risks, tests) and opens a <strong>draft PR</strong> from <code>local/issue-N</code>.</li>
 <li><strong>Plan check.</strong> Standard issues: you read the plan. <strong>Critical</strong> issues (privacy or security code, a new
-   dependency, a shared data contract, a public interface others build on) get a fresh Opus design reviewer.</li>
-<li><strong>Build.</strong> The same builder implements, <strong>updates the docs the change affects</strong>, runs the checks from
-   <code>CLAUDE.md</code> until green, fills in the PR's <strong>Handoff</strong> (including a <strong>Docs</strong> line: what was updated, or
-   "none needed" and why) and marks it ready.</li>
-<li><strong>Review ∥ CI.</strong> A fresh Opus reviewer reads the diff against the plan and <code>CLAUDE.md</code> and posts <strong>inline
-   comments</strong> tagged <code>[blocker]</code>, <code>[improvement]</code>, <code>[doc-debt]</code> or <code>[question]</code>. Every blocker comes with a
-   reproduction. It also checks that docs and code agree in the changed area (see <a href="#docs-ship-with-the-code">Docs ship with the
-   code</a>).</li>
+   dependency, a shared data contract, a public interface others build on) get a fresh design reviewer.</li>
+<li><strong>Build.</strong> The same builder implements, <strong>updates the affected docs</strong>, runs the checks from <code>CLAUDE.md</code> until
+   green, fills in the PR's <strong>Handoff</strong> (including a <strong>Docs</strong> line: what was updated, or "none needed" and why) and
+   marks it ready.</li>
+<li><strong>Review ∥ CI.</strong> A fresh reviewer checks the diff against the plan and <code>CLAUDE.md</code>, including that docs and code
+   agree (see <a href="#docs-ship-with-the-code">Docs ship with the code</a>). It posts <strong>inline comments</strong> tagged
+   <code>[blocker]</code>, <code>[improvement]</code>, <code>[doc-debt]</code> or <code>[question]</code>; every blocker comes with a reproduction.</li>
 <li><strong>Fix.</strong> The builder fixes blockers. You verify each with its reproduction on the new commit and resolve the
    thread. There is no second full review.</li>
-<li><strong>Gates and merge.</strong> When all <a href="../../reference/gates/">thirteen gates</a> pass, the factory merges (merge commit) and the lane
-   moves on. If the merge is refused, it hands the PR to you instead (see <a href="../flag-and-continue/#ready-to-merge">Ready to
+<li><strong>Gates and merge.</strong> When all <a href="../../reference/gates/">thirteen gates</a> pass, the factory merges (merge commit) and
+   the lane moves on. If the merge is refused, it hands the PR to you (see <a href="../flag-and-continue/#ready-to-merge">Ready to
    merge</a>).</li>
 </ol>
 <h2 id="real-data">Real data<a class="headerlink" href="#real-data" title="Permanent link">&para;</a></h2>
@@ -1525,15 +1728,10 @@ a PR:</p>
 <li>irreversible loss or overwrite of the user's existing data (source files, history, remote repos) on a plausible invocation, even a mistaken one, when a cheap guard would prevent it;</li>
 <li>a test falsely passes.</li>
 </ul>
-<p>Everything else is collected into <strong>one <code>improvement</code> issue</strong> per PR, usually in a hardening lane. Switch the line to
+<p>Everything else goes into <strong>one <code>improvement</code> issue</strong> per PR, usually in a hardening lane. Set the line to
 <strong><code>hardening</code></strong> before a release, and reviews become thorough again.</p>
 <h2 id="docs-ship-with-the-code">Docs ship with the code<a class="headerlink" href="#docs-ship-with-the-code" title="Permanent link">&para;</a></h2>
-<p>Every code change brings its docs in the same PR, and the tracker catches the rest: see <a href="../docs-with-code/">Docs ship with the code</a>.</p>
-<h2 id="why-this-shape">Why this shape<a class="headerlink" href="#why-this-shape" title="Permanent link">&para;</a></h2>
-<p>The first version used cold subagents for every stage, re-reviewed after every fix and treated every finding as a
-blocker. Two issues cost about 1.4M subagent tokens. Reusing one builder, using one fresh reviewer and triaging by
-urgency cut most of that, without losing the defects that matter. Opus reviews reproduced bugs, including privacy
-leaks, that an earlier Sonnet review had called "ready".</p>
+<p>Every code change brings its docs in the same PR: see <a href="../docs-with-code/">Docs ship with the code</a>.</p>
 
 
 

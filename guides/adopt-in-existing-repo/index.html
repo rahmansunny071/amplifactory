@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://rahmansunny071.github.io/amplifactory/guides/adopt-in-existing-repo/">
       
       
-        <link rel="prev" href="../day-to-day/">
+        <link rel="prev" href="../copilot-and-claude/">
       
       
         <link rel="next" href="../keep-up-to-date/">
@@ -245,7 +245,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../getting-started/create-a-project/" class="md-tabs__link">
+        <a href="../../getting-started/quick-start/" class="md-tabs__link">
           
   
   
@@ -657,6 +657,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../concepts/lessons/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lessons
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../concepts/actions-mode/" class="md-nav__link">
         
   
@@ -665,6 +693,34 @@
     
   
     The GitHub Actions mode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/local-ci/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local CI
   
 
     
@@ -744,6 +800,34 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/quick-start/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -897,6 +981,34 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../copilot-and-claude/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Copilot and Claude Code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -981,23 +1093,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Option 2: just the skill">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#keeping-the-skill-up-to-date" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Keeping the skill up to date
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
       
         <li class="md-nav__item">
@@ -1035,6 +1130,34 @@
     
   
     Keep up to date
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../local-ci-setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local CI setup
   
 
     
@@ -1178,6 +1301,62 @@
     
   
     Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/ci-variables/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI variables
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/runner-pool/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runner pool details
   
 
     
@@ -1386,23 +1565,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Option 2: just the skill">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#keeping-the-skill-up-to-date" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Keeping the skill up to date
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
       
         <li class="md-nav__item">
@@ -1442,48 +1604,53 @@
 
 <h1 id="adopt-in-an-existing-repo">Adopt in an existing repo<a class="headerlink" href="#adopt-in-an-existing-repo" title="Permanent link">&para;</a></h1>
 <h2 id="option-1-the-whole-template">Option 1: the whole template<a class="headerlink" href="#option-1-the-whole-template" title="Permanent link">&para;</a></h2>
-<p>Run Copier <strong>into</strong> the existing repo. It asks the same questions and shows a conflict for every file that already
-exists:</p>
+<p>Run Copier <strong>into</strong> the repo. It shows a conflict for every file that already exists.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nb">cd</span><span class="w"> </span>existing-repo
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>uvx<span class="w"> </span>copier<span class="w"> </span>copy<span class="w"> </span>gh:rahmansunny071/amplifactory<span class="w"> </span>.
 </code></pre></div>
-<p>Keep your own <code>pyproject.toml</code>, package and tests where they conflict. Take <code>CLAUDE.md</code>, <code>.claude/</code>, <code>.factory/</code>,
-<code>.github/</code> and <code>scripts/bootstrap.sh</code> from the template, then merge your existing CI into <code>ci.yml</code> and the "checks
-pass" list in <code>CLAUDE.md</code>, which must stay identical. Run <code>./scripts/bootstrap.sh</code>: it skips what already exists.</p>
-<p>Because <code>.copier-answers.yml</code> now exists, later releases come in with <code>uvx copier update</code>.</p>
+<ul>
+<li>Keep your own <code>pyproject.toml</code>, package and tests where they conflict.</li>
+<li>Take <code>CLAUDE.md</code>, <code>.claude/</code>, <code>.factory/</code>, <code>.github/</code> and <code>scripts/bootstrap.sh</code> from the template.</li>
+<li>Merge your CI into <code>ci.yml</code> and the "checks pass" list in <code>CLAUDE.md</code>; they must stay identical.</li>
+<li>Run <code>./scripts/bootstrap.sh</code>. It skips what already exists.</li>
+</ul>
+<p>Later releases come in with <code>uvx copier update</code>.</p>
 <h2 id="option-2-just-the-skill">Option 2: just the skill<a class="headerlink" href="#option-2-just-the-skill" title="Permanent link">&para;</a></h2>
-<p>If you only want the Claude Code skill:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nv">URL</span><span class="o">=</span>https://github.com/rahmansunny071/amplifactory.git<span class="p">;</span><span class="w"> </span><span class="nv">TAG</span><span class="o">=</span>vX.Y.Z<span class="w">   </span><span class="c1"># a release tag</span>
+<p>For a repo with no factory skill yet. If you already have <code>factory/</code>, see
+<a href="../keep-up-to-date/#update-a-repo-that-only-carries-the-skill">Keep up to date</a> instead.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nv">URL</span><span class="o">=</span>gh:rahmansunny071/amplifactory<span class="p">;</span><span class="w"> </span><span class="nv">TAG</span><span class="o">=</span>vX.Y.Z<span class="w">   </span><span class="c1"># a release tag</span>
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nv">T</span><span class="o">=</span><span class="k">$(</span>mktemp<span class="w"> </span>-d<span class="k">)</span><span class="w">                                  </span><span class="c1"># outside the repo</span>
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>git<span class="w"> </span>init<span class="w"> </span>-q<span class="w"> </span>--bare<span class="w"> </span><span class="s2">"</span><span class="nv">$T</span><span class="s2">/src"</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>git<span class="w"> </span>-C<span class="w"> </span><span class="s2">"</span><span class="nv">$T</span><span class="s2">/src"</span><span class="w"> </span>fetch<span class="w"> </span>-q<span class="w"> </span>--depth<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="s2">"</span><span class="nv">$URL</span><span class="s2">"</span><span class="w"> </span><span class="s2">"refs/tags/</span><span class="si">${</span><span class="nv">TAG</span><span class="si">}</span><span class="s2">:refs/tags/</span><span class="si">${</span><span class="nv">TAG</span><span class="si">}</span><span class="s2">"</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="nb">test</span><span class="w"> </span><span class="s2">"</span><span class="k">$(</span>git<span class="w"> </span>-C<span class="w"> </span><span class="s2">"</span><span class="nv">$T</span><span class="s2">/src"</span><span class="w"> </span>cat-file<span class="w"> </span>-t<span class="w"> </span><span class="s2">"refs/tags/</span><span class="nv">$TAG</span><span class="s2">"</span><span class="k">)</span><span class="s2">"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>tag<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">"not annotated: stop"</span><span class="p">;</span><span class="w"> </span>false<span class="p">;</span><span class="w"> </span><span class="o">}</span><span class="w">  </span><span class="c1"># must be tag</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>git<span class="w"> </span>-C<span class="w"> </span><span class="s2">"</span><span class="nv">$T</span><span class="s2">/src"</span><span class="w"> </span>archive<span class="w"> </span><span class="s2">"</span><span class="nv">$TAG</span><span class="s2">"</span><span class="w"> </span>template/.claude/skills<span class="w"> </span><span class="p">|</span><span class="w"> </span>tar<span class="w"> </span>-x<span class="w"> </span>-k<span class="w"> </span>--strip-components<span class="o">=</span><span class="m">2</span><span class="w"> </span>-C<span class="w"> </span>.claude/
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>git<span class="w"> </span>--git-dir<span class="o">=</span><span class="s2">"</span><span class="nv">$T</span><span class="s2">/src"</span><span class="w"> </span>fetch<span class="w"> </span>-q<span class="w"> </span>--depth<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="s2">"</span><span class="nv">$URL</span><span class="s2">"</span><span class="w"> </span><span class="s2">"refs/tags/</span><span class="si">${</span><span class="nv">TAG</span><span class="si">}</span><span class="s2">:refs/tags/</span><span class="si">${</span><span class="nv">TAG</span><span class="si">}</span><span class="s2">"</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="nb">test</span><span class="w"> </span><span class="s2">"</span><span class="k">$(</span>git<span class="w"> </span>--git-dir<span class="o">=</span><span class="s2">"</span><span class="nv">$T</span><span class="s2">/src"</span><span class="w"> </span>cat-file<span class="w"> </span>-t<span class="w"> </span><span class="s2">"refs/tags/</span><span class="nv">$TAG</span><span class="s2">"</span><span class="k">)</span><span class="s2">"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>tag<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">"not annotated: stop"</span><span class="p">;</span><span class="w"> </span>false<span class="p">;</span><span class="w"> </span><span class="o">}</span><span class="w">  </span><span class="c1"># must be tag</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>git<span class="w"> </span>--git-dir<span class="o">=</span><span class="s2">"</span><span class="nv">$T</span><span class="s2">/src"</span><span class="w"> </span>archive<span class="w"> </span><span class="s2">"</span><span class="nv">$TAG</span><span class="s2">"</span><span class="w"> </span>template/.claude/skills<span class="w"> </span><span class="p">|</span><span class="w"> </span>tar<span class="w"> </span>-x<span class="w"> </span>-k<span class="w"> </span>--strip-components<span class="o">=</span><span class="m">2</span><span class="w"> </span>-C<span class="w"> </span>.claude/
 </code></pre></div>
-<p>Use a release <strong>tag</strong>, never <code>main</code>: the skill itself refuses anything else. Releases up to v0.7.0 have no
-<code>sync-root-factory</code> folder, so use the first release that ships it. <code>tar -k</code> keeps files you already have, so a skill of the
-same name is not overwritten (check <code>.claude/skills/</code> for one). Commit the result. This is for a repo that has
-no factory skill yet; if you already have <code>factory/</code>, follow
-<a href="../keep-up-to-date/#update-a-repo-that-only-carries-the-skill">Keeping the skill up to date</a> instead.</p>
+<ul>
+<li>Use a release <strong>tag</strong>, never <code>main</code>; the skill refuses anything else.</li>
+<li>Releases up to v0.7.0 have no <code>sync-root-factory</code>; use the first release that ships it.</li>
+<li><code>tar -k</code> keeps files you already have, so a same-named skill is not overwritten.</li>
+<li>Commit the result.</li>
+</ul>
 <p>Then add to your <code>CLAUDE.md</code>:</p>
 <ul>
-<li>a <strong>Release phase</strong> line (<code>mvp</code> or <code>hardening</code>) and the blocker definition;</li>
-<li>a <strong>Real data</strong> section whose first line is <code>Real data: never.</code> (or <code>with-approval</code> / <code>allowed</code>); without it the skill treats the repo as <code>never</code>;</li>
-<li>a <strong>"checks pass"</strong> list identical to your CI;</li>
-<li>the <strong>hard rules</strong> you want enforced (see the template's <code>CLAUDE.md.jinja</code>), including "every code change
-  ships its docs in the same PR";</li>
+<li><strong>Release phase</strong>: <code>mvp</code> or <code>hardening</code>, and the blocker definition;</li>
+<li><strong>Real data</strong>: first line <code>Real data: never.</code> (or <code>with-approval</code> / <code>allowed</code>); without it the skill assumes
+  <code>never</code>;</li>
+<li><strong>Models</strong>: the model for each role (orchestrator, builder, reviewer) in Claude Code and GitHub Copilot, copied
+  from the template's <code>CLAUDE.md.jinja</code>; without it the skill uses the template's defaults;</li>
+<li><strong>"checks pass"</strong>: a list identical to your CI;</li>
+<li><strong>Hard rules</strong> you want enforced (see <code>CLAUDE.md.jinja</code>), including "every code change ships its docs in the
+  same PR";</li>
 <li><strong>Where knowledge lives</strong>.</li>
 </ul>
-<p>And create the labels the skill uses: <code>factory:needs-maintainer</code>, <code>factory:ready-to-merge</code>, <code>improvement</code>, <code>lane</code>, <code>P0</code>–<code>P3</code>,
-<code>documentation</code>. The skill creates the "Documentation tech-debt" issue itself the first time it needs it.</p>
-<h3 id="keeping-the-skill-up-to-date">Keeping the skill up to date<a class="headerlink" href="#keeping-the-skill-up-to-date" title="Permanent link">&para;</a></h3>
-<p>See <a href="../keep-up-to-date/#update-a-repo-that-only-carries-the-skill">Keep up to date</a>: the first sync (with <code>--assume-tag</code>), the check, and what the sync changes.</p>
+<p>Create the labels the skill uses: <code>factory:needs-maintainer</code>, <code>factory:ready-to-merge</code>, <code>improvement</code>, <code>lane</code>,
+<code>P0</code> to <code>P3</code>, <code>documentation</code>. The skill creates the "Documentation tech-debt" issue itself when needed.</p>
+<p>To update later, see <a href="../keep-up-to-date/#update-a-repo-that-only-carries-the-skill">Keep up to date</a>.</p>
 <h2 id="organise-existing-issues-into-lanes">Organise existing issues into lanes<a class="headerlink" href="#organise-existing-issues-into-lanes" title="Permanent link">&para;</a></h2>
 <blockquote>
 <p>organise the open issues into lanes</p>
 </blockquote>
-<p>Opus proposes lanes, an order and priorities; after your confirmation it wires them with <code>lanes.py</code>. That's how
-pensieve-traces moved to lanes: four lanes, thirteen issues, four "blocked by" links.</p>
+<p>The orchestrator proposes lanes, an order and priorities; after you confirm, it wires them with <code>lanes.py</code>.</p>
 
 
 
@@ -1525,7 +1692,7 @@ pensieve-traces moved to lanes: four lanes, thirteen issues, four "blocked by" l
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../day-to-day/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Day-to-day">
+          <a href="../copilot-and-claude/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Copilot and Claude Code">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -1535,7 +1702,7 @@ pensieve-traces moved to lanes: four lanes, thirteen issues, four "blocked by" l
                 Previous
               </span>
               <div class="md-ellipsis">
-                Day-to-day
+                Copilot and Claude Code
               </div>
             </div>
           </a>

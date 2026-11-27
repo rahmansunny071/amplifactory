@@ -243,7 +243,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../getting-started/create-a-project/" class="md-tabs__link">
+        <a href="../../getting-started/quick-start/" class="md-tabs__link">
           
   
   
@@ -655,6 +655,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../concepts/lessons/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lessons
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../concepts/actions-mode/" class="md-nav__link">
         
   
@@ -663,6 +691,34 @@
     
   
     The GitHub Actions mode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/local-ci/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local CI
   
 
     
@@ -742,6 +798,34 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/quick-start/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -893,6 +977,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../guides/copilot-and-claude/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Copilot and Claude Code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../guides/adopt-in-existing-repo/" class="md-nav__link">
         
   
@@ -929,6 +1041,34 @@
     
   
     Keep up to date
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/local-ci-setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local CI setup
   
 
     
@@ -1077,6 +1217,62 @@
     
   
     Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ci-variables/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI variables
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../runner-pool/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runner pool details
   
 
     
@@ -1308,6 +1504,7 @@
 <li><strong>#96, #97: Actions mode with Copilot.</strong> With <code>actions_agent: copilot</code>, the design, build and review workflows run a pinned, job-local GitHub Copilot CLI signed in with the workflow's own token (<code>copilot-requests: write</code>; no secret), on the model in <code>copilot_model</code>. A hook from the default branch, <code>.github/factory/tool_rules.py</code>, gives each agent only what its Claude twin may do; no agent merges, and the review agent only comments. A design or build run that ends without its PR fails. The build workflow approves the CI runs GitHub holds on the PR its token opened. <code>bootstrap.sh</code> turns on "Allow GitHub Actions to create and approve pull requests" and warns when <code>main</code> has no ruleset; Copier's update message says how to turn it on for an existing repo.</li>
 <li><strong>#94: an opt-in local CI runner pool on the maintainer's Mac.</strong> CI stays on GitHub-hosted runners by default. Where they're off (EMU accounts, for one), the new <code>factory-ci</code> skill ("set up CI runners") sets up one pool per Mac: a launchd service starts a fresh just-in-time runner per CI job, shares slots fairly across repos and then PRs (by P label), keeps jobs at low priority, and can run each job in its own Linux container that can't reach the Mac's own services. <code>setup.py</code> checks health (<code>doctor</code>) and runs the setup step by step (<code>plan</code>, <code>apply</code>, <code>service</code>, <code>container</code>); <code>runners.py</code> is the pool (<code>status</code>, <code>pause</code>, <code>resume</code>, <code>stats</code>, <code>logs</code>). The generated <code>ci.yml</code> routes by two repository variables: <code>FACTORY_RUNNER=local</code> sends its jobs to the pool (never a fork's PR), and <code>FACTORY_CI=off</code> skips them. Copilot Actions-mode jobs use the pool only when the repo is private. The factory skill's new step 0 runs <code>doctor</code> and, when <code>FACTORY_RUNNER</code> is unset, goes on with hosted runners without asking; if it is <code>local</code> and this Mac's pool doesn't serve the repo yet, it tells the maintainer once. <code>doctor</code> reads the repo variables with gh's own login when no login is named after the owner (an org's repo, or <code>GH_TOKEN</code>). With <code>FACTORY_CI=off</code>, gate 1 runs the <code>CLAUDE.md</code> checks and records a <code>factory/local-checks</code> commit status. <code>queue.py</code> shows the pool's status line, and build PRs carry the issue's P label. Template CI checks the routing, runs both scripts' self-tests, and keeps its own jobs on GitHub-hosted runners.</li>
 <li><strong>#92, #93: what the pool's design rests on.</strong> One install folder per just-in-time runner (APFS clones make that cheap), runner registration and queue facts checked against GitHub, and a launchd service whose <code>PATH</code> drops an agent app's own tool folders (an app's trimmed git has no <code>submodule</code>, which <code>actions/checkout</code> runs).</li>
+<li><strong>#55: improved docs, and a Copilot and Claude Code guide.</strong> Action-oriented pages with colour Mermaid diagrams, a Quick start, <code>concepts/lessons</code>, <code>concepts/local-ci</code>, <code>guides/local-ci-setup</code>, <code>reference/runner-pool</code> and <code>reference/ci-variables</code>, and <code>guides/copilot-and-claude</code> (setup, a model per role, tool, permission and memory differences, the Actions mode with each agent).</li>
 <li>v0.16.0 (2026-11-25): <strong>Root <code>CLAUDE.md</code> and <code>scripts/check.sh</code></strong> (#86).</li>
 <li><strong>#86: guide for working on the template, and a local "checks pass".</strong> The repo gets a root <code>CLAUDE.md</code> (context, release phase, layout, checks, CI gotchas, release procedure, hard rules; it never ships, since <code>_subdirectory</code> is <code>template</code>) and <code>scripts/check.sh</code>, which reads the Template CI variants and render steps from <code>template-ci.yml</code>, renders each with <code>--vcs-ref HEAD</code>, runs the steps and <code>mkdocs build --strict</code>. <code>evolving-the-template.md</code> and <code>scripts.md</code> point at both.</li>
 <li>v0.15.0 (2026-11-25): <strong>sync.py creates the progress labels</strong> (#77).</li>

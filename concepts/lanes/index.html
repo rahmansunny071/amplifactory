@@ -247,7 +247,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../getting-started/create-a-project/" class="md-tabs__link">
+        <a href="../../getting-started/quick-start/" class="md-tabs__link">
           
   
   
@@ -782,6 +782,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../lessons/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lessons
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../actions-mode/" class="md-nav__link">
         
   
@@ -790,6 +818,34 @@
     
   
     The GitHub Actions mode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../local-ci/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local CI
   
 
     
@@ -869,6 +925,34 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/quick-start/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -1020,6 +1104,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../guides/copilot-and-claude/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Copilot and Claude Code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../guides/adopt-in-existing-repo/" class="md-nav__link">
         
   
@@ -1056,6 +1168,34 @@
     
   
     Keep up to date
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/local-ci-setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local CI setup
   
 
     
@@ -1199,6 +1339,62 @@
     
   
     Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/ci-variables/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI variables
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/runner-pool/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runner pool details
   
 
     
@@ -1478,8 +1674,8 @@
 
 
 <h1 id="lanes-and-priorities">Lanes and priorities<a class="headerlink" href="#lanes-and-priorities" title="Permanent link">&para;</a></h1>
-<p>A <strong>lane</strong> is a feature or swim lane: something one builder could carry from start to finish. On GitHub it's a
-parent issue labelled <code>lane</code>, and its <strong>native sub-issues, in order</strong>, are the lane's issues.</p>
+<p>A <strong>lane</strong> is a feature one builder can carry from start to finish: a parent issue labelled <code>lane</code>, whose <strong>native
+sub-issues, in order</strong>, are the lane's issues.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>Lane A: STS end-to-end (P0)      #4 ──► #6
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>Lane B: ConvoMem datasets (P1)   #5 ──► #8 ──► #9
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>Lane C: OpenRouter traces (P2)   #7
@@ -1496,19 +1692,19 @@ parent issue labelled <code>lane</code>, and its <strong>native sub-issues, in o
 <tbody>
 <tr>
 <td><strong>Within a lane</strong></td>
-<td>Strictly in order, one issue at a time. The <strong>current issue</strong> is the first open sub-issue. When it merges, the next one becomes current.</td>
+<td>Strictly in order, one issue at a time. The <strong>current issue</strong> is the first open sub-issue; when it merges, the next becomes current.</td>
 </tr>
 <tr>
 <td><strong>Across lanes</strong></td>
-<td>Ranked by priority. <strong>One lane at a time by default.</strong> When more lanes are ready, the skill asks you once whether to run them in parallel.</td>
+<td>Ranked by priority. <strong>One lane at a time by default</strong>; when more are ready, the skill asks once whether to run them in parallel.</td>
 </tr>
 <tr>
 <td><strong>Priority</strong></td>
-<td>Exactly one label: <code>P0</code> must have now, <code>P1</code> next, <code>P2</code> later, <code>P3</code> someday or hardening. A missing label counts as <code>P2</code>.</td>
+<td>Exactly one label: <code>P0</code> must have now, <code>P1</code> next, <code>P2</code> later, <code>P3</code> someday or hardening. No label counts as <code>P2</code>.</td>
 </tr>
 <tr>
 <td><strong>Dependencies</strong></td>
-<td>Native <strong>"blocked by"</strong> links, between issues or whole lanes. The body's "Depends on #N" line is still read as a fallback.</td>
+<td>Native <strong>"blocked by"</strong> links, between issues or whole lanes. A "Depends on #N" line in the body is read as a fallback.</td>
 </tr>
 <tr>
 <td><strong>Questions</strong></td>
@@ -1516,35 +1712,36 @@ parent issue labelled <code>lane</code>, and its <strong>native sub-issues, in o
 </tr>
 <tr>
 <td><strong>Merges</strong></td>
-<td>Always one at a time, whatever the number of lanes.</td>
+<td>Always one at a time.</td>
 </tr>
 </tbody>
 </table>
 <h2 id="the-main-path">The main path<a class="headerlink" href="#the-main-path" title="Permanent link">&para;</a></h2>
 <p>Every brainstorm names a <strong>main path</strong>: the smallest chain of issues that makes the thing work end to end. It's a
-<code>P0</code> lane. Polish and hardening go in a low-priority lane, so the factory doesn't spend its effort perfecting a
-parser before anything consumes its output.</p>
+<code>P0</code> lane. Polish and hardening go in a low-priority lane.</p>
 <h2 id="rolling-wave-detail">Rolling-wave detail<a class="headerlink" href="#rolling-wave-detail" title="Permanent link">&para;</a></h2>
-<p>Only the <strong>next one or two issues per lane</strong> are written in full. Later ones are stubs (a title, one-line goal and
-dependencies) and get detailed when they come close. Plans written too early go stale.</p>
+<p>Only the <strong>next one or two issues per lane</strong> are written in full. Later ones are stubs (title, one-line goal,
+dependencies) detailed when they come close.</p>
 <h2 id="parallel-lanes">Parallel lanes<a class="headerlink" href="#parallel-lanes" title="Permanent link">&para;</a></h2>
-<p>If you allow <code>--lanes N</code>, up to N lanes are active at once, each with its <strong>own worktree and builder</strong>. Before a
-second lane starts, a <strong>collision guard</strong> compares its plan's "Files &amp; interfaces touched" with the files the other
-active lane is changing, and holds it if they overlap. After each merge, the other active lanes' branches are updated
-with <code>main</code> before their review.</p>
+<p>With <code>--lanes N</code>, up to N lanes are active at once, each with its <strong>own worktree and builder</strong>.</p>
+<ul>
+<li>Before a second lane starts, a <strong>collision guard</strong> compares its plan's "Files &amp; interfaces touched" with the files
+  the other active lane is changing, and holds it if they overlap.</li>
+<li>After each merge, the other active lanes' branches are updated with <code>main</code> before their review.</li>
+</ul>
 <h2 id="proposals-become-issues">Proposals become issues<a class="headerlink" href="#proposals-become-issues" title="Permanent link">&para;</a></h2>
-<p>Work the orchestrator proposes becomes issues, not an ad-hoc fix. This covers what the run's own routes don't:
-audit results, recommended follow-ups, and fixes it would offer at the end of a turn or in the final report. It
-proposes a sub-issue of the lane that fits, a new lane if none does, or a doc-debt sub-issue, naming the lane, title
-and priority. One confirmation creates them with <code>gh issue create</code>, wired with <code>lanes.py</code>, and the work then goes
-through the queue. Findings inside a run keep their routes (<code>improvement</code> issues, doc-debt, PR questions).
-Problems in the factory template repo are <code>lesson</code> issues (the <code>factory-lesson</code> skill).</p>
+<p>Work the orchestrator proposes becomes issues, not an ad-hoc fix. This covers audit results, recommended follow-ups
+and fixes it would offer at the end of a turn or in the final report. It proposes a sub-issue of the lane that fits,
+a new lane if none does, or a doc-debt sub-issue, naming the lane, title and priority. One confirmation creates them
+with <code>gh issue create</code>, wired with <code>lanes.py</code>, and the work goes through the queue. Findings inside a run keep their
+routes (<code>improvement</code> issues, doc-debt, PR questions). Problems in the factory template repo are <code>lesson</code> issues
+(the <code>factory-lesson</code> skill).</p>
 <h2 id="seeing-it">Seeing it<a class="headerlink" href="#seeing-it" title="Permanent link">&para;</a></h2>
 <ul>
 <li><code>python3 .claude/skills/factory/scripts/queue.py</code> prints the lanes, each lane's current issue and state
   (<code>active</code>, <code>replied</code>, <code>ready</code>, <code>asked</code>, <code>blocked</code>, <code>waiting</code>, <code>done</code>), and <strong>"Work now"</strong>.</li>
-<li>The <strong>Project board</strong> created by <code>bootstrap.sh</code>: group by <strong>Parent issue</strong> to see each lane with a progress bar,
-  and sort by <strong>Priority</strong>.</li>
+<li>The <strong>Project board</strong> created by <code>bootstrap.sh</code>: group by <strong>Parent issue</strong> for each lane with a progress bar; sort
+  by <strong>Priority</strong>.</li>
 <li><a href="../../reference/scripts/#lanespy"><code>scripts/lanes.py</code></a> creates and reorders lanes, sub-issues, dependencies and
   priorities.</li>
 </ul>

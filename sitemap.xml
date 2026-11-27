@@ -21,6 +21,14 @@
          <lastmod>2026-11-27</lastmod>
     </url>
     <url>
+         <loc>https://rahmansunny071.github.io/amplifactory/concepts/lessons/</loc>
+         <lastmod>2026-11-27</lastmod>
+    </url>
+    <url>
+         <loc>https://rahmansunny071.github.io/amplifactory/concepts/local-ci/</loc>
+         <lastmod>2026-11-27</lastmod>
+    </url>
+    <url>
          <loc>https://rahmansunny071.github.io/amplifactory/concepts/pipeline/</loc>
          <lastmod>2026-11-27</lastmod>
     </url>
@@ -41,7 +49,15 @@
          <lastmod>2026-11-27</lastmod>
     </url>
     <url>
+         <loc>https://rahmansunny071.github.io/amplifactory/getting-started/quick-start/</loc>
+         <lastmod>2026-11-27</lastmod>
+    </url>
+    <url>
          <loc>https://rahmansunny071.github.io/amplifactory/guides/adopt-in-existing-repo/</loc>
+         <lastmod>2026-11-27</lastmod>
+    </url>
+    <url>
+         <loc>https://rahmansunny071.github.io/amplifactory/guides/copilot-and-claude/</loc>
          <lastmod>2026-11-27</lastmod>
     </url>
     <url>
@@ -57,7 +73,15 @@
          <lastmod>2026-11-27</lastmod>
     </url>
     <url>
+         <loc>https://rahmansunny071.github.io/amplifactory/guides/local-ci-setup/</loc>
+         <lastmod>2026-11-27</lastmod>
+    </url>
+    <url>
          <loc>https://rahmansunny071.github.io/amplifactory/reference/changelog/</loc>
+         <lastmod>2026-11-27</lastmod>
+    </url>
+    <url>
+         <loc>https://rahmansunny071.github.io/amplifactory/reference/ci-variables/</loc>
          <lastmod>2026-11-27</lastmod>
     </url>
     <url>
@@ -74,6 +98,10 @@
     </url>
     <url>
          <loc>https://rahmansunny071.github.io/amplifactory/reference/questions/</loc>
+         <lastmod>2026-11-27</lastmod>
+    </url>
+    <url>
+         <loc>https://rahmansunny071.github.io/amplifactory/reference/runner-pool/</loc>
          <lastmod>2026-11-27</lastmod>
     </url>
     <url>

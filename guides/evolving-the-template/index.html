@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://rahmansunny071.github.io/amplifactory/guides/evolving-the-template/">
       
       
-        <link rel="prev" href="../keep-up-to-date/">
+        <link rel="prev" href="../local-ci-setup/">
       
       
         <link rel="next" href="../../reference/questions/">
@@ -245,7 +245,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../getting-started/create-a-project/" class="md-tabs__link">
+        <a href="../../getting-started/quick-start/" class="md-tabs__link">
           
   
   
@@ -657,6 +657,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../concepts/lessons/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lessons
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../concepts/actions-mode/" class="md-nav__link">
         
   
@@ -665,6 +693,34 @@
     
   
     The GitHub Actions mode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/local-ci/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local CI
   
 
     
@@ -744,6 +800,34 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/quick-start/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -900,6 +984,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../copilot-and-claude/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Copilot and Claude Code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../adopt-in-existing-repo/" class="md-nav__link">
         
   
@@ -936,6 +1048,34 @@
     
   
     Keep up to date
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../local-ci-setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local CI setup
   
 
     
@@ -1051,10 +1191,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#developing-the-template" class="md-nav__link">
+  <a href="#develop-the-template" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Developing the template
+        Develop the template
       
     </span>
   </a>
@@ -1172,6 +1312,62 @@
     
   
     Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/ci-variables/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI variables
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/runner-pool/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runner pool details
   
 
     
@@ -1394,10 +1590,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#developing-the-template" class="md-nav__link">
+  <a href="#develop-the-template" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Developing the template
+        Develop the template
       
     </span>
   </a>
@@ -1429,31 +1625,35 @@
 
 
 <h1 id="evolving-the-template">Evolving the template<a class="headerlink" href="#evolving-the-template" title="Permanent link">&para;</a></h1>
-<p>The factory is tested by real use. A project driven through it is the <strong>proving ground</strong>; what goes wrong becomes
-template changes.</p>
+<p>Flow: file a lesson, release, projects update.</p>
 <h2 id="1-file-a-lesson">1. File a lesson<a class="headerlink" href="#1-file-a-lesson" title="Permanent link">&para;</a></h2>
-<p>File it <strong>when it happens</strong>, not at the end of the run. In a generated repo, ask Claude Code to "file a factory lesson: ..." and the <code>factory-lesson</code> skill does it; see <a href="../keep-up-to-date/#file-a-factory-problem-upstream">Keep up to date</a>.</p>
+<p>File it <strong>when it happens</strong>: say "file a factory lesson: ..." in a generated repo. See
+<a href="../keep-up-to-date/#file-a-factory-problem-upstream">Keep up to date</a>.</p>
 <h2 id="2-release">2. Release<a class="headerlink" href="#2-release" title="Permanent link">&para;</a></h2>
-<p>Lessons are batched into a release:</p>
 <ol>
-<li>a branch <code>release/vX.Y.Z</code> and a PR that closes the lessons;</li>
-<li>a <code>CHANGELOG.md</code> entry saying what changed <strong>and why</strong>, and <code>template/.claude/skills/factory/VERSION</code> set to <code>X.Y.Z</code>. Rename the <code>Unreleased</code> entry to <code>vX.Y.Z (date)</code> in the <strong>same commit</strong> as the bump; template CI's <code>version</code> job compares <code>VERSION</code> with the first <code>- vX.Y.Z</code> bullet, so a forgotten bump fails the PR;</li>
-<li>template CI green: it renders five variants, runs each generated project's checks, and asserts every guardrail
-   is present;</li>
-<li>you merge, then tag <code>vX.Y.Z</code>. Copier only sees tags.</li>
+<li>Open a branch <code>release/vX.Y.Z</code> and a PR that closes the lessons.</li>
+<li>Add a <code>CHANGELOG.md</code> entry saying what changed and why, and set <code>template/.claude/skills/factory/VERSION</code> to
+   <code>X.Y.Z</code>. Rename the <code>Unreleased</code> entry to <code>vX.Y.Z (date)</code> in the <strong>same commit</strong> as the bump; the <code>version</code>
+   check in <code>scripts/check.sh</code> compares <code>VERSION</code> with the first <code>- vX.Y.Z</code> bullet.</li>
+<li>Template CI is green on the PR and <code>scripts/check.sh</code> passes locally. Both render every variant in
+   <code>.github/workflows/template-ci.yml</code>, run each generated project's checks, and assert every guardrail.</li>
+<li>Merge, then tag <code>vX.Y.Z</code>. Copier only sees tags.</li>
 </ol>
 <h2 id="3-update-projects">3. Update projects<a class="headerlink" href="#3-update-projects" title="Permanent link">&para;</a></h2>
-<p>Projects pick the release up with <code>copier update</code> or the <code>sync-root-factory</code> skill: see <a href="../keep-up-to-date/">Keep up to date</a>.</p>
-<h2 id="developing-the-template">Developing the template<a class="headerlink" href="#developing-the-template" title="Permanent link">&para;</a></h2>
+<p>Projects pick the release up with <code>copier update</code> or the <code>sync-root-factory</code> skill. See
+<a href="../keep-up-to-date/">Keep up to date</a>.</p>
+<h2 id="develop-the-template">Develop the template<a class="headerlink" href="#develop-the-template" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Working on the template itself? Start with the repo's root <code>CLAUDE.md</code> (layout, release procedure, hard rules). It never ships to generated projects.</li>
-<li>Run the local "checks pass" with <code>scripts/check.sh</code> (commit first): it renders every Template CI variant, runs the same steps, then <code>mkdocs build --strict</code>. Skill scripts' <code>--self-test</code> runs are listed in <code>CLAUDE.md</code>.</li>
+<li>Start with the repo's root <code>CLAUDE.md</code> (layout, release procedure, hard rules). It never ships.</li>
+<li>Run the local "checks pass" with <code>scripts/check.sh</code> (commit first). It runs the variants in parallel (<code>-j N</code> or <code>CHECK_JOBS</code>; <code>-h</code> for usage), and <code>scripts/test-check.sh</code> tests it (Template CI job <code>check-sh</code>, on Ubuntu and macOS). The skill scripts' <code>--self-test</code> runs are
+  listed in <code>CLAUDE.md</code>.</li>
 <li>Template files live in <code>template/</code>; files ending in <code>.jinja</code> are rendered.</li>
-<li>Copier variables use <code>[[ … ]]</code> and blocks <code>[% … %]</code>, so GitHub Actions expressions (<code>${{ … }}</code>) stay untouched.</li>
-<li>The guardrail check also scans rendered files for leftover template syntax. Python code must avoid sequences that
-  look like it, such as two closing square brackets in a row; use type aliases.</li>
+<li>Copier uses <code>[[ ... ]]</code> and <code>[% ... %]</code>, so GitHub Actions <code>${{ ... }}</code> stays untouched.</li>
+<li>The guardrail check scans rendered files for leftover template syntax. Avoid look-alike sequences in Python,
+  such as two closing square brackets in a row; use type aliases.</li>
 <li>To render the working tree instead of the latest tag, use <code>--vcs-ref HEAD</code>.</li>
-<li>This site is built from <code>docs/</code> with MkDocs Material. The changelog page is generated from <code>CHANGELOG.md</code>.</li>
+<li>The docs in <code>docs/</code> are the source of the docs site (GitHub Pages). <code>.github/workflows/docs.yml</code>
+  publishes them on every push to <code>main</code> that touches the docs.</li>
 </ul>
 
 
@@ -1496,7 +1696,7 @@ template changes.</p>
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../keep-up-to-date/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Keep up to date">
+          <a href="../local-ci-setup/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Local CI setup">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -1506,7 +1706,7 @@ template changes.</p>
                 Previous
               </span>
               <div class="md-ellipsis">
-                Keep up to date
+                Local CI setup
               </div>
             </div>
           </a>

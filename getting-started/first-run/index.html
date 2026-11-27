@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Brainstorm an idea into lanes with Opus, confirm once, then say “run the factory” and follow the first issue from plan to merge.">
+        <meta name="description" content="Brainstorm an idea into lanes with the orchestrator, confirm once, then say “run the factory” and follow the first issue from plan to merge.">
       
       
       
@@ -247,7 +247,7 @@
     
     
       <li class="md-tabs__item md-tabs__item--active">
-        <a href="../create-a-project/" class="md-tabs__link">
+        <a href="../quick-start/" class="md-tabs__link">
           
   
   
@@ -657,6 +657,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../concepts/lessons/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lessons
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../concepts/actions-mode/" class="md-nav__link">
         
   
@@ -665,6 +693,34 @@
     
   
     The GitHub Actions mode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/local-ci/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local CI
   
 
     
@@ -749,6 +805,34 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quick-start/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -1004,6 +1088,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../guides/copilot-and-claude/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Copilot and Claude Code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../guides/adopt-in-existing-repo/" class="md-nav__link">
         
   
@@ -1040,6 +1152,34 @@
     
   
     Keep up to date
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/local-ci-setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local CI setup
   
 
     
@@ -1183,6 +1323,62 @@
     
   
     Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/ci-variables/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI variables
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/runner-pool/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runner pool details
   
 
     
@@ -1451,11 +1647,14 @@
 
 
 <h1 id="your-first-run">Your first run<a class="headerlink" href="#your-first-run" title="Permanent link">&para;</a></h1>
-<p>Start Claude Code <strong>from inside the repo</strong> so it loads the repo's <code>CLAUDE.md</code> and the <code>factory</code> skill, and check that
-it's on Opus:</p>
+<p>The <a href="../quick-start/">Quick start</a> runs this on one small project. This page explains each step.</p>
+<p>Start GitHub Copilot or Claude Code <strong>from inside the repo</strong>, so it loads the repo's <code>CLAUDE.md</code> and the <code>factory</code>
+skill, and check that it's on the orchestrator model (<code>CLAUDE.md</code> → "Models"; Claude Opus by default):</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nb">cd</span><span class="w"> </span>my-project
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>claude<span class="w">          </span><span class="c1"># then /model to confirm Opus</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>copilot<span class="w">         </span><span class="c1"># GitHub Copilot CLI; then /model to confirm claude-opus-5.5</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>claude<span class="w">          </span><span class="c1"># or Claude Code; then /model to confirm opus</span>
 </code></pre></div>
+<p>In the GitHub Copilot app, start a session in the repo's folder.</p>
 <h2 id="0-check-bootstraps-output">0. Check bootstrap's output<a class="headerlink" href="#0-check-bootstraps-output" title="Permanent link">&para;</a></h2>
 <p>Before you start, confirm <code>./scripts/bootstrap.sh</code> finished cleanly (it's safe to re-run):</p>
 <ul>
@@ -1464,13 +1663,18 @@ it's on Opus:</p>
   run <code>gh auth refresh -h github.com -s project</code> and re-run it.</li>
 <li>The "Documentation tech-debt" tracking issue exists.</li>
 <li>On a private repo, look for the ruleset warning: on GitHub Free, rulesets aren't enforced on private repos, so
-  <code>main</code> isn't protected. Make the repo public or use GitHub Pro if you want the protection.</li>
+  <code>main</code> isn't protected. Make the repo public or use GitHub Pro if you want the protection. EMU (work) accounts can
+  only create private repos; whether rulesets apply there is unverified, so check for the warning.</li>
 </ul>
+<p><strong>CI on your Mac.</strong> CI runs on GitHub-hosted runners unless you opt in to a runner pool on your Mac. Where they're off
+(EMU personal repos, for one), say "set up CI runners". It's a few questions: how many jobs run at once,
+whether to install the pool's login service, and whether to send this repo's CI to it. Then one CI run proves
+it works. This happens once per Mac and once per repo. See <a href="../../guides/local-ci-setup/">Local CI setup</a>.</p>
 <h2 id="1-brainstorm-into-lanes">1. Brainstorm into lanes<a class="headerlink" href="#1-brainstorm-into-lanes" title="Permanent link">&para;</a></h2>
 <blockquote>
 <p>brainstorm a CLI that converts session logs into a dataset into issues</p>
 </blockquote>
-<p>Opus talks it through with you: goals, constraints, what's out of scope, and how you'll know it works. Then it
+<p>The orchestrator talks it through with you: goals, constraints, what's out of scope, and how you'll know it works. Then it
 proposes <strong>lanes</strong>: features with a priority (<code>P0</code>–<code>P3</code>) and dependencies between them. Inside each lane are the
 <strong>ordered issues</strong>. Only the next one or two per lane are written in full; the rest are stubs. You'll see a table
 like this:</p>
@@ -1513,17 +1717,17 @@ and the Project board items. See <a href="../../concepts/lanes/">Lanes and prior
 <ol>
 <li><code>queue.py</code> shows each lane's current issue and <strong>"Work now"</strong>. If several lanes are ready, it <strong>asks you whether
    to run them in parallel</strong>. The default is one lane.</li>
-<li>A Sonnet builder writes the plan (<code>.factory/designs/issue-N.md</code>) and opens a <strong>draft PR</strong> from a
+<li>A builder writes the plan (<code>.factory/designs/issue-N.md</code>) and opens a <strong>draft PR</strong> from a
    <code>local/issue-N</code> branch.</li>
-<li>Opus checks the plan. For a critical issue (privacy or security code, a new dependency, a shared data contract),
-   a fresh Opus design reviewer does it.</li>
+<li>The orchestrator checks the plan. For a critical issue (privacy or security code, a new dependency, a shared data contract),
+   a fresh design reviewer does it.</li>
 <li>The same builder builds, updates the docs the change affects, fills in the PR's <strong>Handoff</strong> (with its
    <strong>Docs</strong> line), and marks the PR ready.</li>
-<li>A fresh Opus reviewer posts <strong>inline comments</strong> tagged <code>[blocker]</code>, <code>[improvement]</code>, <code>[doc-debt]</code> or
+<li>A fresh reviewer posts <strong>inline comments</strong> tagged <code>[blocker]</code>, <code>[improvement]</code>, <code>[doc-debt]</code> or
    <code>[question]</code>, while CI runs. Docs that disagree with the PR's code are a blocker.</li>
 <li>The builder fixes blockers. Improvements become one <code>improvement</code> issue; <code>doc-debt</code> findings become
    sub-issues of the "Documentation tech-debt" issue.</li>
-<li>When every <a href="../../reference/gates/">gate</a> passes, including <strong>all review threads resolved</strong>, Opus merges. The
+<li>When every <a href="../../reference/gates/">gate</a> passes, including <strong>all review threads resolved</strong>, the orchestrator merges. The
    lane moves to its next issue. If the merge is refused, the PR is labelled <code>factory:ready-to-merge</code> with the
    merge command in a comment, and you merge it (<a href="../../concepts/flag-and-continue/#ready-to-merge">details</a>).</li>
 </ol>

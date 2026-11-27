@@ -245,7 +245,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../getting-started/create-a-project/" class="md-tabs__link">
+        <a href="../../getting-started/quick-start/" class="md-tabs__link">
           
   
   
@@ -657,6 +657,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../concepts/lessons/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lessons
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../concepts/actions-mode/" class="md-nav__link">
         
   
@@ -665,6 +693,34 @@
     
   
     The GitHub Actions mode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/local-ci/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local CI
   
 
     
@@ -744,6 +800,34 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/quick-start/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -895,6 +979,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../guides/copilot-and-claude/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Copilot and Claude Code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../guides/adopt-in-existing-repo/" class="md-nav__link">
         
   
@@ -931,6 +1043,34 @@
     
   
     Keep up to date
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/local-ci-setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local CI setup
   
 
     
@@ -1089,6 +1229,62 @@
     
   
     Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ci-variables/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI variables
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../runner-pool/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runner pool details
   
 
     
@@ -1305,7 +1501,7 @@
 <tbody>
 <tr>
 <td><code>project_name</code></td>
-<td>—</td>
+<td>the destination folder's name, lower-cased with other characters turned into <code>-</code></td>
 <td>Repo and distribution name (kebab-case)</td>
 </tr>
 <tr>
@@ -1345,18 +1541,18 @@
 </tr>
 <tr>
 <td><code>maintainer_github</code></td>
-<td>the template author</td>
+<td>the template author's login: <strong>set your own</strong></td>
 <td>The only login the workflows obey; CODEOWNERS</td>
 </tr>
 <tr>
 <td><code>author_name</code>, <code>author_email</code>, <code>homepage</code></td>
-<td>the template author's</td>
+<td>the template author's: set your own</td>
 <td>pyproject, README</td>
 </tr>
 <tr>
 <td><code>python_min</code>, <code>python_versions</code></td>
 <td><code>3.11</code>, <code>["3.11", "3.12"]</code></td>
-<td><code>requires-python</code>, CI matrix, required checks</td>
+<td><code>requires-python</code>, one CI <code>Tests</code> job per version, required checks</td>
 </tr>
 <tr>
 <td><code>ruff_version</code></td>
@@ -1374,14 +1570,26 @@
 <td><a href="../../concepts/real-data/">Real data</a> in <code>CLAUDE.md</code>: <code>never</code> (you run shapes-only scripts), <code>with-approval</code> (agents ask per issue, then read locally) or <code>allowed</code>. Real data is never committed or quoted at any level</td>
 </tr>
 <tr>
+<td><code>actions_agent</code></td>
+<td><code>none</code> (<code>claude</code> when <code>agent_model</code> is already answered: <code>copier update</code> of an older project, or <code>--data agent_model=…</code>)</td>
+<td>Whether the <a href="../../concepts/actions-mode/">GitHub Actions mode</a> is rendered, and with which agent: <code>none</code> (no agent workflows; the skill runs the factory), <code>claude</code> (Claude Code GitHub Actions) or <code>copilot</code> (the GitHub Copilot CLI, signed in with each workflow's own token)</td>
+</tr>
+<tr>
 <td><code>agent_model</code></td>
 <td><code>sonnet</code></td>
-<td><code>--model</code> for the Actions-mode agents (the skill picks its own models)</td>
+<td><code>--model</code> for the Actions-mode agents, asked only when <code>actions_agent</code> is <code>claude</code> (the skill's models are in the generated <code>CLAUDE.md</code> → "Models")</td>
+</tr>
+<tr>
+<td><code>copilot_model</code></td>
+<td><code>claude-sonnet-5.5</code></td>
+<td><code>copilot --model</code> for the Actions-mode agents, asked only when <code>actions_agent</code> is <code>copilot</code>: any model your Copilot plan offers (<code>copilot help config</code> lists them); letters, digits, dots, hyphens and underscores</td>
 </tr>
 </tbody>
 </table>
 <p>Answers are stored in <code>.copier-answers.yml</code> and reused by <code>copier update</code>. Change one with
-<code>uvx copier update --data release_phase=hardening</code>. The same works for <code>real_data_access</code> (<code>uvx copier update --data real_data_access=&lt;level&gt;</code>); make the change in its own PR. Editing <code>CLAUDE.md</code> by hand also works, but then <code>.copier-answers.yml</code> disagrees with it.</p>
+<code>uvx copier update --data &lt;question&gt;=&lt;value&gt;</code>, for example <code>--data release_phase=hardening</code>,
+<code>--data real_data_access=&lt;level&gt;</code> or <code>--data actions_agent=copilot</code>. Make the change in its own PR. Editing
+<code>CLAUDE.md</code> by hand also works, but then <code>.copier-answers.yml</code> disagrees with it.</p>
 
 
 

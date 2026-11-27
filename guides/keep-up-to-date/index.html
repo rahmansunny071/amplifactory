@@ -16,7 +16,7 @@
         <link rel="prev" href="../adopt-in-existing-repo/">
       
       
-        <link rel="next" href="../evolving-the-template/">
+        <link rel="next" href="../local-ci-setup/">
       
       
         
@@ -245,7 +245,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../getting-started/create-a-project/" class="md-tabs__link">
+        <a href="../../getting-started/quick-start/" class="md-tabs__link">
           
   
   
@@ -657,6 +657,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../concepts/lessons/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lessons
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../concepts/actions-mode/" class="md-nav__link">
         
   
@@ -665,6 +693,34 @@
     
   
     The GitHub Actions mode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/local-ci/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local CI
   
 
     
@@ -744,6 +800,34 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/quick-start/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -900,6 +984,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../copilot-and-claude/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Copilot and Claude Code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../adopt-in-existing-repo/" class="md-nav__link">
         
   
@@ -1009,6 +1121,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Update a repo that only carries the skill">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#if-the-check-fails" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        If the check fails
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1026,6 +1155,34 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../local-ci-setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local CI setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -1161,6 +1318,62 @@
     
   
     Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/ci-variables/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI variables
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/runner-pool/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runner pool details
   
 
     
@@ -1369,6 +1582,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Update a repo that only carries the skill">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#if-the-check-fails" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        If the check fails
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1407,94 +1637,91 @@
 
 
 <h1 id="keep-up-to-date">Keep up to date<a class="headerlink" href="#keep-up-to-date" title="Permanent link">&para;</a></h1>
-<p>A project that uses amplifactory gets new releases through the <strong><code>sync-root-factory</code></strong> skill, and sends factory
-problems back through the <strong><code>factory-lesson</code></strong> skill. Both run in Claude Code inside the project. Releases and
-lessons are described from the template's side in <a href="../evolving-the-template/">Evolving the template</a>.</p>
+<p>Both skills run in GitHub Copilot or Claude Code inside your project: <strong><code>sync-root-factory</code></strong> brings in releases,
+<strong><code>factory-lesson</code></strong> files factory problems upstream.</p>
 <h2 id="update-a-generated-repo">Update a generated repo<a class="headerlink" href="#update-a-generated-repo" title="Permanent link">&para;</a></h2>
-<p>A repo generated by Copier records its version in <code>.copier-answers.yml</code>. Run <code>uvx copier update</code> yourself, or, in
-Claude Code inside the repo, say:</p>
-<blockquote>
-<p>sync the factory to the latest release</p>
-</blockquote>
-<p>The skill opens a PR for you to merge. Before it runs <code>copier update</code>, <code>sync.py copier-check &lt;tag&gt;</code> confirms the tag
-is annotated, <code>_commit</code> is a release tag and <code>_src_path</code> is the GitHub template (not a local clone). Copier does a
-three-way merge and marks conflicts; the skill resolves the mechanical ones, lists the rest for you, and never merges.</p>
-<div class="admonition note">
-<p class="admonition-title">Renamed from agent-factory</p>
-<p>The template was renamed to <code>amplifactory</code>. A repo whose <code>.copier-answers.yml</code> still says
-<code>_src_path: gh:rahmansunny071/agent-factory</code> keeps working (GitHub redirects the old URL and
-<code>copier-check</code> accepts both names). Updating that line to <code>gh:rahmansunny071/amplifactory</code> is optional.</p>
-</div>
+<p>Copier records the version in <code>.copier-answers.yml</code>. Run <code>uvx copier update</code>, or say "sync the factory to the
+latest release". The skill opens a PR for you to merge; it never merges.</p>
+<ul>
+<li>Before <code>copier update</code>, <code>sync.py copier-check &lt;tag&gt;</code> confirms the tag is annotated, <code>_commit</code> is a release tag,
+  and <code>_src_path</code> is the GitHub template (not a local clone).</li>
+<li>Copier does a three-way merge and marks conflicts. The skill resolves the mechanical ones and lists the rest.</li>
+<li>Tags come from the template <code>_src_path</code> names: <code>gh:rahmansunny071/amplifactory</code>, or the old
+  <code>gh:rahmansunny071/agent-factory</code> (it still works and means the same repo).</li>
+</ul>
 <h2 id="update-a-repo-that-only-carries-the-skill">Update a repo that only carries the skill<a class="headerlink" href="#update-a-repo-that-only-carries-the-skill" title="Permanent link">&para;</a></h2>
-<p>A repo that adopted just the <code>factory/</code> skill (see <a href="../adopt-in-existing-repo/">Adopt in an existing repo</a>) is
-<strong>shadowing</strong>: it has no <code>.copier-answers.yml</code>, so the skill applies the release by replacing the skill folders
-from the tag.</p>
-<p><code>.claude/skills/factory/VERSION</code> (written by the sync, and shipped from the first release that has it) records
-which release the copy came from. Then, in Claude Code in the repo:</p>
-<blockquote>
-<p>sync the factory to the latest release</p>
-</blockquote>
-<p>The <code>sync-root-factory</code> skill:</p>
+<p>A repo that adopted only the <code>factory/</code> skill (see <a href="../adopt-in-existing-repo/">Adopt in an existing repo</a>) has no
+<code>.copier-answers.yml</code>. <code>.claude/skills/factory/VERSION</code> records the release the copy came from. Say "sync the
+factory to the latest release". The skill:</p>
 <ul>
 <li>works on a new branch <code>local/adopt-&lt;tag&gt;</code> cut from a fresh <code>origin/&lt;default branch&gt;</code>, and refuses a dirty tree;</li>
-<li>replaces <strong>every skill folder the tag ships</strong> (<code>factory/</code>, <code>factory-lesson/</code>, <code>sync-root-factory/</code> and any future
-  one) byte for byte from the <strong>tag</strong>. A folder the old tag had is replaced only after it matches the version the
-  repo claims; a new one is added; a folder the old tag did not have but you already have (your own skill, or a
-  hand copy) is refused, never overwritten; your own other skills are never touched;</li>
-<li>turns the CHANGELOG entries since your version into a checklist; it edits <code>CLAUDE.md</code>, <code>.claude/commands/*</code>,
+<li>replaces <strong>every skill folder the tag ships</strong> (<code>factory/</code>, <code>factory-lesson/</code>, <code>sync-root-factory/</code>, ...) byte for
+  byte from the <strong>tag</strong>. A folder the old tag had is replaced only after it matches the version the repo claims. A
+  new folder is added. A folder the old tag did not have but you already have (your own skill, a hand copy) is
+  refused, never overwritten. Your other skills are never touched;</li>
+<li>turns the CHANGELOG entries since your version into a checklist. It edits <code>CLAUDE.md</code>, <code>.claude/commands/*</code>,
   <code>README.md</code> and <code>CHANGELOG.md</code> for the ports it can do safely, never sets a policy value (the <code>Real data:</code>
-  level, the release phase), creates only the labels that are missing, and lists everything else under "Open";</li>
+  level, the release phase), creates only missing labels, and lists everything else under "Open";</li>
 <li>opens a PR with a Handoff and never merges it.</li>
 </ul>
-<p><strong>Every sync, the first included:</strong> run the <strong>target tag's</strong> <code>sync.py</code>, extracted outside the repo, never the copy in
-the repo (which may predate the guards, and does not exist yet the first time). Nothing is committed before the
-adopt branch exists, so this works on a protected <code>main</code>:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nv">R</span><span class="o">=</span><span class="k">$(</span>git<span class="w"> </span>rev-parse<span class="w"> </span>--show-toplevel<span class="k">)</span><span class="p">;</span><span class="w"> </span><span class="nv">URL</span><span class="o">=</span>https://github.com/rahmansunny071/amplifactory.git<span class="p">;</span><span class="w"> </span><span class="nv">TAG</span><span class="o">=</span>vX.Y.Z<span class="w">  </span><span class="c1"># latest release</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nv">T</span><span class="o">=</span><span class="k">$(</span>mktemp<span class="w"> </span>-d<span class="k">)</span><span class="w">                                  </span><span class="c1"># outside the repo</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>git<span class="w"> </span>init<span class="w"> </span>-q<span class="w"> </span>--bare<span class="w"> </span><span class="s2">"</span><span class="nv">$T</span><span class="s2">/src"</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>git<span class="w"> </span>-C<span class="w"> </span><span class="s2">"</span><span class="nv">$T</span><span class="s2">/src"</span><span class="w"> </span>fetch<span class="w"> </span>-q<span class="w"> </span>--depth<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="s2">"</span><span class="nv">$URL</span><span class="s2">"</span><span class="w"> </span><span class="s2">"refs/tags/</span><span class="si">${</span><span class="nv">TAG</span><span class="si">}</span><span class="s2">:refs/tags/</span><span class="si">${</span><span class="nv">TAG</span><span class="si">}</span><span class="s2">"</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>git<span class="w"> </span>-C<span class="w"> </span><span class="s2">"</span><span class="nv">$T</span><span class="s2">/src"</span><span class="w"> </span>cat-file<span class="w"> </span>-t<span class="w"> </span><span class="s2">"refs/tags/</span><span class="nv">$TAG</span><span class="s2">"</span><span class="w">    </span><span class="c1"># must print: tag  (annotated)</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>mkdir<span class="w"> </span><span class="s2">"</span><span class="nv">$T</span><span class="s2">/x"</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>git<span class="w"> </span>-C<span class="w"> </span><span class="s2">"</span><span class="nv">$T</span><span class="s2">/src"</span><span class="w"> </span>archive<span class="w"> </span><span class="s2">"</span><span class="nv">$TAG</span><span class="s2">"</span><span class="w"> </span>template/.claude/skills/sync-root-factory<span class="w"> </span><span class="p">|</span><span class="w"> </span>tar<span class="w"> </span>-x<span class="w"> </span>-C<span class="w"> </span><span class="s2">"</span><span class="nv">$T</span><span class="s2">/x"</span>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>python3<span class="w"> </span>-I<span class="w"> </span><span class="s2">"</span><span class="nv">$T</span><span class="s2">/x/template/.claude/skills/sync-root-factory/scripts/sync.py"</span><span class="w"> </span>--repo<span class="w"> </span><span class="s2">"</span><span class="nv">$R</span><span class="s2">"</span><span class="w"> </span>status
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="c1"># first sync only, while factory/VERSION is missing: add --assume-tag &lt;tag the folder was copied from&gt;</span>
+<p>Every sync, the first included, runs the <strong>target tag's</strong> <code>sync.py</code>, extracted outside the repo. Never run the
+copy in the repo: it may predate the guards, and on the first sync it does not exist. Nothing is committed before
+the adopt branch exists, so this works on a protected <code>main</code>.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nv">R</span><span class="o">=</span><span class="k">$(</span>git<span class="w"> </span>rev-parse<span class="w"> </span>--show-toplevel<span class="k">)</span><span class="p">;</span><span class="w"> </span><span class="nv">TAG</span><span class="o">=</span>vX.Y.Z<span class="w">  </span><span class="c1"># latest release</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nv">URL</span><span class="o">=</span>https://github.com/rahmansunny071/amplifactory.git
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>gitc<span class="o">()</span><span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="nv">GIT_TERMINAL_PROMPT</span><span class="o">=</span><span class="m">0</span><span class="w"> </span>git<span class="w"> </span>-c<span class="w"> </span><span class="s1">'credential.helper=!gh auth git-credential'</span><span class="w"> </span><span class="s2">"</span><span class="nv">$@</span><span class="s2">"</span><span class="p">;</span><span class="w"> </span><span class="o">}</span><span class="w">  </span><span class="c1"># gh's token, for a repo git can't read anonymously</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="nv">T</span><span class="o">=</span><span class="k">$(</span>mktemp<span class="w"> </span>-d<span class="k">)</span><span class="w">                                  </span><span class="c1"># outside the repo</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>git<span class="w"> </span>init<span class="w"> </span>-q<span class="w"> </span>--bare<span class="w"> </span><span class="s2">"</span><span class="nv">$T</span><span class="s2">/src"</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>gitc<span class="w"> </span>--git-dir<span class="o">=</span><span class="s2">"</span><span class="nv">$T</span><span class="s2">/src"</span><span class="w"> </span>fetch<span class="w"> </span>-q<span class="w"> </span>--depth<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="s2">"</span><span class="nv">$URL</span><span class="s2">"</span><span class="w"> </span><span class="s2">"refs/tags/</span><span class="si">${</span><span class="nv">TAG</span><span class="si">}</span><span class="s2">:refs/tags/</span><span class="si">${</span><span class="nv">TAG</span><span class="si">}</span><span class="s2">"</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>git<span class="w"> </span>--git-dir<span class="o">=</span><span class="s2">"</span><span class="nv">$T</span><span class="s2">/src"</span><span class="w"> </span>cat-file<span class="w"> </span>-t<span class="w"> </span><span class="s2">"refs/tags/</span><span class="nv">$TAG</span><span class="s2">"</span><span class="w">    </span><span class="c1"># must print: tag  (annotated)</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>mkdir<span class="w"> </span><span class="s2">"</span><span class="nv">$T</span><span class="s2">/x"</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>git<span class="w"> </span>--git-dir<span class="o">=</span><span class="s2">"</span><span class="nv">$T</span><span class="s2">/src"</span><span class="w"> </span>archive<span class="w"> </span><span class="s2">"</span><span class="nv">$TAG</span><span class="s2">"</span><span class="w"> </span>template/.claude/skills/sync-root-factory<span class="w"> </span><span class="p">|</span><span class="w"> </span>tar<span class="w"> </span>-x<span class="w"> </span>-C<span class="w"> </span><span class="s2">"</span><span class="nv">$T</span><span class="s2">/x"</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>python3<span class="w"> </span>-I<span class="w"> </span><span class="s2">"</span><span class="nv">$T</span><span class="s2">/x/template/.claude/skills/sync-root-factory/scripts/sync.py"</span><span class="w"> </span>--repo<span class="w"> </span><span class="s2">"</span><span class="nv">$R</span><span class="s2">"</span><span class="w"> </span>status
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="c1"># first sync only, while factory/VERSION is missing: add --assume-tag &lt;tag the folder was copied from&gt;</span>
 </code></pre></div>
-<p><code>--assume-tag</code> is needed only while <code>factory/VERSION</code> is missing (the first sync): it stands in for the file, and
-the folder is still checked against that tag. Later syncs leave it out; <code>sync.py</code> refuses one that disagrees with <code>VERSION</code>. Then ask Claude to sync; the skill runs the same extracted script.
-The old way (copy <code>sync-root-factory/</code> into the repo and commit it) is no longer needed: the adopt branch is cut
-from <code>origin/&lt;default&gt;</code>, which would not contain that commit. If you already committed one and the old tag did not ship it (before v0.8.0), <code>apply</code> refuses it; on <code>local/adopt-&lt;tag&gt;</code> run <code>git rm -r .claude/skills/sync-root-factory</code>, commit, and
-rerun.</p>
-<p><strong>If the check fails</strong> (your copy matches no tag, for example because a <code>main</code>-only commit was layered on a tag):
-the sync stops and lists the differing files. There is no override. If the edits are unwanted, restore the copy of the
-<strong>recorded</strong> tag, the one <code>verify-local</code> compared against (the version in <code>factory/VERSION</code>, or your <code>--assume-tag</code>; not
-the target tag, whose <code>VERSION</code> would make the repo look synced). Do it on <code>local/adopt-&lt;target tag&gt;</code>, because a commit
-on local <code>main</code> is not on the adopt branch:</p>
+<ul>
+<li><code>--assume-tag</code> stands in for the missing <code>factory/VERSION</code> on the first sync; the folder is still checked
+  against that tag. Leave it out later; <code>sync.py</code> refuses one that disagrees with <code>VERSION</code>.</li>
+<li>Then ask the agent to sync; it runs the same extracted script.</li>
+<li>Do not copy <code>sync-root-factory/</code> into the repo and commit it: the adopt branch is cut from <code>origin/&lt;default&gt;</code>,
+  which would not contain it. If you did and the old tag did not ship it (before v0.8.0), <code>apply</code> refuses it. On
+  <code>local/adopt-&lt;tag&gt;</code>, run <code>git rm -r .claude/skills/sync-root-factory</code>, commit, and rerun.</li>
+</ul>
+<h3 id="if-the-check-fails">If the check fails<a class="headerlink" href="#if-the-check-fails" title="Permanent link">&para;</a></h3>
+<p>If your copy matches no tag (for example a <code>main</code>-only commit on top of a tag), the sync stops and lists the
+differing files. There is no override.</p>
+<ul>
+<li><strong>Edits wanted:</strong> port them after the sync.</li>
+<li><strong>Edits unwanted:</strong> on <code>local/adopt-&lt;target tag&gt;</code> (a commit on local <code>main</code> is not on that branch), restore the
+  <strong>recorded</strong> tag: the version in <code>factory/VERSION</code> or your <code>--assume-tag</code>, not the target tag. Then rerun the
+  sync.</li>
+</ul>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nv">OLD</span><span class="o">=</span>v0.7.0<span class="w">                                      </span><span class="c1"># the recorded tag</span>
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>git<span class="w"> </span>init<span class="w"> </span>-q<span class="w"> </span>--bare<span class="w"> </span><span class="s2">"</span><span class="nv">$T</span><span class="s2">/old"</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>git<span class="w"> </span>-C<span class="w"> </span><span class="s2">"</span><span class="nv">$T</span><span class="s2">/old"</span><span class="w"> </span>fetch<span class="w"> </span>-q<span class="w"> </span>--depth<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="s2">"</span><span class="nv">$URL</span><span class="s2">"</span><span class="w"> </span><span class="s2">"refs/tags/</span><span class="si">${</span><span class="nv">OLD</span><span class="si">}</span><span class="s2">:refs/tags/</span><span class="si">${</span><span class="nv">OLD</span><span class="si">}</span><span class="s2">"</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="nb">test</span><span class="w"> </span><span class="s2">"</span><span class="k">$(</span>git<span class="w"> </span>-C<span class="w"> </span><span class="s2">"</span><span class="nv">$T</span><span class="s2">/old"</span><span class="w"> </span>cat-file<span class="w"> </span>-t<span class="w"> </span><span class="s2">"refs/tags/</span><span class="nv">$OLD</span><span class="s2">"</span><span class="k">)</span><span class="s2">"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>tag<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">"not annotated: stop"</span><span class="p">;</span><span class="w"> </span>false<span class="p">;</span><span class="w"> </span><span class="o">}</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>git<span class="w"> </span>--git-dir<span class="o">=</span><span class="s2">"</span><span class="nv">$T</span><span class="s2">/old"</span><span class="w"> </span>fetch<span class="w"> </span>-q<span class="w"> </span>--depth<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="s2">"</span><span class="nv">$URL</span><span class="s2">"</span><span class="w"> </span><span class="s2">"refs/tags/</span><span class="si">${</span><span class="nv">OLD</span><span class="si">}</span><span class="s2">:refs/tags/</span><span class="si">${</span><span class="nv">OLD</span><span class="si">}</span><span class="s2">"</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="nb">test</span><span class="w"> </span><span class="s2">"</span><span class="k">$(</span>git<span class="w"> </span>--git-dir<span class="o">=</span><span class="s2">"</span><span class="nv">$T</span><span class="s2">/old"</span><span class="w"> </span>cat-file<span class="w"> </span>-t<span class="w"> </span><span class="s2">"refs/tags/</span><span class="nv">$OLD</span><span class="s2">"</span><span class="k">)</span><span class="s2">"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>tag<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">"not annotated: stop"</span><span class="p">;</span><span class="w"> </span>false<span class="p">;</span><span class="w"> </span><span class="o">}</span>
 <a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>rm<span class="w"> </span>-rf<span class="w"> </span><span class="s2">"</span><span class="nv">$R</span><span class="s2">/.claude/skills/factory"</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>git<span class="w"> </span>-C<span class="w"> </span><span class="s2">"</span><span class="nv">$T</span><span class="s2">/old"</span><span class="w"> </span>archive<span class="w"> </span><span class="s2">"</span><span class="nv">$OLD</span><span class="s2">"</span><span class="w"> </span>template/.claude/skills/factory<span class="w"> </span><span class="p">|</span><span class="w"> </span>tar<span class="w"> </span>-x<span class="w"> </span>--strip-components<span class="o">=</span><span class="m">2</span><span class="w"> </span>-C<span class="w"> </span><span class="s2">"</span><span class="nv">$R</span><span class="s2">/.claude/"</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>git<span class="w"> </span>--git-dir<span class="o">=</span><span class="s2">"</span><span class="nv">$T</span><span class="s2">/old"</span><span class="w"> </span>archive<span class="w"> </span><span class="s2">"</span><span class="nv">$OLD</span><span class="s2">"</span><span class="w"> </span>template/.claude/skills/factory<span class="w"> </span><span class="p">|</span><span class="w"> </span>tar<span class="w"> </span>-x<span class="w"> </span>--strip-components<span class="o">=</span><span class="m">2</span><span class="w"> </span>-C<span class="w"> </span><span class="s2">"</span><span class="nv">$R</span><span class="s2">/.claude/"</span>
 <a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>git<span class="w"> </span>-C<span class="w"> </span><span class="s2">"</span><span class="nv">$R</span><span class="s2">"</span><span class="w"> </span>add<span class="w"> </span>-A<span class="w"> </span>.claude/skills/factory<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>git<span class="w"> </span>-C<span class="w"> </span><span class="s2">"</span><span class="nv">$R</span><span class="s2">"</span><span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"restore factory/ to </span><span class="nv">$OLD</span><span class="s2">"</span>
 </code></pre></div>
-<p>then rerun the sync. If the edits are wanted, port them after the sync.</p>
 <h2 id="file-a-factory-problem-upstream">File a factory problem upstream<a class="headerlink" href="#file-a-factory-problem-upstream" title="Permanent link">&para;</a></h2>
-<p>A <strong>factory problem</strong> (not a bug in the project's own code) found while driving a project is filed in amplifactory
-as an issue labelled <strong><code>lesson</code></strong>:</p>
-<ul>
-<li>what happened, with links;</li>
-<li>the fix applied in the project, if any;</li>
-<li>the template files to change.</li>
-</ul>
-<p>File it <strong>when it happens</strong>, not at the end of the run.</p>
-<p>In a generated repo, ask Claude Code to "file a factory lesson: ..." and the <strong><code>factory-lesson</code> skill</strong> does it:</p>
+<p>A <strong>factory problem</strong> (not a bug in the project's own code) is filed in amplifactory as an issue labelled
+<strong><code>lesson</code></strong>, <strong>when it happens</strong>, not at the end of the run. It states what happened (with links), the fix applied
+in the project if any, and the template files to change. See <a href="../evolving-the-template/">Evolving the template</a>.</p>
+<p>In a generated repo, say "file a factory lesson: ...". The <strong><code>factory-lesson</code> skill</strong>:</p>
 <ol>
-<li>finds the template repo from <code>.copier-answers.yml</code> (<code>_src_path</code>), used only when it is a GitHub source (<code>gh:</code>, <code>https://github.com/</code>, <code>ssh://git@github.com/</code>, <code>git@github.com:</code>); a local path, an empty value or a missing file falls back to <code>rahmansunny071/amplifactory</code>; the old slug <code>rahmansunny071/agent-factory</code> (any case) is mapped to the new one; it then confirms the slug with <code>gh repo view</code>; it never files in the current repo;</li>
-<li>searches open and closed <code>lesson</code> issues for a duplicate: an open match gets a comment instead of a new issue; a closed match means it is already fixed, so it points to the release that fixed it and to updating (<code>copier update</code>, or the <code>sync-root-factory</code> skill);</li>
-<li>drafts the body (What happened, Fix applied in the generated repo, Template files to change, Options, Takeaway) and checks it for real data values, secrets and private paths, since the issue goes to another repo;</li>
-<li>asks you <strong>once</strong> (if you edit the draft, it re-checks the edited text for real data and shows the result before filing), then creates it with the <code>lesson</code> label and reports the URL;</li>
-<li>offers a comment on the downstream PR or issue linking the lesson, only if you agree.</li>
+<li>Finds the template repo from <code>_src_path</code> in <code>.copier-answers.yml</code>, only if it is a GitHub source (<code>gh:</code>,
+   <code>https://github.com/</code>, <code>ssh://git@github.com/</code>, <code>git@github.com:</code>). A local path, empty value or missing file
+   falls back to <code>rahmansunny071/amplifactory</code>, the template's own repo. The old slug <code>rahmansunny071/agent-factory</code> (any case) maps to it. It confirms the slug with <code>gh repo view</code> and never files in the current repo.</li>
+<li>Searches open and closed <code>lesson</code> issues for a duplicate. An open match gets a comment instead of a new issue. A
+   closed match is already fixed: it points to the fixing release and to updating (<code>copier update</code> or
+   <code>sync-root-factory</code>).</li>
+<li>Drafts the body (What happened, Fix applied in the generated repo, Template files to change, Options, Takeaway)
+   and checks it for real data, secrets and private paths, since the issue goes to another repo.</li>
+<li>Asks you <strong>once</strong>. If you edit the draft, it re-checks the text and shows the result before filing. It creates
+   the issue with the <code>lesson</code> label and reports the URL.</li>
+<li>Offers a comment on the downstream PR or issue linking the lesson, only if you agree.</li>
 </ol>
-<p>It needs a <code>gh</code> login with access to the template repo (private repos need one).</p>
+<p>It needs a <code>gh</code> login with access to the template repo.</p>
 
 
 
@@ -1553,13 +1780,13 @@ as an issue labelled <strong><code>lesson</code></strong>:</p>
         
         
           
-          <a href="../evolving-the-template/" class="md-footer__link md-footer__link--next" aria-label="Next: Evolving the template">
+          <a href="../local-ci-setup/" class="md-footer__link md-footer__link--next" aria-label="Next: Local CI setup">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Evolving the template
+                Local CI setup
               </div>
             </div>
             <div class="md-footer__button md-icon">
