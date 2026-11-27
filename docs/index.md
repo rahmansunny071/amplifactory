@@ -106,3 +106,7 @@ flowchart LR
 | [**Keep up to date**](guides/keep-up-to-date.md) | `sync-root-factory` moves a repo to the latest release by PR; `factory-lesson` files factory problems in this repo. |
 | [**Local CI**](concepts/local-ci.md) | One runner pool per Mac runs the CI of every factory repo on it, where GitHub-hosted runners are off. |
 | [**Where knowledge lives**](concepts/where-knowledge-lives.md) | Issues, PRs, review threads, plans and Handoffs are the source of truth; the run log (`.factory/runs/`) and agent memory only point at them. |
+
+## License
+
+amplifactory is released under the [MIT License](https://github.com/rahmansunny071/amplifactory/blob/main/LICENSE). It covers the template; a project you generate is yours, under any license you choose (the template doesn't add one).

@@ -87,4 +87,8 @@ uvx copier copy --defaults --vcs-ref HEAD --data project_name=demo --data "descr
 
 Without `--vcs-ref HEAD`, Copier renders the latest tag, not your working tree.
 
+## License
+
+amplifactory is released under the [MIT License](LICENSE). The license covers this template repo; a project you generate from it is yours, under any license you choose (the template doesn't add one).
+
 Created by **[Sajjadur Rahman](https://sajjadur.net/)**.
