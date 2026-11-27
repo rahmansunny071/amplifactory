@@ -417,6 +417,7 @@ def _test_guard() -> None:
 
     fakes = {"environ": environ, "resolve": resolve, "add": add, "connect": connect}
     fakes.update(execve=execve, access=lambda path, mode: True, getpwnam=lambda name: name)
+    fakes.update(inet6=lambda: "")  # not this machine's /proc/net/if_inet6: Linux CI has IPv6
     err = _Out()
     assert main(["/home/runner/run.sh"], err, out=_Out(calls), **dict(fakes)) == 1  # a fake exec
     assert calls[:4] == [
