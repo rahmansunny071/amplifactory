@@ -125,7 +125,7 @@ jobs:
           # v0.3.0: urgency triage, builder reuse, run log
           need CLAUDE.md '## Release phase'
           need .claude/skills/factory/references/briefs.md 'blocker'
-          need .claude/skills/factory/references/briefs.md 'SendMessage'
+          need .claude/skills/factory/references/briefs.md 'messages to the **same** agent'   # builder reuse (#18 wording)
           need .claude/skills/factory/references/gates.md 'gh run watch'
           need .gitignore '.factory/runs/'
           need scripts/bootstrap.sh 'factory:needs-maintainer factory:ready-to-merge improvement lane P0 P1 P2 P3 '
@@ -242,6 +242,27 @@ jobs:
           need .claude/skills/sync-root-factory/scripts/sync.py 'def verify_local'
           need .claude/skills/sync-root-factory/scripts/sync.py 'BRANCH_PREFIX = "local/adopt-"'
           uv run --no-project --python 3.12 python .claude/skills/sync-root-factory/scripts/sync.py --self-test || fail=1
+          # the skill runs in Claude Code and Copilot. Roles, not model names; one table maps the tools.
+          need CLAUDE.md '## Models'
+          need CLAUDE.md '`claude-opus-5.5`'
+          need CLAUDE.md '`claude-sonnet-5.5`'
+          need .claude/skills/factory/SKILL.md '## Claude Code and Copilot'
+          need .claude/skills/factory/SKILL.md '| Message the same builder again | `SendMessage`'
+          need .claude/skills/factory/SKILL.md '`agent_type: "general-purpose"`'
+          need .claude/skills/factory/SKILL.md '`read_agent`'
+          need .claude/skills/factory/SKILL.md 'orchestrator model (`CLAUDE.md` → "Models"'
+          if grep -rn -- 'SendMessage' .claude | grep -v -- 'write_agent'; then
+            echo "::error::a line names SendMessage without its Copilot counterpart, write_agent"; fail=1
+          fi
+          if grep -rn -- 'AskUserQuestion' .claude | grep -v -- 'ask_user'; then
+            echo "::error::a line names AskUserQuestion without its Copilot counterpart, ask_user"; fail=1
+          fi
+          if grep -nwiE 'opus|sonnet|haiku' .claude/skills/factory/references/briefs.md; then
+            echo "::error::briefs.md names a model; name the role (CLAUDE.md → Models)"; fail=1
+          fi
+          if grep -rnE 'model: "(opus|sonnet|haiku)"|\((Opus|Sonnet)\)' .claude; then
+            echo "::error::a skill hard-codes a Claude Code model"; fail=1
+          fi
           exit $fail
       - name: skill scripts run on Python 3.9 (macOS system python3)
         working-directory: ${{ runner.temp }}/out

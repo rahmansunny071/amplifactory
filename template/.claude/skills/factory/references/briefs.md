@@ -1,6 +1,7 @@
 # Subagent briefs
 
-Copy the brief, fill in the `<…>` fields, and pass it as the subagent's prompt with the model shown.
+Copy the brief, fill in the `<…>` fields, and pass it as the subagent's prompt, with the role's model from
+`CLAUDE.md` → "Models" for your harness (SKILL.md → "Claude Code and Copilot" says how).
 Always pass **absolute paths**, and paste `<owner/repo>` from `gh repo view --json nameWithOwner -q
 .nameWithOwner`, never from memory. Every brief ends with a fixed result block, so you can check outcomes
 instead of trusting prose.
@@ -41,9 +42,10 @@ orchestrator appends its gist to `.factory/designs/issue-<N>.md`.
 
 ---
 
-## Builder — `model: "sonnet"`, reused for plan, build and fixes
+## Builder — builder model, reused for plan, build and fixes
 
-Spawn once per issue. Keep its id: phase 2 and every fix round are `SendMessage`s to the **same** agent.
+Spawn once per issue (in Copilot, in the background). Keep its id: phase 2 and every fix round are
+messages to the **same** agent.
 
 ### Phase 1: the initial prompt (plan, open a draft PR, stop)
 
@@ -84,7 +86,7 @@ plan_file: <abs path>
 open_questions: <or "none">
 ```
 
-### Phase 2: the build message (`SendMessage` to the same builder)
+### Phase 2: the build message (to the same builder)
 
 ```
 Plan approved<, with these changes: …>. Reviewer notes (guidance, not plan changes): <… or "none">.
@@ -110,7 +112,7 @@ docs: <docs updated, or "none needed: <why>">
 deviations: <or "none">
 ```
 
-### Fix message (`SendMessage` to the same builder, blockers only)
+### Fix message (to the same builder, blockers only)
 
 ```
 Review blockers to fix on <PR>, nothing else:
@@ -131,7 +133,7 @@ checks: <each check → pass/fail with counts>
 notes: <what each new test proves>
 ```
 
-## Resume builder — `model: "sonnet"` (new session, answering maintainer replies)
+## Resume builder — builder model (new session, answering maintainer replies)
 
 ```
 You are continuing PR <PR> (issue #<N>) of <owner/repo> in <worktree-abs-path> (branch local/issue-<N>; run
@@ -161,7 +163,7 @@ checks: <each check → pass/fail with counts>
 notes: <per thread: what was done>
 ```
 
-## Design reviewer — `model: "opus"` (critical tier only)
+## Design reviewer — reviewer model (critical tier only)
 
 ```
 You are reviewing the PLAN for issue #<N> of <owner/repo> in <worktree-abs-path> (branch local/issue-<N>,
@@ -195,7 +197,7 @@ notes: <guidance for the builder, else "none">
 questions: <comment ids, each with options and your recommendation, else "none">
 ```
 
-## Code reviewer — `model: "opus"`, fresh, once per issue
+## Code reviewer — reviewer model, fresh, once per issue
 
 ```
 You are the REVIEW agent for PR <PR> (issue #<N>) of <owner/repo>, in <worktree-abs-path> (`git pull
@@ -247,7 +249,7 @@ questions: <numbered: comment id + options and recommendation, else "none">
 undisclosed_deviations: <list, else "none">
 ```
 
-## Issue writer — `model: "sonnet"` (several issues at once only)
+## Issue writer — builder model (several issues at once only)
 
 ```
 You are drafting one GitHub issue for <owner/repo> (checked out at <repo-abs-path>). Don't create it;
@@ -270,7 +272,7 @@ body_file: <abs path>
 open_points: <or "none">
 ```
 
-## Hardening phase only: code re-review — `model: "opus"`
+## Hardening phase only: code re-review — reviewer model
 
 In the hardening phase (before a release), the maintainer may want blocker fixes re-reviewed instead of
 just verified. Use the Code reviewer brief with the RESUME SCOPE line set to "Review the fixes since <sha>

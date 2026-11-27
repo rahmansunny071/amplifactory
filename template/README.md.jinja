@@ -6,19 +6,19 @@
 
 ## Getting started
 
-This repo is built by an issue-driven agent factory. Only the maintainer (@[[ maintainer_github ]]) can start or advance work, merge to `main`, or publish anything. The quickest way in is the **`factory` skill** (`.claude/skills/factory/`), which runs the whole pipeline from a Claude Code session:
+This repo is built by an issue-driven agent factory. Only the maintainer (@[[ maintainer_github ]]) can start or advance work, merge to `main`, or publish anything. The quickest way in is the **`factory` skill** (`.claude/skills/factory/`), which runs the whole pipeline from a GitHub Copilot or Claude Code session:
 
 1. Run `./scripts/bootstrap.sh` once, if you haven't (it creates the GitHub repo, labels and board). The skill does **not** need `/install-github-app`.
-2. Run `claude` in this repo, on Opus.
+2. Start GitHub Copilot (`copilot`, or the Copilot app) or Claude Code (`claude`) in this repo, on the orchestrator model from [`CLAUDE.md`](CLAUDE.md) → "Models" (`/model` checks it).
 3. Say **"brainstorm X into issues"** or **"run the factory"**. It never adds `factory:design` or `design:approved`, so the Actions workflows don't duplicate the work.
 
 The skill's scripts need Python 3.9 or newer and run as `python3`. Step-by-step: [first run](https://rahmansunny071.github.io/amplifactory/getting-started/first-run/); everything else is in the [docs site](https://rahmansunny071.github.io/amplifactory/). Agent rules live in [`CLAUDE.md`](CLAUDE.md); the stage prompts in [`.claude/commands/`](.claude/commands/).
 
 ### What the skill does
 
-- **Brainstorm → lanes → issues:** talk an idea through with Claude (Opus). It proposes **lanes** (features, with priorities `P0`–`P3` and dependencies between lanes) and the **ordered issues** in each, you confirm once, and they're created as lane issues with native sub-issues, "blocked by" links and priority labels (and added to the Project board).
-- **Lanes:** each lane's sub-issues run one at a time, in order; lanes run **one at a time by default**, and Claude asks before running more in parallel (`queue.py` shows each lane's current issue and what to work on now).
-- **Run:** per issue: **one Sonnet builder** plans, builds and fixes, and **one fresh Opus reviewer** reviews, in parallel with CI. Critical issues (privacy/security, new dependencies, shared data contracts) also get an Opus design review. Opus merges when the gates in `references/gates.md` pass.
+- **Brainstorm → lanes → issues:** talk an idea through with the orchestrator (your session). It proposes **lanes** (features, with priorities `P0`–`P3` and dependencies between lanes) and the **ordered issues** in each, you confirm once, and they're created as lane issues with native sub-issues, "blocked by" links and priority labels (and added to the Project board).
+- **Lanes:** each lane's sub-issues run one at a time, in order; lanes run **one at a time by default**, and the orchestrator asks before running more in parallel (`queue.py` shows each lane's current issue and what to work on now).
+- **Run:** per issue: **one builder** plans, builds and fixes, and **one fresh reviewer** reviews, in parallel with CI. Critical issues (privacy/security, new dependencies, shared data contracts) also get a design review. The orchestrator merges when the gates in `references/gates.md` pass. By default the orchestrator and reviewers run on Claude Opus and the builder on Claude Sonnet; `CLAUDE.md` → "Models" sets them for Claude Code and for Copilot.
 - **Urgency first:** in the `mvp` release phase (`CLAUDE.md`), only blockers are fixed in-PR; everything else is filed as an `improvement` issue.
 - **Flags and continues:** when it needs you (it's unsure, a gate fails, or it would rely on an unverified assumption about real data), it asks **inline on the PR** with options and a recommendation, labels it `factory:needs-maintainer`, and works on other issues. Reply in the threads, then say "resume the factory".
 - **Real data:** whether agents may read your real data is set in `CLAUDE.md` ("Real data": `never`, `with-approval` or `allowed`). At every level, real data is never committed or quoted in GitHub text, and tests use synthetic fixtures.
@@ -84,7 +84,7 @@ uvx ruff@[[ ruff_version ]] format --check . && uvx ruff@[[ ruff_version ]] chec
 uv run --no-sync pytest -q
 ```
 
-This repo was generated from [amplifactory](https://github.com/rahmansunny071/amplifactory). Pull in later factory improvements with `copier update`, or tell Claude Code **"sync the factory to the latest release"**: the `sync-root-factory` skill (`.claude/skills/sync-root-factory/`) does the update on a `local/adopt-<tag>` branch and opens a PR for you to merge.
+This repo was generated from [amplifactory](https://github.com/rahmansunny071/amplifactory). Pull in later factory improvements with `copier update`, or tell Copilot or Claude Code **"sync the factory to the latest release"**: the `sync-root-factory` skill (`.claude/skills/sync-root-factory/`) does the update on a `local/adopt-<tag>` branch and opens a PR for you to merge.
 
 ## Author
 
