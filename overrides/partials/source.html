@@ -1,0 +1,14 @@
+{#-
+  Material's repository widget, unchanged except for two data attributes carrying the newest release tag
+  (hooks/release_tag.py). javascripts/release-tag.js adds it to the widget's facts beside stars and forks.
+-#}
+<a href="{{ config.repo_url }}" title="{{ lang.t('source') }}" class="md-source" data-md-component="source"
+  {%- if config.extra.release %} data-release-tag="{{ config.extra.release.tag | e }}" data-release-url="{{ config.extra.release.url | e }}"{% endif %}>
+  <div class="md-source__icon md-icon">
+    {% set icon = config.theme.icon.repo or "fontawesome/brands/git-alt" %}
+    {% include ".icons/" ~ icon ~ ".svg" %}
+  </div>
+  <div class="md-source__repository">
+    {{ config.repo_name }}
+  </div>
+</a>

@@ -214,3 +214,11 @@
 .md-footer-meta {
   background-color: var(--md-default-bg-color);
 }
+
+/* Release tag beside stars and forks in the repo widget (hooks/release_tag.py, javascripts/release-tag.js). */
+.md-source__fact--version a {
+  color: inherit;
+}
+.md-source__fact--version a:hover {
+  text-decoration: underline;
+}

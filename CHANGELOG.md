@@ -1,6 +1,8 @@
 # Changelog
 
 - Unreleased:
+- Unreleased:
+  - **#84: the docs header shows the release tag.** The repo has tags but no GitHub Releases, so Material's repo widget never showed a version. `hooks/release_tag.py` reads the newest `vN.N` tag at build time and a small script adds it, linked, beside the stars and forks.
   - **#89: `sync-root-factory` works with `safe.bareRepository=explicit`.** `sync.py` passes `--git-dir` to every git call that reads the shadow clone, and `SKILL.md` says so, so the skill no longer fails in harnesses (such as GitHub Copilot sessions) that set it.
   - **#90: merge gates watch the right run, and stacked PRs move to `main` first.** Gate 1 now means the run for the PR's head commit: "Bounded CI waits" reads `headRefOid`, finds that commit's run with `gh run list --commit`, re-reads the head before merging, and on a `DIRTY` state checks `git diff --cached --check`. "Merge" starts with "Stacked PRs first": retarget a PR whose base is another PR's branch to `main` before that branch is merged and deleted, or GitHub closes it. `SKILL.md` step 8 points at the check.
   - **#91: generated `ci.yml` has one job per Python version.** A job-level `if:` on a matrix job that is skipped posts only its unexpanded name, so required checks such as `Tests (Python 3.12)` hung. Each version is its own job; every job skips drafts, `ready_for_review` runs them, and each has a timeout. Template CI checks the rendered file's shape.
