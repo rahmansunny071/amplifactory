@@ -6,6 +6,9 @@
 document$.subscribe(function () {
   document.querySelectorAll(".md-source[data-release-tag]").forEach(function (source) {
     var repo = source.querySelector(".md-source__repository");
+    // navigation.instant re-runs this on every page while the header persists.
+    if (source.dataset.releaseDone) return;
+    source.dataset.releaseDone = "1";
     var li = document.createElement("li");
     li.className = "md-source__fact md-source__fact--version";
     var a = document.createElement("a");
