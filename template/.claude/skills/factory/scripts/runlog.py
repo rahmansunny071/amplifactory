@@ -152,7 +152,7 @@ def _self_test() -> None:
         assert per[4]["tokens"]["sonnet"] == 49000 and per[4]["tokens"]["opus"] == 60000, per[4]
         assert per[4]["by_actor"]["builder"] == 49000, per[4]
         assert "#4" in _fmt_summary(per)
-        # #18: --model takes any model id, so a Copilot id logs instead of failing argparse.
+        # #98: --model takes any model id, so a Copilot id logs instead of failing argparse.
         argv = ["--dir", tmp, "add", "--issue", "8", "--step", "plan"]
         with contextlib.redirect_stdout(io.StringIO()):
             rc = main([*argv, "--model", "claude-sonnet-5.5"])
