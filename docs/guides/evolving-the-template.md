@@ -30,7 +30,7 @@ Projects pick the release up with `copier update` or the `sync-root-factory` ski
 ## Develop the template
 
 - Start with the repo's root `CLAUDE.md` (layout, release procedure, hard rules). It never ships.
-- Run the local "checks pass" with `scripts/check.sh` (commit first). The skill scripts' `--self-test` runs are
+- Run the local "checks pass" with `scripts/check.sh` (commit first). It runs the variants in parallel (`-j N` or `CHECK_JOBS`; `-h` for usage), and `scripts/test-check.sh` tests it (Template CI job `check-sh`, on Ubuntu and macOS). The skill scripts' `--self-test` runs are
   listed in `CLAUDE.md`.
 - Template files live in `template/`; files ending in `.jinja` are rendered.
 - Copier uses `[[ ... ]]` and `[% ... %]`, so GitHub Actions `${{ ... }}` stays untouched.

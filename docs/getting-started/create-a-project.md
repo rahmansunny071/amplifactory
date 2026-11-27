@@ -25,9 +25,12 @@ optional: it's off unless Copier's `actions_agent` is `copilot` or `claude`.
 uvx copier copy gh:rahmansunny071/amplifactory my-project
 ```
 
+Copier 9.5 or newer is required (`uvx` fetches the latest).
+
 Copier asks a few [questions](../reference/questions.md): the project and package names, a description, what the
 agents should know about the project, project-specific hard rules, Python versions, the release phase, whether agents may read your real data (`never` by default) and whether to add the GitHub Actions mode (`actions_agent`, `none` by default). Defaults
-are filled in.
+are filled in; `project_name` defaults to the destination folder's name, kebab-cased. If the folder name differs from
+the project name (`My Project` becomes `my-project`), the closing message says which repo bootstrap will create.
 
 !!! note "Private fork"
     The template repo is public, so Copier needs no credentials. If you copy from a private fork, Copier needs your
@@ -56,7 +59,7 @@ cd my-project
 | Step | What it does |
 |---|---|
 | Lockfile and first commit | `uv lock`, then `git init` and the first commit |
-| GitHub repo | creates and pushes it (`--public` or `--private`) |
+| GitHub repo | creates and pushes it (`--public` or `--private`). For a repo that already exists, it pushes `main` only when your local `main` is ahead of `origin/main`, and stops if they have diverged (`git pull --rebase`, then re-run) |
 | Labels | the factory labels, `improvement`, `lane`, `P0`–`P3` and `documentation` |
 | Documentation tech-debt issue | the tracking issue whose sub-issues are documentation todos (labels `documentation`, `P2`) |
 | Ruleset protecting `main` | no deletion or force push; PRs need 1 approval and code-owner review; **all conversations resolved**; required checks `Tests (Python X)` and `Lint`; admins can bypass for PRs only |
