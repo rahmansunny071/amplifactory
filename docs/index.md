@@ -1,35 +1,78 @@
 ---
 title: "amplifactory"
-description: "An issue-driven agent factory on Claude Code, packaged as a Copier template. You plan with Claude; agents design, build and review; you stay in the loop by exception."
+description: "An issue-driven agent factory for GitHub Copilot and Claude Code, packaged as a Copier template. You plan with the agent; agents design, build and review; you stay in the loop by exception."
 hide:
   - toc
 ---
 
 # amplifactory
 
-amplifactory turns a repository into an **issue-driven agent factory**. You and Claude (Opus) turn an idea into
-prioritized **lanes** of ordered GitHub issues. Then the factory takes each issue from plan to merged pull request:
-a Sonnet **builder** plans, builds and fixes, a fresh Opus **reviewer** checks the work, and Opus **merges** when every
-gate passes. When it needs a decision from you, it asks **on the pull request** and keeps working on other lanes.
+amplifactory turns a repository into an **issue-driven agent factory**. In a GitHub Copilot or Claude Code
+session (the **orchestrator**) you turn an idea into prioritized **lanes** of ordered GitHub issues. The factory then
+takes each issue to a merged PR: a **builder** plans, builds and fixes, a fresh **reviewer** checks, and the
+orchestrator merges when every gate passes. When it needs you, it asks on the PR and keeps working on other lanes.
 
-It's a [Copier](https://copier.readthedocs.io/) template: one command creates a repo with the rules, the skill, CI,
-labels, branch protection and a Project board. `copier update` brings later releases into existing projects.
+It's a [Copier](https://copier.readthedocs.io/) template: one command creates a repo with the rules, the `factory`
+skill, CI, labels, branch protection and a Project board. `copier update` brings in later releases.
 
+```mermaid
+%%{init: {"themeCSS": ".node.you .nodeLabel, .node.you .nodeLabel p, .node.agent .nodeLabel, .node.agent .nodeLabel p, .node.gh .nodeLabel, .node.gh .nodeLabel p, .node.done .nodeLabel, .node.done .nodeLabel p { color: #fff !important; } .node.ci .nodeLabel, .node.ci .nodeLabel p { color: #1F1300 !important; } .flowchart-link { stroke: var(--md-mermaid-edge-color) !important; } .marker { fill: var(--md-mermaid-edge-color) !important; stroke: var(--md-mermaid-edge-color) !important; } .edgeLabel, .edgeLabel p { background-color: var(--md-mermaid-label-bg-color) !important; color: var(--md-mermaid-label-fg-color) !important; } .cluster-label .nodeLabel, .cluster-label p { color: var(--md-mermaid-label-fg-color) !important; }"}}%%
+flowchart LR
+    you(["<b>You</b><br/>idea, answers, final say"]):::you
+    orch["<b>Orchestrator</b><br/>your Copilot or Claude session"]:::agent
+    lanes["<b>Lanes P0–P3</b><br/>ordered issues"]:::gh
+
+    you -->|"idea"| orch
+    orch -->|"brainstorm"| lanes
+    lanes -->|"you confirm<br/>once per lane"| builder
+
+    subgraph issue["Per issue, in order"]
+        direction LR
+        builder["<b>Builder</b><br/>plan, build, fix"]:::agent
+        pr["<b>Pull request</b><br/>with a Handoff"]:::gh
+        reviewer["<b>Fresh reviewer</b><br/>blocker, improvement,<br/>question comments"]:::agent
+        actions["<b>GitHub Actions</b><br/>queues ci.yml jobs"]:::gh
+        pool["<b>Runner pool</b><br/>on your Mac, one<br/>fresh runner per job"]:::ci
+        gates["<b>13 gates</b><br/>CI green, no blockers,<br/>Handoff, docs"]:::agent
+        merge(["<b>Merge</b>"]):::done
+
+        builder -->|"opens"| pr
+        pr --> reviewer
+        reviewer -->|"blockers"| builder
+        pr -->|"pull_request"| actions
+        actions -->|"self-hosted"| pool
+        pool -->|"checks"| pr
+        pr --> gates
+        gates -->|"all pass"| merge
+    end
+
+    needs["<b>Needs you?</b><br/>question inline on the PR;<br/>the lane pauses, others continue"]:::you
+    builder -.->|"decision only you can make"| needs
+    gates -.->|"not sure, or a gate fails"| needs
+    needs -.->|"you answer, say resume"| orch
+    merge -.->|"next issue"| builder
+
+    classDef you fill:#00796B,stroke:#004D40,color:#fff,stroke-width:2px
+    classDef agent fill:#5C5CE0,stroke:#3D3DB8,color:#fff
+    classDef gh fill:#57606A,stroke:#30363D,color:#fff
+    classDef ci fill:#F59E0B,stroke:#B45309,color:#1F1300,stroke-width:2px
+    classDef done fill:#1A7F4B,stroke:#0F5132,color:#fff
+    style issue fill:none,stroke:#00796B,stroke-width:2px,stroke-dasharray:6 4
 ```
-idea ──► brainstorm with Opus ──► lanes (P0–P3) of ordered issues ──► you confirm once
-                                                                          │
-         ┌────────────────────────────────────────────────────────────────┘
-         ▼   per lane, one issue at a time, in order
-   Sonnet builder: plan ──► (Opus checks the plan) ──► build ──► PR
-                                                                  │
-   fresh Opus reviewer ∥ CI ──► builder fixes blockers ──► gates ──► merge
-         │
-         └─ needs you? question inline on the PR, lane paused, other lanes continue
-```
+
+*Blue: agents. Grey: GitHub. Amber: CI on the runner pool on your Mac. Teal: you. Dotted lines: when it needs you, and the next issue.*
 
 ## Get started
 
 <div class="grid cards" markdown>
+
+-   :material-flash-outline: **Quick start**
+
+    ---
+
+    One small CLI, from `copier copy` of the template to a merged PR with CI on your Mac's runner pool.
+
+    [:octicons-arrow-right-24: Quick start](getting-started/quick-start.md)
 
 -   :material-rocket-launch-outline: **Create a project**
 
@@ -53,18 +96,13 @@ idea ──► brainstorm with Opus ──► lanes (P0–P3) of ordered issues 
 
 | Idea | In short |
 |---|---|
-| [**Lanes and priorities**](concepts/lanes.md) | Features become lanes, each a parent issue whose native sub-issues run in order. `P0`–`P3` priorities and "blocked by" links drive the schedule. One lane at a time unless you say otherwise. |
-| [**The pipeline**](concepts/pipeline.md) | Two subagents per issue: one Sonnet builder reused for plan, build and fixes, and one fresh Opus reviewer. Only blockers are fixed in-PR before a first release; everything else becomes an `improvement` issue. |
-| [**Flag and continue**](concepts/flag-and-continue.md) | Questions go on the PR as inline comments with options and a recommendation. You answer whenever you like, then say "resume". |
-| [**Proposals become issues**](concepts/lanes.md#proposals-become-issues) | Follow-ups and audit results the orchestrator proposes are proposed as a sub-issue, lane or doc-debt issue, never as an ad-hoc fix. One confirmation creates it. |
-| [**Real data**](concepts/real-data.md) | `never`, `with-approval` or `allowed`: how far agents may read real data. Never committed or quoted at any level; a missing line reads as `never`. |
-| [**Docs ship with the code**](concepts/docs-with-code.md) | Every code change brings its docs. The Handoff's Docs line is a merge gate, and old mismatches go to the "Documentation tech-debt" tracker. |
-| [**Keep up to date**](guides/keep-up-to-date.md) | `sync-root-factory` moves a generated or adopting repo to the latest release by PR; `factory-lesson` files factory problems upstream. |
-| [**Where knowledge lives**](concepts/where-knowledge-lives.md) | GitHub and the repo are the source of truth: issues, PRs, review threads, plans, Handoffs. The run log and Claude's memory only point at them. |
-
-## Where it came from
-
-The factory started as a label-by-label GitHub Actions pipeline for one project. It was then generalized into this
-template and hardened by driving a real project, pensieve-traces, through it. Every factory problem found along the
-way became a `lesson` issue and then a release. The [changelog](reference/changelog.md) tells that story, one
-release at a time.
+| [**Lanes and priorities**](concepts/lanes.md) | Features become lanes of ordered sub-issues; `P0`–`P3` and "blocked by" links set the schedule. |
+| [**The pipeline**](concepts/pipeline.md) | One builder and one fresh reviewer per issue. Before a first release only blockers are fixed in the PR; the rest become `improvement` issues. |
+| [**Flag and continue**](concepts/flag-and-continue.md) | Questions go on the PR with options and a recommendation. Answer whenever you like, then say "resume". |
+| [**Real data**](concepts/real-data.md) | `never`, `with-approval` or `allowed`: how far agents may read real data. It is never committed or quoted. |
+| [**Docs ship with the code**](concepts/docs-with-code.md) | Every code change brings its docs; the Handoff's Docs line is a merge gate. |
+| [**Lessons**](concepts/lessons.md) | A factory problem found in your project becomes a `lesson` issue here, then a release, then an update in every project. |
+| [**Copilot and Claude Code**](guides/copilot-and-claude.md) | Run the factory in either: setup, a model per role, what differs, and the Actions mode with each. |
+| [**Keep up to date**](guides/keep-up-to-date.md) | `sync-root-factory` moves a repo to the latest release by PR; `factory-lesson` files factory problems in this repo. |
+| [**Local CI**](concepts/local-ci.md) | One runner pool per Mac runs the CI of every factory repo on it, where GitHub-hosted runners are off. |
+| [**Where knowledge lives**](concepts/where-knowledge-lives.md) | Issues, PRs, review threads, plans and Handoffs are the source of truth; the run log (`.factory/runs/`) and agent memory only point at them. |
