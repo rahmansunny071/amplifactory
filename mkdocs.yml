@@ -3,6 +3,7 @@ site_description: An issue-driven agent factory on GitHub Copilot and Claude Cod
 site_url: https://rahmansunny071.github.io/amplifactory/
 repo_url: https://github.com/rahmansunny071/amplifactory
 repo_name: amplifactory
+copyright: Copyright &copy; 2026 Sajjadur Rahman · <a href="https://github.com/rahmansunny071/amplifactory/blob/main/LICENSE">MIT License</a>
 docs_dir: docs
 strict: true
 hooks:
