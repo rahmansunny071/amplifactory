@@ -37,5 +37,5 @@ Projects pick the release up with `copier update` or the `sync-root-factory` ski
 - The guardrail check scans rendered files for leftover template syntax. Avoid look-alike sequences in Python,
   such as two closing square brackets in a row; use type aliases.
 - To render the working tree instead of the latest tag, use `--vcs-ref HEAD`.
-- The docs in `docs/` are the source of the docs site (GitHub Pages). A release publishes them with
-  `scripts/publish_docs.py vX.Y.Z`; see `CLAUDE.md`.
+- The docs in `docs/` are the source of the docs site (GitHub Pages). `.github/workflows/docs.yml`
+  publishes them on every push to `main` that touches the docs.

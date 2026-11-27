@@ -360,6 +360,6 @@ Behavior:
 - It exits non-zero on any failure and warns when the tree is dirty.
 - It keeps its temp dir (printing the path) only on failure. Ctrl-C stops the running renders and their children, and keeps the temp dir.
 - `scripts/test-check.sh` tests it against fake repos in a few seconds; run it when you change `check.sh`.
-- Template CI runs both: job `check-sh`, shown as "scripts/check.sh's tests", and on macOS again under `/bin/bash` (bash 3.2). It runs whenever Template CI does (pull requests that aren't drafts, and pushes to `main`, unless `FACTORY_CI` is `off`).
+- Template CI runs both: job `check-sh`, shown as "scripts/check.sh's tests", and on macOS again under `/bin/bash` (bash 3.2). It runs whenever Template CI does (every pull request, drafts included, and pushes to `main`).
 
 See the root `CLAUDE.md` for the full definition, including the skill scripts' `--self-test` runs.

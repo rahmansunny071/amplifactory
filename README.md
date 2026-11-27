@@ -4,7 +4,7 @@
 
 📖 **Documentation:** https://rahmansunny071.github.io/amplifactory/, built from [`docs/`](docs/index.md)
 
-You plan with an agent: an idea becomes prioritized lanes of ordered GitHub issues. Then the factory takes each issue from plan to merged PR: a builder plans, builds and fixes, a fresh reviewer checks the work, and the orchestrator merges when the gates pass (by default Claude Opus orchestrates and reviews, and Claude Sonnet builds). When it needs you, it asks on the PR and keeps working. Every generated repo gets this process, with two ways to run it: the interactive **`factory` skill** in GitHub Copilot (the CLI or the app) or Claude Code (recommended), and an optional, async **GitHub Actions mode** (off unless you generate with `--data actions_agent=claude`). Either way you stay the only one who can start work, approve it, merge to `main` or publish.
+You plan with an agent: an idea becomes prioritized lanes of ordered GitHub issues. Then the factory takes each issue from plan to merged PR: a builder plans, builds and fixes, a fresh reviewer checks the work, and the orchestrator merges when the gates pass (by default Claude Opus orchestrates and reviews, and Claude Sonnet builds). When it needs you, it asks on the PR and keeps working. Every generated repo gets this process, with two ways to run it: the interactive **`factory` skill** in GitHub Copilot (the CLI or the app) or Claude Code (recommended), and an optional, async **GitHub Actions mode** (off unless you generate with `--data actions_agent=copilot` or `claude`). Either way you stay the only one who can start work, approve it, merge to `main` or publish.
 
 ```mermaid
 flowchart LR
@@ -79,7 +79,7 @@ To let the skill merge PRs itself you can opt in with a permission rule; the one
 
 ## Developing the template
 
-The documentation site is built from `docs/` with MkDocs Material (`uvx --with mkdocs-material mkdocs serve`) and published by `.github/workflows/docs.yml`. Template files live in `template/`; files ending in `.jinja` are rendered. `.github/workflows/template-ci.yml` defines the template checks (render each variant, run the generated project's checks, assert every guardrail is present). It runs on GitHub, on the runner pool on the maintainer's Mac, and `scripts/check.sh` runs it locally.
+The documentation site is built from `docs/` with MkDocs Material (`uvx --with mkdocs-material mkdocs serve`) and published by `.github/workflows/docs.yml`. Template files live in `template/`; files ending in `.jinja` are rendered. `.github/workflows/template-ci.yml` defines the template checks (render each variant, run the generated project's checks, assert every guardrail is present). It runs on GitHub-hosted runners, and `scripts/check.sh` runs it locally.
 
 ```bash
 uvx copier copy --defaults --vcs-ref HEAD --data project_name=demo --data "description=Demo." . /tmp/demo
