@@ -1,5 +1,7 @@
 # Changelog
 
+- Unreleased:
+  - **#84: the docs header shows the release tag.** The repo has tags but no GitHub Releases, so Material's repo widget never showed a version. `hooks/release_tag.py` reads the newest `vN.N` tag at build time and a small script adds it, linked, beside the stars and forks.
 - v0.16.0 (2026-11-25): **Root `CLAUDE.md` and `scripts/check.sh`** (#86).
   - **#86: guide for working on the template, and a local "checks pass".** The repo gets a root `CLAUDE.md` (context, release phase, layout, checks, CI gotchas, release procedure, hard rules; it never ships, since `_subdirectory` is `template`) and `scripts/check.sh`, which reads the Template CI variants and render steps from `template-ci.yml`, renders each with `--vcs-ref HEAD`, runs the steps and `mkdocs build --strict`. `evolving-the-template.md` and `scripts.md` point at both.
 - v0.15.0 (2026-11-25): **sync.py creates the progress labels** (#77).
