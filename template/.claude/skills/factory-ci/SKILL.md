@@ -49,7 +49,7 @@ Report its lines. The exit code says what to do next:
 | Exit | Meaning | Next |
 |---|---|---|
 | 0 | Healthy, or CI runs on GitHub-hosted runners by the maintainer's choice | Nothing |
-| 2 | The pool isn't set up for this repo: `FACTORY_RUNNER` is unset (CI runs on GitHub-hosted runners, the default), or the setup isn't finished | Unset: nothing, unless the maintainer asked for the pool or CI runs never start (hosted runners off); then "Set up", below, or no CI (`gh variable set FACTORY_CI --body off`). Setup started: finish it |
+| 2 | The pool isn't set up for this repo: `FACTORY_RUNNER` is unset (CI runs on GitHub-hosted runners, the default), or it is `local` and this Mac's setup isn't finished | Unset: nothing, unless the maintainer asked for the pool or CI runs never start (hosted runners off); then "Set up", below, or no CI (`gh variable set FACTORY_CI --body off`). `local`: finish the setup on the Mac that runs the pool |
 | 3 | The pool isn't running, or in container mode Docker isn't | Do what the `next:` line says. Docker down: ask the maintainer to start Docker Desktop. The pool down: ask whether to start it, `setup.py service install --yes` |
 | 4 | CI is off on purpose (`FACTORY_CI=off`) | Gate merges on the `CLAUDE.md` checks |
 | 1 | Error | Say what failed |

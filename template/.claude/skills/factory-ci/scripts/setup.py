@@ -196,8 +196,28 @@ class Setup:
     # --- doctor
 
     def variables(self) -> dict:
-        data = self.call("GET", "/actions/variables", params={"per_page": 30}) or {}
+        try:
+            data = self.call("GET", "/actions/variables", params={"per_page": 30}) or {}
+        except pool.PoolError:
+            # no gh login named after the owner: an org's repo, or gh signed in through GH_TOKEN.
+            # For a repo this Mac's pool doesn't serve, gh's own login can read the variables.
+            if self.repo in pool.load_config(self.home)["repos"]:
+                raise
+            data = self.gh_variables()
         return {v.get("name"): str(v.get("value", "")) for v in data.get("variables") or []}
+
+    def gh_variables(self) -> dict:
+        cmd = ["gh", "api", f"repos/{self.repo}/actions/variables?per_page=30"]
+        try:
+            out = self.run(cmd, capture_output=True, text=True, timeout=30)
+        except (OSError, subprocess.TimeoutExpired) as exc:
+            raise pool.PoolError(f"could not run gh: {exc.__class__.__name__}") from None
+        if out.returncode != 0:
+            said = (out.stderr or "").strip().splitlines()
+            raise pool.PoolError(
+                f"gh could not read {self.repo}'s variables" + (f" (gh: {said[0]})" if said else "")
+            )
+        return json.loads(out.stdout or "{}") or {}
 
     def oldest_queued_s(self) -> float | None:
         data = self.call("GET", "/actions/runs", params={"status": "queued", "per_page": 100}) or {}
@@ -1353,7 +1373,8 @@ def _setup(root: Path, api: _FakeAPI, now: float, **kwargs) -> Setup:
     def clock() -> float:
         return now
 
-    gh = pool.GitHub(pool.Tokens(run=_fake_gh), transport=api, clock=clock)
+    tokens = kwargs.pop("tokens", None) or pool.Tokens(run=_fake_gh)
+    gh = pool.GitHub(tokens, transport=api, clock=clock)
     kwargs.setdefault("which", lambda tool, path=None: "/usr/bin/" + tool)
     kwargs.setdefault("system", "Darwin")
     kwargs.setdefault("machine", "arm64")
@@ -1392,6 +1413,23 @@ def _test_doctor(root: Path) -> None:
     assert code == EXIT_SETUP and lines[-1].startswith("next: setup.py plan"), lines
     assert sum(line.startswith("setup: ") for line in lines) == 3, lines
     assert "--body github" in lines[0], lines  # unset: hosted runners, the default
+    assert lines[0].startswith("setup: FACTORY_RUNNER is unset"), lines  # step 0 reads it
+
+    # no gh login named after the owner (an org's repo, or gh signed in through GH_TOKEN): for a
+    # repo this Mac's pool doesn't serve, gh's own login reads the variables
+    def no_login(cmd, **kwargs):
+        return subprocess.CompletedProcess(cmd, 1, "", "no oauth token found\n")
+
+    def gh_api(cmd, **kwargs):
+        if cmd[:2] != ["gh", "api"]:
+            return _no_sysctl(cmd, **kwargs)
+        assert cmd[2] == "repos/octo/app/actions/variables?per_page=30", cmd
+        return subprocess.CompletedProcess(cmd, 0, json.dumps({"variables": []}), "")
+
+    code, lines = _setup(root, api, now, tokens=pool.Tokens(run=no_login), run=gh_api).doctor()
+    assert code == EXIT_SETUP and lines[0].startswith("setup: FACTORY_RUNNER is unset"), lines
+    said = _fails(_setup(root, api, now, tokens=pool.Tokens(run=no_login)).doctor)
+    assert "gh could not read octo/app's variables" in said, said
     set_vars(FACTORY_RUNNER="local")
     pool.repo_add(home, "octo/app", None)
     pool.write_json(home.root / "base" / pool.VERSION_FILE, "x")  # makes base/

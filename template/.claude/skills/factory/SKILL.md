@@ -81,10 +81,16 @@ When the run log or memory disagrees with GitHub, GitHub wins.
    the repo slug from step 4. Act on its exit code:
    - `0`: go on. If it printed any `warning:` line (a pool that still runs jobs on the Mac, or
      lets them reach its services), relay those lines to the maintainer in one message first.
-   - `2`: CI runs on GitHub-hosted runners, the default. Go on, and don't ask. If a PR's CI run never
-     starts (an account with GitHub-hosted runners off, such as an EMU account), tell the maintainer
-     once: the `factory-ci` skill sets up a runner pool on this Mac ("set up CI runners"), or
-     `gh variable set FACTORY_CI --body off` gates merges on the `CLAUDE.md` checks instead.
+   - `2` with the line `setup: FACTORY_RUNNER is unset`:
+     CI runs on GitHub-hosted runners, the default. Go on, and don't ask. If a PR's CI run never
+     starts (an account with GitHub-hosted runners off, such as an EMU account), tell the
+     maintainer once: the `factory-ci` skill sets up a runner pool on this Mac ("set up CI
+     runners"), or `gh variable set FACTORY_CI --body off` gates merges on the `CLAUDE.md` checks
+     instead.
+   - `2` otherwise: `FACTORY_RUNNER` is `local`, but this Mac's pool doesn't serve the repo yet, so CI
+     runs wait in the queue. Tell the maintainer once: finish the setup with the `factory-ci` skill
+     ("set up CI runners"), run the factory on the Mac that has the pool, or go back to GitHub's
+     runners (`gh variable set FACTORY_RUNNER --body github`).
    - `3`: the pool isn't running, or in container mode Docker isn't. Do what the `next:` line says: ask
      the maintainer to start Docker Desktop, or ask whether to start the pool (`setup.py service install --yes`).
    - `4`: CI is off on purpose. Gate 1 then runs the `CLAUDE.md` checks on each PR's head and records
