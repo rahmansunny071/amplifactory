@@ -300,8 +300,8 @@ the run log only speeds this up.
 4. Resolve the addressed threads, remove `factory:needs-maintainer`, set `factory:review`, log `resume`,
    and continue from step 7 (improvements, then merge).
 
-If the maintainer used `@claude` on the PR (the Actions `factory-chat` workflow), its commits are already
-there: treat them like a builder's changes and check them.
+If the repo has the Actions mode (`.github/workflows/factory-*.yml`) and the maintainer used `@claude` on the PR
+(the `factory-chat` workflow), its commits are already there: treat them like a builder's changes and check them.
 
 ### Parallel lanes
 
@@ -342,9 +342,10 @@ shapes only".
 
 ## Coexisting with the GitHub Actions factory
 
-The two modes never trigger each other by accident: skill branches are `local/issue-N` (the Actions review
-only matches `factory/issue-*`), and the skill never adds `factory:design` or `design:approved` or writes
-`@claude`. The maintainer **may** write `@claude` on a skill PR on purpose, to have `factory-chat` apply an
+Only repos with `.github/workflows/factory-*.yml` (Copier's `actions_agent: claude` or `copilot`) have it; with
+`actions_agent: none` this section doesn't apply. The two modes never trigger each other by accident:
+skill branches are `local/issue-N` (the Actions review only matches `factory/issue-*`), and the skill never adds `factory:design` or `design:approved` or writes
+`@claude`. In Claude mode, the maintainer **may** write `@claude` on a skill PR on purpose, to have `factory-chat` apply an
 answer right away; resume handles it.
 
 ## When you're done

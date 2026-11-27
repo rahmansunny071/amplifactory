@@ -52,8 +52,9 @@ differ by harness.
 
 `/model` shows and changes the session's model in both. To use other models, the maintainer edits this
 table. An organization's policy can limit the models on offer: if a role's model isn't available, use the
-closest one that is and say so in the run summary. The Actions-mode workflows set their own model
-(`agent_model` in `.copier-answers.yml`).
+closest one that is and say so in the run summary.[% if claude_actions %] The Actions-mode workflows set their own model
+(`agent_model` in `.copier-answers.yml`).[% elif copilot_actions %] The Actions-mode workflows set their own model
+(`copilot_model` in `.copier-answers.yml`).[% endif %]
 
 ## Setup
 uv sync --locked --extra dev    # same lockfile CI uses
@@ -78,8 +79,9 @@ changing lint rules, the ruff pin, or skipping tests.
 - Never bump the version, publish a release, or edit release tooling unless the
   approved design says so explicitly.
 - Never touch .github/workflows/ unless the approved design says so explicitly.
-  Such changes go in a PR of their own: agent stages skip on a PR that modifies
-  their workflow, and the change only takes effect after merge.
+  Such changes go in a PR of their own[% if claude_actions %]: agent stages skip on a PR that modifies
+  their workflow, and the change only takes effect after merge[% elif copilot_actions %]. The Actions-mode
+  agents can't push them: the workflow token can't change .github/workflows/[% endif %].
 - Every code change ships its docs in the same PR: new docs for new behaviour,
   and updates to any doc it makes wrong or stale (README, CHANGELOG,
   docstrings, `.factory/designs/`). Docs that disagree with the PR's code break

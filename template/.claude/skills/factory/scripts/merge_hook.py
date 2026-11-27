@@ -1,13 +1,17 @@
 """Copilot `permissionRequest` hook: approve exactly the factory's merge command, nothing else.
 
-Opt-in only; the template never turns it on. Copy this file to ~/.copilot/hooks/ and add the personal
-hook that README → "Letting the factory merge for you" shows. Never run it as a repository hook: that
-would run the working tree's copy, which any file edit could change.
+Opt-in only; the template never turns it on. Copy this file to ~/.copilot/hooks/
+($COPILOT_HOME/hooks/ if you set COPILOT_HOME) and add the personal hook that README →
+"Letting the factory merge for you" shows. Never run it as a repository hook: that would run the
+working tree's copy, which any file edit could change.
 
-Reads the permission request as JSON on stdin. Prints {"behavior": "allow"} only for a shell command
-that is, in full, `gh pr merge <N> --merge --delete-branch` or `gh pr merge <N> --merge --admin
---delete-branch`. Anything else, and any error, prints nothing, so Copilot's normal permission flow
-decides. It never exits 2, which Copilot treats as a deny. Stdlib only.
+Reads the permission request as JSON on stdin. In a `permissionRequest`, Copilot CLI 1.0.116 sends
+the tool as `toolName` and its arguments as `toolInput`, though its hooks help names them
+`toolArgs`; both are read, and so are Claude-style `tool_name`/`tool_input`. Prints
+{"behavior": "allow"} only for a shell command that is, in full,
+`gh pr merge <N> --merge --delete-branch` or `gh pr merge <N> --merge --admin --delete-branch`.
+Anything else, and any error, prints nothing, so Copilot's normal permission flow decides. It never
+exits 2, which Copilot treats as a deny. Stdlib only.
 
     python3 .claude/skills/factory/scripts/merge_hook.py < request.json
     python3 .claude/skills/factory/scripts/merge_hook.py --self-test
@@ -30,7 +34,8 @@ def command_of(request: dict) -> str | None:
     tool = request.get("toolName", request.get("tool_name"))
     if not isinstance(tool, str) or tool.lower() not in SHELL_TOOLS:
         return None
-    args = request.get("toolArgs", request.get("tool_input"))
+    keys = ("toolInput", "toolArgs", "tool_input")
+    args = next((request[k] for k in keys if k in request), None)
     if isinstance(args, str):
         try:
             args = json.loads(args)
@@ -69,6 +74,23 @@ def _self_test() -> None:
         "tool_input": {"command": "gh pr merge 3 --merge --delete-branch"},
     }
     assert decide(claude_style) == ALLOW
+
+    # #29: the payload Copilot CLI 1.0.116 sends a permissionRequest hook (synthetic values)
+    def copilot(command: str) -> dict:
+        return {
+            "hookName": "permissionRequest",
+            "sessionId": "s",
+            "timestamp": 1,
+            "cwd": "/tmp/repo",
+            "permissionSuggestions": [],
+            "toolName": "bash",
+            "toolInput": {"command": command},
+        }
+
+    assert decide(copilot("gh pr merge 22 --merge --delete-branch")) == ALLOW
+    assert decide(copilot("gh pr merge 22 --merge --admin --delete-branch")) == ALLOW
+    assert decide(copilot("gh pr close 22")) is None
+    assert decide(copilot("gh pr merge 22 --merge --delete-branch && echo x")) is None
     refused = [
         "gh pr merge 22 --merge --delete-branch -R owner/repo",
         "gh pr merge 22 -R owner/repo --merge --delete-branch",

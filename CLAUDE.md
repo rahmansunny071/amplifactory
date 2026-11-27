@@ -44,7 +44,7 @@ Commit first: the render uses `--vcs-ref HEAD`. Then run all of these:
 2. Each skill script's `--self-test`, under Python 3.9 and 3.12:
    ```
    for py in 3.9 3.12; do
-     for s in factory/scripts/queue factory/scripts/lanes factory/scripts/runlog \
+     for s in factory/scripts/queue factory/scripts/lanes factory/scripts/runlog factory/scripts/merge_hook \
               sync-root-factory/scripts/sync; do
        uv run --no-project --python $py python template/.claude/skills/$s.py --self-test
      done
