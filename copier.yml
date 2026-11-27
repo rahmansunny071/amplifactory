@@ -7,7 +7,7 @@
 # Copier variables use [[ ... ]] (and [% ... %] for blocks), so GitHub Actions
 # expressions like ${{ github.event.issue.number }} pass through untouched.
 
-_min_copier_version: "9.0"
+_min_copier_version: "9.5"  # _folder_name (project_name's default)
 _subdirectory: template
 _answers_file: .copier-answers.yml
 _templates_suffix: .jinja

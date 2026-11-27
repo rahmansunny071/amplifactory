@@ -283,14 +283,25 @@ jobs:
             --data project_name=other . "$RUNNER_TEMP/diff-folder" > "$RUNNER_TEMP/msg2.txt" 2>&1
           grep -qF 'rahmansunny071/other' "$RUNNER_TEMP/msg2.txt" \
             || { echo "::error::the message doesn't name the repo when it differs from the folder"; fail=1; }
+          # copying into . (how an existing repo adopts the template) names it after the folder too
+          src=$PWD
+          mkdir -p "$RUNNER_TEMP/Dot_Repo"
+          (cd "$RUNNER_TEMP/Dot_Repo" && uvx --from 'copier>=9,<10' copier copy --defaults --vcs-ref HEAD \
+            --data "description=x" "$src" . > "$RUNNER_TEMP/msg3.txt" 2>&1)
+          grep -qxF 'project_name: dot-repo' "$RUNNER_TEMP/Dot_Repo/.copier-answers.yml" \
+            || { echo "::error::copying into . did not default project_name to the folder name"; fail=1; }
           exit $fail
 
   # scripts/check.sh's own tests (scripts/test-check.sh), against fake repos. check.sh is the local
   # "checks pass", so a change that breaks it must fail here too. On macOS they also run under
   # /bin/bash, macOS's bash 3.2, which check.sh supports.
   check-sh:
-    name: scripts/check.sh's tests
-    runs-on: ubuntu-latest
+    name: scripts/check.sh's tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
