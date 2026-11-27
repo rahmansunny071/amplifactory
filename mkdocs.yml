@@ -1,5 +1,5 @@
 site_name: amplifactory
-site_description: An issue-driven agent factory on Claude Code, as a Copier template.
+site_description: An issue-driven agent factory on GitHub Copilot and Claude Code, as a Copier template.
 site_url: https://rahmansunny071.github.io/amplifactory/
 repo_url: https://github.com/rahmansunny071/amplifactory
 repo_name: amplifactory
@@ -62,7 +62,11 @@ markdown_extensions:
       permalink: true
       title: On this page
   - pymdownx.details
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.highlight:
       anchor_linenums: true
   - pymdownx.inlinehilite
@@ -82,18 +86,25 @@ nav:
           - Real data: concepts/real-data.md
           - Docs ship with the code: concepts/docs-with-code.md
           - Where knowledge lives: concepts/where-knowledge-lives.md
+          - Lessons: concepts/lessons.md
           - The GitHub Actions mode: concepts/actions-mode.md
+          - Local CI: concepts/local-ci.md
   - Get started:
+      - Quick start: getting-started/quick-start.md
       - Create a project: getting-started/create-a-project.md
       - Your first run: getting-started/first-run.md
   - Guides:
       - Day-to-day: guides/day-to-day.md
+      - Copilot and Claude Code: guides/copilot-and-claude.md
       - Adopt in an existing repo: guides/adopt-in-existing-repo.md
       - Keep up to date: guides/keep-up-to-date.md
+      - Local CI setup: guides/local-ci-setup.md
       - Evolving the template: guides/evolving-the-template.md
   - Reference:
       - Copier questions: reference/questions.md
       - Scripts: reference/scripts.md
+      - CI variables: reference/ci-variables.md
+      - Runner pool details: reference/runner-pool.md
       - Merge gates: reference/gates.md
       - Labels: reference/labels.md
       - Guardrails: reference/guardrails.md

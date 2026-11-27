@@ -5,9 +5,9 @@ description: "The three real-data levels (never, with-approval, allowed), what a
 
 # Real data
 
-Some projects work on data that must not leave the maintainer's machine. `CLAUDE.md` has a **Real data** section
-whose first line sets how far agents may go. It is chosen once, by the `real_data_access` question when you
-[create the project](../getting-started/create-a-project.md), and the skill reads it from `main`.
+The first line of the **Real data** section in `CLAUDE.md` sets how far agents may go. You choose it with the
+`real_data_access` question when you [create the project](../getting-started/create-a-project.md); the skill reads it
+from `main`.
 
 ## The three levels
 
@@ -20,24 +20,23 @@ whose first line sets how far agents may go. It is chosen once, by the `real_dat
 ## Rules at every level
 
 - Real data is **never committed** and **never quoted** in issues, PRs or commits; only field names, counts and
-  shapes.
+  shapes. This includes what [`factory-lesson`](../guides/keep-up-to-date.md#file-a-factory-problem-upstream) files
+  upstream.
 - Tests use **synthetic fixtures** only.
 - Agents read data where it lives and never copy it into the repo or worktree (a scratch directory outside the repo
   is fine).
 - A stricter hard rule in `CLAUDE.md` overrides the level.
-- The same applies to what [`factory-lesson`](../guides/keep-up-to-date.md#file-a-factory-problem-upstream) files
-  upstream.
 
 ## A missing or malformed line reads as `never`
 
-If `CLAUDE.md` has no `Real data:` line, or the line is not one of the three values, the skill treats the repo
-as `never`. A repo that [adopted just the skill](../guides/adopt-in-existing-repo.md) is therefore safe by default.
+If `CLAUDE.md` has no `Real data:` line, or the value isn't one of the three, the skill treats the repo as `never`.
+A repo that [adopted just the skill](../guides/adopt-in-existing-repo.md) is safe by default.
 
 ## Changing the level
 
-- **Copier answer:** `uvx copier update --data real_data_access=<level>`, in a PR of its own.
-- **By hand:** edit the `Real data:` line in `CLAUDE.md`. Then `.copier-answers.yml` still records the old level, and
-  a later `copier update` can render the old line back, so prefer the Copier answer.
+- **Copier answer (preferred):** `uvx copier update --data real_data_access=<level>`, in a PR of its own.
+- **By hand:** edit the `Real data:` line in `CLAUDE.md`. `.copier-answers.yml` then still records the old level, and
+  a later `copier update` can render the old line back.
 
-[`sync-root-factory`](../guides/keep-up-to-date.md) never changes this value for you; it lists it under "Open".
+[`sync-root-factory`](../guides/keep-up-to-date.md) never changes this value; it lists it under "Open".
 See also [`real_data_access`](../reference/questions.md) in the Copier questions.
