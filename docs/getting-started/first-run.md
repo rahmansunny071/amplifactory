@@ -30,9 +30,8 @@ Before you start, confirm `./scripts/bootstrap.sh` finished cleanly (it's safe t
   `main` isn't protected. Make the repo public or use GitHub Pro if you want the protection. EMU (work) accounts can
   only create private repos; whether rulesets apply there is unverified, so check for the warning.
 
-**CI on your Mac.** The first "run the factory" asks where CI should run. If GitHub-hosted runners work
-for your account, it records that and moves on. Where they're off (EMU personal repos, for one),
-it offers to set up a runner pool on your Mac. It's a few questions: how many jobs run at once,
+**CI on your Mac.** CI runs on GitHub-hosted runners unless you opt in to a runner pool on your Mac. Where they're off
+(EMU personal repos, for one), say "set up CI runners". It's a few questions: how many jobs run at once,
 whether to install the pool's login service, and whether to send this repo's CI to it. Then one CI run proves
 it works. This happens once per Mac and once per repo. See [Local CI setup](../guides/local-ci-setup.md).
 

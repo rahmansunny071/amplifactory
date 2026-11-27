@@ -9,8 +9,8 @@ Some accounts can't use GitHub-hosted runners (EMU personal repos, for one), so 
 never starts. The **runner pool** runs that CI on your Mac instead: one pool per Mac, serving every factory repo
 on it, with a fresh runner for each job.
 
-**Do you need it?** Only when GitHub-hosted runners are off for your account. The first "run the factory" in a repo
-checks this and offers the setup. Otherwise skip this page.
+**Do you need it?** Only when GitHub-hosted runners are off for your account. The setup is opt-in: say "set up CI runners", or
+set `FACTORY_RUNNER=local`, and "run the factory" then checks the pool each time. Otherwise skip this page.
 
 ## Do this
 

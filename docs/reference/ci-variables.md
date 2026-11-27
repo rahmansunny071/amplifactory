@@ -11,7 +11,7 @@ A generated repo's `.github/workflows/ci.yml` reads two repository variables. Se
 |---|---|---|
 | `FACTORY_RUNNER` | `local` | Jobs run on your Mac's [runner pool](../concepts/local-ci.md): `runs-on: [self-hosted, factory-run-<run_id>]`. Pull requests from forks still run on `ubuntu-latest` |
 | | `github`, or anything else | Jobs run on `ubuntu-latest` |
-| | unset | Jobs run on `ubuntu-latest`. The factory's step 0 (`setup.py doctor`) asks once where CI should run |
+| | unset | Jobs run on `ubuntu-latest`. The factory's step 0 (`setup.py doctor`) takes this to mean hosted runners and carries on without asking |
 | `FACTORY_CI` | `off` | Every job is skipped. A job skipped by its `if:` reports Success, so required checks pass and pull requests can merge. The factory's merge gate runs the `CLAUDE.md` checks instead (below) |
 | | unset, or anything else | CI runs normally |
 

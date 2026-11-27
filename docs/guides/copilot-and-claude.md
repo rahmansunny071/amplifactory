@@ -35,7 +35,7 @@ You need Python 3.9+, [uv](https://docs.astral.sh/uv/), git and `gh` (logged in)
 
 Then generate and bootstrap the project as in the [Quick start](../getting-started/quick-start.md), and start the
 harness in the project folder (`copilot` or `claude`). Say **`brainstorm X into issues`**, then **`run the factory`**.
-The first `run the factory` also asks where CI runs ([Local CI](../concepts/local-ci.md)).
+Where hosted runners are off, say `set up CI runners` first ([Local CI](../concepts/local-ci.md)).
 
 !!! tip "Start on the orchestrator's model"
     Check `/model` before you start. The orchestrator model is in the generated `CLAUDE.md` under "Models".

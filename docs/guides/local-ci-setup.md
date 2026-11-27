@@ -9,8 +9,8 @@ Use this when GitHub-hosted runners are off for your account (EMU personal repos
 generated repo's CI never starts. The `factory-ci` skill puts CI on a [runner pool](../concepts/local-ci.md) on
 your Mac.
 
-The first "run the factory" in a repo asks where CI should run. If GitHub-hosted runners work, it records
-`FACTORY_RUNNER=github` and stops asking; if not, it offers this setup. You can also say **"set up CI runners"**.
+The setup is opt-in. Where GitHub-hosted runners are off, say **"set up CI runners"**. Otherwise CI runs on
+`ubuntu-latest` and nothing is asked.
 
 The agent runs `setup.py` (in `.claude/skills/factory-ci/scripts/`) and asks at each decision. Nothing that
 changes a repo setting or your Mac happens without your yes. Every step is safe to repeat.
@@ -34,7 +34,9 @@ A second repo on the same Mac skips steps 4 and 5.
 Every "run the factory" starts with `setup.py doctor` (about a second). It reports one of four states:
 
 - healthy;
-- setup needed;
+- setup needed: with `FACTORY_RUNNER` unset that just means hosted runners, and the factory carries on without
+  asking; with `FACTORY_RUNNER=local` but no finished pool on this Mac, it tells you once to finish the setup or
+  run `gh variable set FACTORY_RUNNER --body github`;
 - the pool is down, and it offers to start it (in container mode, a Docker that isn't running counts as down; start
   Docker Desktop);
 - CI is off.

@@ -24,7 +24,7 @@ copilot --version          # GitHub Copilot CLI (or use the Copilot app)
 
 !!! note "Where GitHub-hosted runners are off"
     That is the case for EMU personal repos. CI then needs the [runner pool](../concepts/local-ci.md) on your
-    Mac. Step 4 sets it up from inside Copilot. If your account has hosted runners, step 4 records that and moves on.
+    Mac. Step 4 sets it up from inside Copilot. If your account has hosted runners, skip step 4: CI runs on `ubuntu-latest`.
 
 ## 1. Generate the project
 
@@ -95,8 +95,8 @@ If bootstrap warns that it couldn't create the ruleset, `main` is unprotected: s
 copilot       # in slugify-demo; /model should show claude-opus-5.5, the orchestrator in CLAUDE.md
 ```
 
-Say **`run the factory`** (or **`set up CI runners`**). The first time, the `factory-ci` skill asks where CI runs and,
-where hosted runners are off, offers the pool. It asks before each step: the repo setting for Actions, how many jobs
+Say **`set up CI runners`**. The `factory-ci` skill sets up the pool (it is opt-in; "run the factory" only checks
+it afterwards). It asks before each step: the repo setting for Actions, how many jobs
 may run at once, installing the pool's login service (once per Mac), pointing this repo at it, and one smoke-test CI
 run. Details: [Local CI setup](../guides/local-ci-setup.md).
 

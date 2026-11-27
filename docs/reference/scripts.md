@@ -258,7 +258,7 @@ Its exit code says what to do next:
 |---|---|
 | 0 | Healthy, or `FACTORY_RUNNER` names another runner (the pool isn't used) |
 | 1 | Error (the message says what) |
-| 2 | Setup needed: run `plan` |
+| 2 | Setup needed: run `plan`. With `FACTORY_RUNNER` unset it means hosted runners, the default, and the factory carries on without asking; with `FACTORY_RUNNER=local` and no finished pool on this Mac, the maintainer is told once to finish the setup or run `gh variable set FACTORY_RUNNER --body github` |
 | 3 | The pool isn't running, or in container mode Docker isn't: start what the `next:` line names |
 | 4 | CI is off (`FACTORY_CI=off`): gate merges on the local checks |
 
