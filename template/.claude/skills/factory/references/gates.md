@@ -6,7 +6,7 @@ it if it's mechanical, otherwise **flag and continue** (SKILL.md).
 
 | # | Gate | How to check |
 |---|---|---|
-| 1 | **CI green** | Run-level watch (below) of the run for the PR's head commit, never an older run: every required check `pass`, none pending |
+| 1 | **CI green** | Run-level watch (below) of the run for the PR's head commit, never an older run: every required check `pass`, none pending. With `FACTORY_CI=off` there's no run: the head commit has a `factory/local-checks` `success` status instead (below) |
 | 2 | **Up to date with `main`** | `gh pr view <PR> --json mergeStateStatus` isn't `BEHIND` or `DIRTY`. If it's `BEHIND`: `gh api -X PUT repos/<owner/repo>/pulls/<PR>/update-branch`, then re-check gate 1. `BLOCKED` alone just means "needs approval": the merge needs the maintainer's bypass or approval (see "Merge") |
 | 3 | **No open blockers** | The code review returned `READY`, or every blocker was fixed by the builder **and** you verified each one with its reproduction on the current commit. Improvements don't block in the mvp phase |
 | 4 | **Deviations disclosed and minor** | The PR body's "Deviations" plus the review's `undisclosed_deviations`. Scope, interface or dependency changes aren't minor |
@@ -21,6 +21,53 @@ it if it's mechanical, otherwise **flag and continue** (SKILL.md).
 | 13 | **You aren't unsure** | Skim the diff yourself. If something still bothers you, flag it on the PR instead of merging |
 
 ## Bounded CI waits (gate 1)
+
+**First, where does CI run?** Read the two repository variables (values compare without regard to case):
+
+```bash
+gh variable list -R <owner/repo> --json name,value -q '.[] | select(.name | startswith("FACTORY_")) | "\(.name)=\(.value)"'
+```
+
+- **`FACTORY_CI=off`: there's no run to watch.** CI's jobs are skipped on purpose, and a skipped job
+  reports Success. Run the `CLAUDE.md` checks ("Definition of checks pass") yourself, in the issue's
+  worktree at the PR's head commit, then record the result on that commit:
+
+  ```bash
+  gh pr view <PR> -R <owner/repo> --json headRefOid -q .headRefOid   # the head commit: <sha>
+  git -C <worktree> rev-parse HEAD   # must print the same <sha>: check what the PR merges
+  # … the CLAUDE.md checks, in <worktree> …
+  gh api -X POST repos/<owner/repo>/statuses/<sha> -f context=factory/local-checks \
+    -f state=success -f description="CLAUDE.md checks pass"
+  ```
+
+  Paste the `<sha>` you checked into the `POST`. Shell variables don't last from one command to the
+  next, and reading the head again could mark a newer, unchecked push. If a check fails, post
+  `state=failure` with the failing check in `description` (140 characters at most), and treat it as red
+  CI. Gate 1 holds when the head commit has a `factory/local-checks` `success`, so every push needs a
+  new run. If GitHub refuses the status (a token without `statuses: write`), put the checks' result in
+  the merge comment instead.
+- **`FACTORY_RUNNER=local`: is the pool running?** A run waits in the queue while the pool is down or
+  paused. On the Mac that runs the pool (it has `~/.amplifactory/runner-pool`, or
+  `$FACTORY_RUNNER_POOL_HOME`), ask the pool before you watch:
+
+  ```bash
+  python3 .claude/skills/factory-ci/scripts/runners.py status
+  ```
+
+  - `0` (up): watch the run, below.
+  - `3` (down): ask the maintainer whether to start it
+    (`python3 .claude/skills/factory-ci/scripts/setup.py service install --yes`). If `status` has a
+    `docker:` line, the pool runs its jobs in containers and can't reach Docker: ask them to do what
+    that line says instead, usually to start Docker Desktop.
+  - `5` (paused): give the reason `status` shows, and ask whether to resume it
+    (`python3 .claude/skills/factory-ci/scripts/runners.py resume`).
+  - Anything else: say what it printed, and watch the run.
+
+  After a start or a resume, ask the pool again: a pool can be both down and paused. If the maintainer
+  says no, the run waits in the queue: leave this PR, carry on with other work, and come back to it.
+
+  On any other machine, watch the run.
+- **Otherwise,** watch the run.
 
 Watch the **workflow run for the PR's head commit**, not the PR's checks and not the newest run on the
 branch. `gh pr checks --watch` follows individual checks, and GitHub sometimes leaves one "pending" after

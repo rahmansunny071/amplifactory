@@ -77,6 +77,19 @@ When the run log or memory disagrees with GitHub, GitHub wins.
 
 ## Before you start
 
+0. **Where CI runs.** Run `python3 .claude/skills/factory-ci/scripts/setup.py doctor --repo <slug>`, with
+   the repo slug from step 4. Act on its exit code:
+   - `0`: go on. If it printed any `warning:` line (a pool that still runs jobs on the Mac, or
+     lets them reach its services), relay those lines to the maintainer in one message first.
+   - `2`: CI runs on GitHub-hosted runners, the default. Go on, and don't ask. If a PR's CI run never
+     starts (an account with GitHub-hosted runners off, such as an EMU account), tell the maintainer
+     once: the `factory-ci` skill sets up a runner pool on this Mac ("set up CI runners"), or
+     `gh variable set FACTORY_CI --body off` gates merges on the `CLAUDE.md` checks instead.
+   - `3`: the pool isn't running, or in container mode Docker isn't. Do what the `next:` line says: ask
+     the maintainer to start Docker Desktop, or ask whether to start the pool (`setup.py service install --yes`).
+   - `4`: CI is off on purpose. Gate 1 then runs the `CLAUDE.md` checks on each PR's head and records
+     them as a `factory/local-checks` commit status (`references/gates.md` → "Bounded CI waits").
+   - `1`: say what failed, and go on.
 1. **Model.** You should be on the orchestrator model (`CLAUDE.md` → "Models", in your harness's
    column; `/model` shows and changes it in both). If not, tell the user before orchestrating.
 2. **Repo state.** `gh auth status` is OK, `main` is clean and up to date, and the `CLAUDE.md` checks pass

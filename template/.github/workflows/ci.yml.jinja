@@ -2,6 +2,10 @@ name: CI
 
 # Tests and lint on every pull request and every push to main.
 # All tests run offline on synthetic fixtures (no network, model or real traces).
+# Two repository variables steer it (no workflow edit needed):
+#   FACTORY_RUNNER=local  jobs run on the maintainer's Mac, in its runner pool (factory-ci skill):
+#                         runs-on [self-hosted, factory-run-<run_id>]; PRs from forks never do.
+#   FACTORY_CI=off        every job is skipped; a job skipped by `if:` reports Success.
 # Draft PRs skip CI; marking one ready for review runs it. One job per Python version, not a
 # matrix: a matrix job skipped by `if:` never posts the "Tests (Python X)" names required on main.
 on:
@@ -26,8 +30,8 @@ jobs:
 [%- for v in python_versions %]
   test-py[[ v | replace('.', '-') ]]:
     name: Tests (Python [[ v ]])
-    if: ${{ !github.event.pull_request.draft }}
-    runs-on: ubuntu-latest
+    if: vars.FACTORY_CI != 'off' && !github.event.pull_request.draft
+    runs-on: ${{ vars.FACTORY_RUNNER == 'local' && (!github.event.pull_request || github.event.pull_request.head.repo.full_name == github.repository) && fromJSON(format('["self-hosted","factory-run-{0}"]', github.run_id)) || 'ubuntu-latest' }}
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
@@ -39,8 +43,8 @@ jobs:
 [% endfor %]
   lint:
     name: Lint
-    if: ${{ !github.event.pull_request.draft }}
-    runs-on: ubuntu-latest
+    if: vars.FACTORY_CI != 'off' && !github.event.pull_request.draft
+    runs-on: ${{ vars.FACTORY_RUNNER == 'local' && (!github.event.pull_request || github.event.pull_request.head.repo.full_name == github.repository) && fromJSON(format('["self-hosted","factory-run-{0}"]', github.run_id)) || 'ubuntu-latest' }}
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4

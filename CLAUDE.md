@@ -45,7 +45,7 @@ Commit first: the render uses `--vcs-ref HEAD`. Then run all of these:
    ```
    for py in 3.9 3.12; do
      for s in factory/scripts/queue factory/scripts/lanes factory/scripts/runlog factory/scripts/merge_hook \
-              sync-root-factory/scripts/sync; do
+              sync-root-factory/scripts/sync factory-ci/scripts/runners factory-ci/scripts/setup; do
        uv run --no-project --python $py python template/.claude/skills/$s.py --self-test
      done
    done

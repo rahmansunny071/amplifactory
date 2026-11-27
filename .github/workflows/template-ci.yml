@@ -67,8 +67,9 @@ jobs:
             uvx --from pyyaml python -c "import sys, yaml; yaml.safe_load(open(sys.argv[1]))" "$f"
           done
       # #91: one job per required check name (a matrix job skipped by if: posts only its unexpanded
-      # name), drafts skipped, ready_for_review runs it, and timeouts on every job
-      - name: ci.yml has one job per check name, skips drafts, has timeouts
+      # name), drafts and FACTORY_CI=off skipped, ready_for_review runs it, FACTORY_RUNNER routing
+      # (#94) and timeouts on every job
+      - name: ci.yml has one job per check name, routes by FACTORY_RUNNER, skips drafts and FACTORY_CI=off
         working-directory: ${{ runner.temp }}/out
         run: |
           uvx --from pyyaml python - <<'PY'
@@ -83,9 +84,19 @@ jobs:
           want = sorted([f"Tests (Python {v})" for v in versions] + ["Lint"])
           if names != want:
               bad.append(f"check names {names}, want {want} (bootstrap's ruleset requires them)")
-          # "$" + "{{" keeps GitHub from evaluating it in this live workflow
-          gate = "$" + "{{ !github.event.pull_request.draft }}"
+          # the routing contract, exactly: a precedence slip can keep every piece and still send all
+          # PRs to the pool. "$" + "{{" keeps GitHub from evaluating it in this live workflow.
+          route = "$" + "{{ " + " ".join([
+              "vars.FACTORY_RUNNER == 'local' &&",
+              "(!github.event.pull_request ||",
+              "github.event.pull_request.head.repo.full_name == github.repository) &&",
+              "fromJSON(format('[\"self-hosted\",\"factory-run-{0}\"]', github.run_id)) ||",
+              "'ubuntu-latest'",
+          ]) + " }}"
+          gate = "vars.FACTORY_CI != 'off' && !github.event.pull_request.draft"
           for jid, job in jobs.items():
+              if job.get("runs-on") != route:
+                  bad.append(f"{jid}: runs-on must be exactly {route}")
               if "strategy" in job:
                   bad.append(f"{jid}: a matrix job skipped by if: never posts its check names")
               if job.get("if") != gate:
@@ -127,7 +138,7 @@ jobs:
             fi
           fi
           # #40: the Actions mode with Copilot. The workflow token signs in a pinned, job-local CLI; every
-          # job runs on ubuntu-latest with a timeout; each agent gets exactly
+          # job routes like ci.yml (the pool only for a private repo, not an internal one) with a timeout; each agent gets exactly
           # its stage's tool rules; only the build's approve-runs job (no agent) holds actions: write, to
           # approve the build PR's held runs; the review only takes a same-repo factory/issue-N PR;
           # bootstrap lets workflows open PRs.
@@ -162,7 +173,14 @@ jobs:
             need README.md 'actions/permissions/workflow -F can_approve_pull_request_reviews=true'   # copier update path
             uvx --from pyyaml python - <<'PY' || fail=1
           import re, shlex, sys, yaml
-          route = "ubuntu-latest"
+          # "$" + "{{" keeps GitHub from evaluating it in this live workflow, as in the ci.yml check above.
+          route = "$" + "{{ " + " ".join([
+              "vars.FACTORY_RUNNER == 'local' && github.event.repository.visibility == 'private' &&",
+              "(!github.event.pull_request ||",
+              "github.event.pull_request.head.repo.full_name == github.repository) &&",
+              "fromJSON(format('[\"self-hosted\",\"factory-run-{0}\"]', github.run_id)) ||",
+              "'ubuntu-latest'",
+          ]) + " }}"
           me = yaml.safe_load(open(".copier-answers.yml"))["maintainer_github"]
           agent = {"contents": "write", "pull-requests": "write", "issues": "write", "copilot-requests": "write"}
           # each job's if must hold these (the maintainer-only triggers; same-repo branches)
@@ -193,7 +211,7 @@ jobs:
                   job = wf["jobs"].get(name) or {}
                   where = f"factory-{w}.yml jobs.{name}"
                   if job.get("runs-on") != route:
-                      bad.append(f"{where}: runs-on must be ubuntu-latest")
+                      bad.append(f"{where}: runs-on is not the pool route (private repos only)")
                   if not job.get("timeout-minutes"):
                       bad.append(f"{where}: no timeout-minutes")
                   if name == "approve-runs" and job.get("timeout-minutes") != 10:
@@ -610,12 +628,26 @@ jobs:
           if [ "$want_actions" = none ] && grep -rnE '@claude|install-github-app|CLAUDE_CODE_OAUTH_TOKEN|copilot-requests|can_approve_pull_request_reviews' README.md CLAUDE.md scripts/bootstrap.sh .github; then
             echo "::error::actions_agent=none, but the lines above mention an Actions mode (#21, #40)"; fail=1
           fi
+          # #94: the opt-in local CI runner pool (factory-ci); its self-tests also run containers.py's and guard.py's
+          test -f .claude/skills/factory-ci/scripts/runners.py || { echo "::error::missing .claude/skills/factory-ci/scripts/runners.py"; fail=1; }
+          need .claude/skills/factory-ci/scripts/runners.py 'ACTIONS_RUNNER_HOOK_JOB_STARTED'
+          need .claude/skills/factory-ci/scripts/runners.py '"runner_group_id": 1'
+          need .claude/skills/factory-ci/scripts/runners.py 'def refusal'
+          uv run --no-project --python 3.12 python .claude/skills/factory-ci/scripts/runners.py --self-test || fail=1
+          test -f .claude/skills/factory-ci/scripts/setup.py || { echo "::error::missing .claude/skills/factory-ci/scripts/setup.py"; fail=1; }
+          uv run --no-project --python 3.12 python .claude/skills/factory-ci/scripts/setup.py --self-test || fail=1
+          # the factory-ci skill, the factory's step 0 (GitHub-hosted by default, the pool opt-in), the setup hint
+          need .claude/skills/factory-ci/SKILL.md 'name: factory-ci'
+          need .claude/skills/factory-ci/SKILL.md 'setup.py plan'
+          need .claude/skills/factory/SKILL.md 'factory-ci/scripts/setup.py doctor'
+          need .claude/skills/factory/SKILL.md 'CI runs on GitHub-hosted runners, the default. Go on, and don'"'"'t ask.'
+          need scripts/bootstrap.sh 'sets up CI on'
           exit $fail
       - name: skill scripts run on Python 3.9 (macOS system python3)
         working-directory: ${{ runner.temp }}/out
         run: |
           fail=0
-          for s in factory/scripts/queue factory/scripts/lanes factory/scripts/runlog factory/scripts/merge_hook sync-root-factory/scripts/sync; do
+          for s in factory/scripts/queue factory/scripts/lanes factory/scripts/runlog factory/scripts/merge_hook sync-root-factory/scripts/sync factory-ci/scripts/runners factory-ci/scripts/setup; do
             uv run --no-project --python 3.9 python ".claude/skills/$s.py" --self-test || fail=1
           done
           exit $fail
