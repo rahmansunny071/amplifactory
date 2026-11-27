@@ -1,5 +1,7 @@
-# amplifactory: a Copier template for an issue-driven agent factory on
-# Claude Code GitHub Actions (design → maintainer approval → build → review).
+# amplifactory: a Copier template for an issue-driven agent factory. The factory
+# skill runs in GitHub Copilot or Claude Code; an optional Actions mode runs it on
+# GitHub Actions, with Claude Code (actions_agent: claude) or the GitHub Copilot CLI
+# (actions_agent: copilot); off by default; design → maintainer approval → build → review.
 #
 #   copier copy gh:rahmansunny071/amplifactory my-project
 #   cd my-project && ./scripts/bootstrap.sh --public
@@ -124,11 +126,59 @@ real_data_access:
   choices: [never, with-approval, allowed]
   default: never
 
+actions_agent:
+  type: str
+  help: >-
+    The GitHub Actions mode, where labels you add start design, build and review agents on GitHub
+    runners. none: no agent workflows; you run the factory skill in GitHub Copilot or Claude Code.
+    claude: Claude Code GitHub Actions (needs a Claude subscription). copilot: the GitHub Copilot CLI,
+    signed in with each workflow's own token (no secret; bills the repo owner's Copilot seat).
+  choices: [none, claude, copilot]
+  # A new project gets none. A project generated before this question recorded agent_model (asked
+  # after this question, so a new project hasn't answered it yet): there the default is claude, so
+  # `copier update` keeps its workflows instead of deleting them. (Copier's _copier_operation is not
+  # available to question defaults, only to tasks and _exclude.)
+  default: "[[ 'claude' if agent_model is defined else 'none' ]]"
+
+claude_actions:
+  # computed, never asked or recorded: whether the Claude Actions-mode files are rendered
+  type: bool
+  when: false
+  default: "[[ actions_agent == 'claude' ]]"
+
+copilot_actions:
+  # computed, never asked or recorded: whether the Copilot Actions-mode files are rendered
+  type: bool
+  when: false
+  default: "[[ actions_agent == 'copilot' ]]"
+
+actions_mode:
+  # computed, never asked or recorded: whether either Actions mode is on (the files they share)
+  type: bool
+  when: false
+  default: "[[ actions_agent != 'none' ]]"
+
 agent_model:
   type: str
-  help: Model the factory agents use (sonnet is the sensible default on Pro)
+  when: "[[ actions_agent == 'claude' ]]"
+  help: >-
+    Model for the Actions-mode agents (Claude Code GitHub Actions; sonnet is the sensible
+    default on Pro). The factory skill's models are in the generated CLAUDE.md → Models.
   choices: [sonnet, opus, haiku]
   default: sonnet
+
+copilot_model:
+  type: str
+  when: "[[ actions_agent == 'copilot' ]]"
+  help: >-
+    Model for the Actions-mode agents (copilot --model): any model your Copilot plan offers
+    (`copilot help config` lists them). The factory skill's models are in the generated CLAUDE.md →
+    Models.
+  default: claude-sonnet-5.5
+  validator: >-
+    [% if not copilot_model or copilot_model | regex_search('[^A-Za-z0-9._-]') %]
+    Use a model name: letters, digits, dots, hyphens and underscores
+    [% endif %]
 
 _message_after_copy: |
   Generated [[ project_name ]].
@@ -138,15 +188,38 @@ _message_after_copy: |
     gh auth refresh -h github.com -s repo,workflow,project
         # repo: create and push the repo; workflow: push the Actions workflows;
         # project: the Project board (bootstrap and lanes.py project-add)
-    ./scripts/bootstrap.sh --public     # or --private (rulesets need public or GitHub Pro)
-    claude                              # on Opus; then say "brainstorm X into issues" or "run the factory"
+    ./scripts/bootstrap.sh --public     # or --private: EMU (enterprise-managed) accounts can only
+                                        # create private repos; rulesets on private repos need a
+                                        # plan that supports them
+    copilot                             # GitHub Copilot CLI (or the Copilot app), or claude for
+                                        # Claude Code; on the orchestrator model in CLAUDE.md →
+                                        # Models, say "brainstorm X into issues" or "run the factory"
   The factory skill works from there and needs no secret.
   [%- if (_folder_name or 'project')|lower|regex_replace('[^a-z0-9]+', '-')|trim('-') != project_name %]
   The folder is named [[ _folder_name ]], but bootstrap creates the GitHub repo
   [[ maintainer_github ]]/[[ project_name ]].
   [%- endif %]
+  [%- if actions_agent == 'claude' %]
 
-  Optional, last, only for Actions mode (agents on GitHub runners):
+  Actions mode with Claude (optional, last; agents on GitHub runners):
     in Claude Code, /install-github-app → pick [[ maintainer_github ]]/[[ project_name ]]
     → choose your subscription; decline the installer's own claude.yml workflows
     dry run: open an issue with the Factory task template and add factory:design
+  [%- elif actions_agent == 'copilot' %]
+
+  Actions mode with Copilot (optional, last; agents on GitHub runners, no secret):
+    bootstrap lets workflows open PRs; the agents bill your Copilot seat
+    dry run: open an issue with the Factory task template and add factory:design
+  [%- else %]
+
+  The GitHub Actions mode is off (actions_agent: none). To add it later, in a PR of its own:
+    uvx copier update --data actions_agent=copilot    # or actions_agent=claude
+  [%- endif %]
+
+_message_after_update: |
+  [% if actions_agent == 'copilot' -%]
+  Actions mode with Copilot: its agents open PRs with the workflows' own token, which needs
+  "Allow GitHub Actions to create and approve pull requests" (Settings → Actions → General).
+  Bootstrap turns it on for a new repo. If this update added the mode, turn it on:
+    gh api -X PUT repos/[[ maintainer_github ]]/[[ project_name ]]/actions/permissions/workflow -F can_approve_pull_request_reviews=true
+  [%- endif %]

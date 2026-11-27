@@ -1,0 +1,79 @@
+name: factory-design
+# Actions mode with Copilot. Fires when the maintainer adds factory:design to an issue: the design
+# agent (the GitHub Copilot CLI) writes .factory/designs/issue-N.md and opens a draft design PR.
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  design:
+    if: >
+      github.event.label.name == 'factory:design' &&
+      github.event.sender.login == '[[ maintainer_github ]]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    concurrency:
+      group: factory-${{ github.event.issue.number }}
+      cancel-in-progress: false
+    # copilot-requests: the workflow's own token signs in the Copilot CLI (no secret); usage bills
+    # the repo owner's Copilot seat.
+    permissions: { contents: write, pull-requests: write, issues: write, copilot-requests: write }
+    env:
+      FACTORY_COPILOT_VERSION: "1.0.116"
+      COPILOT_AUTO_UPDATE: "false"
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      # Job-local and pinned, never a global install: on a self-hosted runner that would replace its
+      # own copilot.
+      - name: Install the Copilot CLI
+        run: |
+          npm install --no-save --no-audit --no-fund --prefix "$RUNNER_TEMP/copilot-cli" "@github/copilot@$FACTORY_COPILOT_VERSION"
+          echo "$RUNNER_TEMP/copilot-cli/node_modules/.bin" >> "$GITHUB_PATH"
+          echo "COPILOT_HOME=$RUNNER_TEMP/copilot-home" >> "$GITHUB_ENV"
+      - name: Commit as github-actions[bot]
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      # Each agent may run only what its Claude twin may: tool_rules.py, a preToolUse hook, denies the
+      # rest. It comes from the default branch, by its full ref so that a tag an agent pushed can't stand
+      # in, never from the checkout an agent can write. It loads from $COPILOT_HOME/hooks with the folder
+      # untrusted: trusting it would load the branch's hooks too.
+      - name: Tool rules (the default branch's)
+        env: { DEFAULT_BRANCH: "${{ github.event.repository.default_branch }}" }
+        run: |
+          git fetch --quiet --no-tags origin "+refs/heads/$DEFAULT_BRANCH:refs/remotes/origin/$DEFAULT_BRANCH"
+          mkdir -p "$COPILOT_HOME/hooks"
+          git show "refs/remotes/origin/$DEFAULT_BRANCH:.github/factory/tool_rules.py" > "$COPILOT_HOME/hooks/tool_rules.py"
+          printf '%s\n' '{"version": 1, "hooks": {"preToolUse": [{"type": "command", "timeoutSec": 30, "bash": "python3 \"$COPILOT_HOOK_DIR/tool_rules.py\" design"}]}}' > "$COPILOT_HOME/hooks/tool-rules.json"
+          echo '{"toolName": "bash", "toolArgs": {"command": "env"}}' | python3 "$COPILOT_HOME/hooks/tool_rules.py" design | grep -q '"deny"'
+      # shell(gh pr) allows every gh pr command, and Copilot runs read-only commands (cat, ls) with no
+      # rule; the tool rules above narrow them to Claude's design allowlist.
+      - name: Design agent
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          N: ${{ github.event.issue.number }}
+        run: >-
+          copilot -p "/design-issue $N" --model [[ copilot_model ]] --no-ask-user --disable-builtin-mcps
+          --allow-tool 'write(.factory/designs/**)' --allow-tool 'shell(git:*)' --allow-tool 'shell(gh issue)'
+          --allow-tool 'shell(gh pr)' --allow-tool 'shell(gh label)'
+      # A denied command doesn't fail the agent, so check its artifact: a run without one is red,
+      # unless the agent marked the issue factory:blocked (it commented why).
+      - name: The design PR is open
+        env:
+          GH_TOKEN: ${{ github.token }}
+          N: ${{ github.event.issue.number }}
+        run: |
+          pr=$(gh pr list -R "$GITHUB_REPOSITORY" --head "design/issue-$N" --state open \
+                 --json number,isCrossRepository --jq '[.[] | select(.isCrossRepository | not)][0].number // empty')
+          if [ -z "$pr" ]; then
+            if gh issue view "$N" -R "$GITHUB_REPOSITORY" --json labels --jq '.labels[].name' | grep -x 'factory:blocked' >/dev/null; then
+              echo "::notice::no design PR: the agent marked #$N factory:blocked; its comment on the issue says why"
+              exit 0
+            fi
+            echo "::error::the design agent opened no PR from design/issue-$N; see its log above and the issue's comments"
+            exit 1
+          fi
+          echo "design PR: #$pr"

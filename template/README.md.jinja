@@ -6,19 +6,19 @@
 
 ## Getting started
 
-This repo is built by an issue-driven agent factory. Only the maintainer (@[[ maintainer_github ]]) can start or advance work, merge to `main`, or publish anything. The quickest way in is the **`factory` skill** (`.claude/skills/factory/`), which runs the whole pipeline from a Claude Code session:
+This repo is built by an issue-driven agent factory. Only the maintainer (@[[ maintainer_github ]]) can start or advance work, merge to `main`, or publish anything. The quickest way in is the **`factory` skill** (`.claude/skills/factory/`), which runs the whole pipeline from a GitHub Copilot or Claude Code session:
 
-1. Run `./scripts/bootstrap.sh` once, if you haven't (it creates the GitHub repo, labels and board). The skill does **not** need `/install-github-app`.
-2. Run `claude` in this repo, on Opus.
-3. Say **"brainstorm X into issues"** or **"run the factory"**. It never adds `factory:design` or `design:approved`, so the Actions workflows don't duplicate the work.
+1. Run `./scripts/bootstrap.sh` once, if you haven't (it creates the GitHub repo, labels and board; EMU accounts use `--private`). The skill needs no secret.
+2. Start GitHub Copilot (`copilot`, or the Copilot app) or Claude Code (`claude`) in this repo, on the orchestrator model from [`CLAUDE.md`](CLAUDE.md) → "Models" (`/model` checks it).
+3. Say **"brainstorm X into issues"** or **"run the factory"**.[% if actions_mode %] It never adds `factory:design` or `design:approved`, so the Actions workflows don't duplicate the work.[% endif %]
 
 The skill's scripts need Python 3.9 or newer and run as `python3`. Step-by-step: [first run](https://rahmansunny071.github.io/amplifactory/getting-started/first-run/); everything else is in the [docs site](https://rahmansunny071.github.io/amplifactory/). Agent rules live in [`CLAUDE.md`](CLAUDE.md); the stage prompts in [`.claude/commands/`](.claude/commands/).
 
 ### What the skill does
 
-- **Brainstorm → lanes → issues:** talk an idea through with Claude (Opus). It proposes **lanes** (features, with priorities `P0`–`P3` and dependencies between lanes) and the **ordered issues** in each, you confirm once, and they're created as lane issues with native sub-issues, "blocked by" links and priority labels (and added to the Project board).
-- **Lanes:** each lane's sub-issues run one at a time, in order; lanes run **one at a time by default**, and Claude asks before running more in parallel (`queue.py` shows each lane's current issue and what to work on now).
-- **Run:** per issue: **one Sonnet builder** plans, builds and fixes, and **one fresh Opus reviewer** reviews, in parallel with CI. Critical issues (privacy/security, new dependencies, shared data contracts) also get an Opus design review. Opus merges when the gates in `references/gates.md` pass.
+- **Brainstorm → lanes → issues:** talk an idea through with the orchestrator (your session). It proposes **lanes** (features, with priorities `P0`–`P3` and dependencies between lanes) and the **ordered issues** in each, you confirm once, and they're created as lane issues with native sub-issues, "blocked by" links and priority labels (and added to the Project board).
+- **Lanes:** each lane's sub-issues run one at a time, in order; lanes run **one at a time by default**, and the orchestrator asks before running more in parallel (`queue.py` shows each lane's current issue and what to work on now).
+- **Run:** per issue: **one builder** plans, builds and fixes, and **one fresh reviewer** reviews, in parallel with CI. Critical issues (privacy/security, new dependencies, shared data contracts) also get a design review. The orchestrator merges when the gates in `references/gates.md` pass. By default the orchestrator and reviewers run on Claude Opus and the builder on Claude Sonnet; `CLAUDE.md` → "Models" sets them for Claude Code and for Copilot.
 - **Urgency first:** in the `mvp` release phase (`CLAUDE.md`), only blockers are fixed in-PR; everything else is filed as an `improvement` issue.
 - **Flags and continues:** when it needs you (it's unsure, a gate fails, or it would rely on an unverified assumption about real data), it asks **inline on the PR** with options and a recommendation, labels it `factory:needs-maintainer`, and works on other issues. Reply in the threads, then say "resume the factory".
 - **Real data:** whether agents may read your real data is set in `CLAUDE.md` ("Real data": `never`, `with-approval` or `allowed`). At every level, real data is never committed or quoted in GitHub text, and tests use synthetic fixtures.
@@ -37,9 +37,32 @@ The skill's scripts need Python 3.9 or newer and run as `python3`. Step-by-step:
 
 This uses the wildcard syntax from the [Claude Code permissions docs](https://code.claude.com/docs/en/permissions). The rule lets the agent use your ruleset bypass (`--admin`), so it is your choice and the template does not ship it. The rule matches only commands that end in `--delete-branch`, which is how the skill runs the merge (`references/gates.md` → "Merge"); variants with `-R` or other trailing flags aren't covered. A project rule applies only after you accept the workspace trust prompt. How allow rules interact with auto mode is described in the [permission modes docs](https://code.claude.com/docs/en/permission-modes); check it, and try it in your own session. Even with the rule, a merge GitHub itself refuses is still handed off.
 
+**In GitHub Copilot** the rule above does nothing (Copilot doesn't read `permissions` from `.claude/settings.json`), and Copilot's own rules can't single out the merge: `--allow-tool='shell(gh pr)'`, or "Yes, and don't ask again" on a `gh pr merge` prompt, approves every `gh pr` command, `gh pr close` included. Instead, add a personal hook that runs the skill's `merge_hook.py`. It approves only `gh pr merge <N> --merge [--admin] --delete-branch`, typed exactly so, and leaves every other request to the normal prompt. Copy the script out of the repo first, so no branch or file edit can change what it approves (copy it again after a factory update):
+
+```bash
+mkdir -p ~/.copilot/hooks && cp .claude/skills/factory/scripts/merge_hook.py ~/.copilot/hooks/
+```
+
+On Windows, in PowerShell:
+
+```powershell
+New-Item -ItemType Directory -Force ~/.copilot/hooks | Out-Null; Copy-Item .claude/skills/factory/scripts/merge_hook.py ~/.copilot/hooks/
+```
+
+Then save this as `~/.copilot/hooks/factory-merge.json`. If you set `COPILOT_HOME`, Copilot reads personal hooks from `$COPILOT_HOME/hooks/` instead, so put both files there:
+
+```json
+{ "version": 1, "hooks": { "permissionRequest": [ { "type": "command", "matcher": "bash|powershell", "timeoutSec": 10,
+  "bash": "test -f \"$COPILOT_HOOK_DIR/merge_hook.py\" && python3 \"$COPILOT_HOOK_DIR/merge_hook.py\" || true",
+  "powershell": "$f = Join-Path $env:COPILOT_HOOK_DIR 'merge_hook.py'; if (Test-Path $f) { [Console]::In.ReadToEnd() | python $f }; exit 0" } ] } }
+```
+
+Copilot runs the `bash` command on macOS and Linux and the `powershell` one on Windows, where it calls Python as
+`python` (use `py` if that's how Python runs there). It applies in every repo you use Copilot in, for that one command; a missing script or any error falls back to the normal prompt. Don't commit it as a repository hook (`.github/hooks/`): that would run the working tree's copy of the script, which any file edit could turn into an allow-all. The details are in the [Copilot hooks reference](https://docs.github.com/en/copilot/reference/hooks-reference). As with the Claude Code rule, the template doesn't ship it, and a merge that is still refused is handed off.
+
 ### Labels
 
-Bootstrap creates these. Meanings in short; the docs site has the detail.
+Bootstrap creates these. Meanings in short; the [labels reference](https://rahmansunny071.github.io/amplifactory/reference/labels/) has the detail.
 
 | Group | Label | Meaning |
 |---|---|---|
@@ -47,20 +70,21 @@ Bootstrap creates these. Meanings in short; the docs site has the detail.
 | Skill | `factory:ready-to-merge` | Every gate passed; you merge it (the default hand-off) |
 | Skill | `improvement` | Non-blocking follow-up, filed instead of fixed in the PR |
 | Skill | `documentation` | A docs todo, including the "Documentation tech-debt" sub-issues |
-| Progress (skill and Actions) | `factory:designing` | Design / plan in progress or awaiting review |
-| Progress (skill and Actions) | `factory:building` | Implementation in progress |
-| Progress (skill and Actions) | `factory:review` | PR open, in review or awaiting merge |
-| Progress (skill and Actions) | `factory:blocked` | An agent hit something it shouldn't decide, or couldn't finish |
-| Actions | `factory:design` | You ask the design agent for a design (on an issue) |
-| Actions | `design:approved` | You sign off the design PR: start building |
+| Progress[% if actions_mode %] (skill and Actions)[% endif %] | `factory:designing` | Design / plan in progress or awaiting review |
+| Progress[% if actions_mode %] (skill and Actions)[% endif %] | `factory:building` | Implementation in progress |
+| Progress[% if actions_mode %] (skill and Actions)[% endif %] | `factory:review` | PR open, in review or awaiting merge |
+| Progress[% if actions_mode %] (skill and Actions)[% endif %] | `factory:blocked` | An agent hit something it shouldn't decide, or couldn't finish |
+| Actions[% if not actions_mode %] (off)[% endif %] | `factory:design` | [% if actions_mode %]You ask the design agent for a design (on an issue)[% else %]Unused: the Actions mode is off in this repo[% endif %] |
+| Actions[% if not actions_mode %] (off)[% endif %] | `design:approved` | [% if actions_mode %]You sign off the design PR: start building[% else %]Unused: the Actions mode is off in this repo[% endif %] |
 | Lanes | `lane` | Parent issue of a feature; its sub-issues run in order |
 | Priority | `P0` | Most urgent; ranks lanes and issues |
 | Priority | `P1`, `P2` | In between |
 | Priority | `P3` | Least urgent |
 
-## Actions mode (optional)
+[% if claude_actions -%]
+## Actions mode with Claude (optional)
 
-The same pipeline can run from labels on GitHub Actions, with a click from you at every step. It needs `/install-github-app` (run in Claude Code, pick this repo) and the `CLAUDE_CODE_OAUTH_TOKEN` secret that saves.
+The same pipeline can run from labels on GitHub Actions, with a click from you at every step. Its agents are Claude Code GitHub Actions, so it needs a Claude subscription: run `/install-github-app` in Claude Code, pick this repo, and it saves the `CLAUDE_CODE_OAUTH_TOKEN` secret.
 
 1. Open an issue with the **Factory task** template.
 2. Add `factory:design`. The design agent writes `.factory/designs/issue-N.md` and opens a draft design PR.
@@ -68,13 +92,44 @@ The same pipeline can run from labels on GitHub Actions, with a click from you a
 4. Add `design:approved` to the design PR. The build agent implements it on `factory/issue-N`, runs the checks until green and opens a PR.
 5. The review agent checks the PR against the design and `CLAUDE.md`.
 6. Merge. Releases stay manual.
+[%- elif copilot_actions -%]
+## Actions mode with Copilot (optional)
+
+The same pipeline can run from labels on GitHub Actions, with a click from you at every step. Its agents are the GitHub Copilot CLI, signed in with each workflow's own token (`copilot-requests: write`): there is no secret and no Claude subscription. Their requests bill your Copilot seat, on the model in `.copier-answers.yml` → `copilot_model`.
+
+1. Open an issue with the **Factory task** template.
+2. Add `factory:design`. The design agent writes `.factory/designs/issue-N.md` and opens a draft design PR.
+3. Review it, and push any changes to its `design/issue-N` branch yourself.
+4. Add `design:approved` to the design PR. The build agent implements it on `factory/issue-N`, runs the checks until green and opens a PR. GitHub holds the CI and review runs of a PR the workflow token opens until someone approves them; the build workflow approves them for you.
+5. The review agent checks the PR against the design and `CLAUDE.md`.
+6. Merge. Releases stay manual.
+
+The agents open their PRs with the workflow token, which needs **Allow GitHub Actions to create and approve pull requests** (Settings → Actions → General → Workflow permissions). Bootstrap turns it on; if you added this mode with `copier update`, turn it on yourself: `gh api -X PUT repos/[[ maintainer_github ]]/[[ project_name ]]/actions/permissions/workflow -F can_approve_pull_request_reviews=true`. Each agent may do only what Claude's may at the same stage: a hook, `.github/factory/tool_rules.py`, which every agent job copies from the default branch, denies the rest (other commands, `$`, redirections, and writes outside `.factory/designs/` for the design agent or at all for the review agent). Change it only in a reviewed PR. No agent may merge, and the review agent only comments. The token could still approve a PR it didn't open, so `.github/CODEOWNERS` makes you the owner of every file: with the "Protect main" ruleset, which requires a code owner's review, only your approval (or your `--admin` bypass) merges a PR. `approve-runs` approves the held runs of the build PR's branch and commit, until GitHub stops adding them, and only when the build PR, into the default branch, is the one open PR from that branch. The agents act on text in issues and comments, so keep yourself the only one who can write that text.
+[%- else -%]
+## Actions mode (off)
+
+This repo was generated with Copier's `actions_agent: none`, so it has no agent workflows: you run the factory with the skill. To add the label-driven Actions mode, run `uvx copier update --data actions_agent=copilot` (agents on the GitHub Copilot CLI) or `--data actions_agent=claude` (Claude Code GitHub Actions) in a PR of its own; this section then explains it.
+[%- endif %]
 
 ## Changing the factory itself
 
+[% if claude_actions -%]
 - **Workflow changes go in their own PR.** `claude-code-action` refuses to run from a workflow file that differs from `main`'s, so on a PR that edits `.github/workflows/factory-*.yml` the affected agent stage skips itself (the job still shows success). The change takes effect once merged. Don't bundle it with feature work.
+[% else -%]
+- **Workflow changes go in their own PR** (`CLAUDE.md` → "Hard rules").[% if copilot_actions %] The Copilot agents can't make them: the workflow token can't push changes to `.github/workflows/`.[% endif %]
+[% endif -%]
+[% if actions_mode -%]
 - **After merging a workflow change, update open factory PRs before re-triggering them.** PR-triggered runs use the PR's merge commit, which GitHub doesn't rebuild when `main` moves, so an older design or implementation PR keeps running the old workflow. Click **Update branch** on the PR (or `gh api -X PUT repos/[[ maintainer_github ]]/[[ project_name ]]/pulls/N/update-branch`), then re-add the label or push.
+[% endif -%]
 - **Merging your own PRs:** GitHub never lets an author approve their own PR. Use the ruleset's admin bypass ("Merge without waiting for requirements to be met").
+[% if claude_actions -%]
 - **A run that ends without its artifact is a failure,** even if the job is green: a design run must open a draft PR, a build run an implementation PR, otherwise the agent must leave a comment and `factory:blocked`.
+[% elif copilot_actions -%]
+- **A design or build run that ends without its PR turns red,** unless the agent marked the issue `factory:blocked` and commented why.
+[% endif %]
+## CI
+
+`.github/workflows/ci.yml` runs the tests (one job per Python version) and lint on pull requests and on pushes to `main`, on GitHub's `ubuntu-latest`. Draft pull requests skip CI; marking one ready for review runs it. Tests stop after 20 minutes and lint after 10.
 
 ## Development
 
@@ -84,7 +139,7 @@ uvx ruff@[[ ruff_version ]] format --check . && uvx ruff@[[ ruff_version ]] chec
 uv run --no-sync pytest -q
 ```
 
-This repo was generated from [amplifactory](https://github.com/rahmansunny071/amplifactory). Pull in later factory improvements with `copier update`, or tell Claude Code **"sync the factory to the latest release"**: the `sync-root-factory` skill (`.claude/skills/sync-root-factory/`) does the update on a `local/adopt-<tag>` branch and opens a PR for you to merge.
+This repo was generated from [amplifactory](https://github.com/rahmansunny071/amplifactory). Pull in later factory improvements with `copier update`, or tell Copilot or Claude Code **"sync the factory to the latest release"**: the `sync-root-factory` skill (`.claude/skills/sync-root-factory/`) does the update on a `local/adopt-<tag>` branch and opens a PR for you to merge.
 
 ## Author
 

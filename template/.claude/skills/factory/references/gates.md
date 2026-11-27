@@ -8,7 +8,7 @@ it if it's mechanical, otherwise **flag and continue** (SKILL.md).
 |---|---|---|
 | 1 | **CI green** | Run-level watch (below) of the run for the PR's head commit, never an older run: every required check `pass`, none pending |
 | 2 | **Up to date with `main`** | `gh pr view <PR> --json mergeStateStatus` isn't `BEHIND` or `DIRTY`. If it's `BEHIND`: `gh api -X PUT repos/<owner/repo>/pulls/<PR>/update-branch`, then re-check gate 1. `BLOCKED` alone just means "needs approval": the merge needs the maintainer's bypass or approval (see "Merge") |
-| 3 | **No open blockers** | The Opus code review returned `READY`, or every blocker was fixed by the builder **and** you verified each one with its reproduction on the current commit. Improvements don't block in the mvp phase |
+| 3 | **No open blockers** | The code review returned `READY`, or every blocker was fixed by the builder **and** you verified each one with its reproduction on the current commit. Improvements don't block in the mvp phase |
 | 4 | **Deviations disclosed and minor** | The PR body's "Deviations" plus the review's `undisclosed_deviations`. Scope, interface or dependency changes aren't minor |
 | 5 | **No hard-rule violations** | Your own read of the diff against `CLAUDE.md`'s hard rules |
 | 6 | **No workflow changes** | `gh pr diff <PR> --name-only` has nothing under `.github/`. Those go to the maintainer, in their own PR |
@@ -47,9 +47,10 @@ Paste the `<sha>` and `<run-id>` each command printed into the next one. `--comm
 The verdict holds for that `<sha>` only. Just before merging, read `headRefOid` again: if it has
 changed, gate 1 starts over.
 
-Run it with a tool timeout (or in the background), not an open-ended wait. Don't use `sleep` loops: Claude
-Code blocks foreground `sleep`, and macOS has no `timeout` command. If the run is `success` but a PR check
-still shows pending, `gh run rerun <run-id>` clears it.
+Run it the way your harness waits on a long command (SKILL.md → "Claude Code and Copilot"): a tool
+timeout or a background run, never an open-ended wait. Don't use `sleep` loops: a harness may block a
+foreground `sleep` (Claude Code does), and macOS has no `timeout` command. If the run is `success` but a
+PR check still shows pending, `gh run rerun <run-id>` clears it.
 
 ## Posting questions (and other review comments) inline
 

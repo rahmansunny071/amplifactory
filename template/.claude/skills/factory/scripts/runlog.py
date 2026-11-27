@@ -12,6 +12,9 @@ Logs live in `.factory/runs/<YYYY-MM-DD>.jsonl` at the repo root (gitignored). S
     python3 .claude/skills/factory/scripts/runlog.py summary  # wall time, rounds, tokens by model
     python3 .claude/skills/factory/scripts/runlog.py --self-test
 
+`--model` is the id the role ran on, in either harness: `sonnet` in Claude Code, `claude-sonnet-5.5` in
+GitHub Copilot, or whatever CLAUDE.md's "Models" table names.
+
 Steps used by the factory skill: plan, plan-check, design-review, build, review, fix, handoff-written,
 needs-maintainer, resume, merge, ready-to-merge, blocked, decision, improvement-filed. An issue whose
 last step is `merge` is done; `needs-maintainer` and `ready-to-merge` are waiting on the maintainer;
@@ -24,6 +27,8 @@ anything else is in flight.
 from __future__ import annotations
 
 import argparse
+import contextlib
+import io
 import json
 import subprocess
 import sys
@@ -147,6 +152,11 @@ def _self_test() -> None:
         assert per[4]["tokens"]["sonnet"] == 49000 and per[4]["tokens"]["opus"] == 60000, per[4]
         assert per[4]["by_actor"]["builder"] == 49000, per[4]
         assert "#4" in _fmt_summary(per)
+        # #18: --model takes any model id, so a Copilot id logs instead of failing argparse.
+        argv = ["--dir", tmp, "add", "--issue", "8", "--step", "plan"]
+        with contextlib.redirect_stdout(io.StringIO()):
+            rc = main([*argv, "--model", "claude-sonnet-5.5"])
+        assert rc == 0 and status(read_all(d))[8]["model"] == "claude-sonnet-5.5"
     print("runlog.py self-test: ok")
 
 
@@ -158,7 +168,7 @@ def main(argv: list[str] | None = None) -> int:
     a = sub.add_parser("add", help="append one step")
     a.add_argument("--issue", type=int, required=True)
     a.add_argument("--step", required=True)
-    a.add_argument("--model", choices=["opus", "sonnet", "haiku"])
+    a.add_argument("--model", help="model id the role ran on (sonnet, claude-sonnet-5.5, ...)")
     a.add_argument("--actor", choices=["orchestrator", "builder", "reviewer", "writer"])
     a.add_argument("--tokens", type=int)
     a.add_argument("--ms", type=int, help="subagent duration in milliseconds")

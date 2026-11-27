@@ -1,13 +1,15 @@
 #!/usr/bin/env bash
 # One-time setup for a repo generated from amplifactory. Safe to re-run.
 #
-#   ./scripts/bootstrap.sh --public    # recommended: rulesets work and Actions minutes are free
-#   ./scripts/bootstrap.sh --private   # rulesets need GitHub Pro on private repos
+#   ./scripts/bootstrap.sh --public    # recommended where allowed: rulesets work, Actions minutes are free
+#   ./scripts/bootstrap.sh --private   # EMU (enterprise-managed) accounts: the only choice. Rulesets on
+#                                      # private repos need a plan that supports them (GitHub Pro or up)
 #
 # Does: uv lock, first commit, create + push the GitHub repo, factory labels, the
 # "Documentation tech-debt" tracking issue, a ruleset protecting main (when the
 # plan allows it), a Project board, and fork-PR approval.
-# Does NOT: add the Claude token. That's only for Actions mode (/install-github-app in Claude Code).
+# Does NOT: set up an agent or a secret. The factory skill runs in GitHub Copilot or Claude Code;
+# [% if claude_actions %]only the optional Actions mode with Claude needs a token (README → "Actions mode with Claude").[% elif copilot_actions %]the optional Actions mode with Copilot uses each workflow's own token (README → "Actions mode with Copilot").[% else %]the GitHub Actions mode is off (actions_agent: none), so no agent token is needed.[% endif %]
 set -euo pipefail
 # Under pipefail, never end a pipe in grep -q: it exits at the first match, the writer gets SIGPIPE and
 # the pipeline reads as a failure. Send grep's output to /dev/null so it reads all its input.
@@ -24,7 +26,7 @@ for arg in "$@"; do
   case "$arg" in
     --public) visibility=public ;;
     --private) visibility=private ;;
-    -h|--help) sed -n '2,11p' "$0"; exit 0 ;;
+    -h|--help) sed -n '2,12p' "$0"; exit 0 ;;
     *) echo "unknown argument: $arg" >&2; exit 2 ;;
   esac
 done
@@ -127,7 +129,7 @@ JSON
   if echo "$ruleset" | gh api -X POST "repos/$REPO/rulesets" --input - >/dev/null 2>&1; then
     echo "created: no deletion or force push; PR + 1 approval; all conversations resolved; checks: ${CHECKS[*]}"
   else
-    echo "WARNING: could not create the ruleset (private repos need GitHub Pro). main is NOT protected." >&2
+    echo "WARNING: could not create the ruleset (private repos need a plan with rulesets, such as GitHub Pro). main is NOT protected." >&2
   fi
 fi
 
@@ -162,19 +164,43 @@ else
   echo "private repo: only collaborators can fork; nothing to set"
 fi
 
+[% if copilot_actions -%]
+# The Copilot agents open PRs with their workflow's own token, which GitHub allows only with "Allow
+# GitHub Actions to create and approve pull requests". Keep the default token permissions as they are.
+step "Workflows may open pull requests (Actions mode with Copilot)"
+perms=$(gh api "repos/$REPO/actions/permissions/workflow" --jq .default_workflow_permissions 2>/dev/null || true)
+if [ -n "$perms" ] && gh api -X PUT "repos/$REPO/actions/permissions/workflow" \
+     -f default_workflow_permissions="$perms" -F can_approve_pull_request_reviews=true >/dev/null 2>&1; then
+  echo "on: the design and build agents can open PRs (default workflow permissions stay $perms)"
+else
+  echo "WARNING: could not turn it on. In Settings → Actions → General → Workflow permissions, tick" >&2
+  echo "         \"Allow GitHub Actions to create and approve pull requests\"; the agents can't open PRs without it." >&2
+fi
+if ! gh api "repos/$REPO/rulesets" --jq '.[].name' 2>/dev/null | grep -x "Protect main" >/dev/null; then
+  echo "WARNING: main has no \"Protect main\" ruleset, so nothing stops a workflow token from merging a PR." >&2
+  echo "         Keep the Actions mode off (uvx copier update --data actions_agent=none) until main is protected." >&2
+fi
+
+[% endif -%]
 cat <<EOF
 
 Done: https://github.com/$REPO
 
 Remaining (manual):
-  1. Run claude in this repo, on Opus, then say "brainstorm X into issues" or "run the factory".
+  1. Start GitHub Copilot in this repo (copilot, or the Copilot app), or Claude Code (claude), on the
+     orchestrator model in CLAUDE.md → Models. Then say "brainstorm X into issues" or "run the factory".
      The factory skill works from here and needs no secret.
   2. Keep yourself the only collaborator with Triage access or higher.
-  3. Optional, last, only for Actions mode: in Claude Code, run /install-github-app, pick $REPO
+[% if claude_actions %]  3. Actions mode with Claude (optional, last): in Claude Code, run /install-github-app, pick $REPO
      and choose your subscription. That saves the CLAUDE_CODE_OAUTH_TOKEN secret. If it needs the
      workflow scope first:
        gh auth refresh -h github.com -s repo,workflow
      Decline (close) the installer's own claude.yml / claude-code-review.yml PR:
      factory-chat.yml and factory-review.yml already cover those, with sender and fork checks.
      Dry run: open an issue with the Factory task template and add factory:design.
-EOF
+[% elif copilot_actions %]  3. Actions mode with Copilot (optional, last): its agents run the GitHub Copilot CLI, signed in
+     with each workflow's own token, and bill your Copilot seat; there is no secret to add.
+     Dry run: open an issue with the Factory task template and add factory:design.
+[% else %]  3. The GitHub Actions mode is off (actions_agent: none). To add it, in a PR of its own:
+       uvx copier update --data actions_agent=copilot    # or actions_agent=claude
+[% endif %]EOF

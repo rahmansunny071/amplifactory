@@ -1,9 +1,9 @@
 ---
 name: factory
 description: >-
-  Run this repo's agent factory end to end from Claude Code. Brainstorm a feature or roadmap with the
+  Run this repo's agent factory end to end from Claude Code or GitHub Copilot. Brainstorm a feature or roadmap with the
   maintainer and turn it into prioritized swim lanes of ordered, dependency-linked GitHub issues; then take each ready issue from
-  plan to merged PR with a Sonnet builder and a fresh Opus reviewer, fixing only what blocks the main path
+  plan to merged PR with one builder agent and a fresh reviewer, fixing only what blocks the main path
   and filing the rest as improvements. Questions for the maintainer go on the PR as inline comments while
   the run continues; "resume" picks up their answers. Use this whenever the user wants to plan or break
   down work into issues, "run the factory", "resume the factory", work through open issues, pick up issue
@@ -14,18 +14,20 @@ description: >-
 # Factory
 
 This repo is built by an issue-driven agent factory (see `README.md` → "Getting started" and
-`CLAUDE.md`). This skill runs it from a Claude Code session. You (Opus) are the orchestrator: a Sonnet
-**builder** plans and codes, a fresh Opus **reviewer** checks the result, and you merge when the gates
-pass. The maintainer answers questions **asynchronously on the PR**; the run never sits waiting.
+`CLAUDE.md`). This skill runs it from a Claude Code or GitHub Copilot session (the CLI or the app). You
+are the **orchestrator**: a **builder** subagent plans and codes, a fresh **reviewer** checks the result,
+and you merge when the gates pass. Each role runs on the model that `CLAUDE.md` → "Models" names for your
+harness, and "Claude Code and Copilot" below maps each action onto your harness's tools. The maintainer
+answers questions **asynchronously on the PR**; the run never sits waiting.
 
 Five principles shape everything below. All of them came out of real runs:
 
 1. **Urgency over completeness.** Before the project's first release (`Release phase: mvp` in
    `CLAUDE.md`), the goal is a main path that works end to end, then iteration. Only **blockers** are
    fixed inside a PR; everything else becomes an `improvement` issue.
-2. **Don't pay for context twice.** The agent that plans is the agent that builds and fixes
-   (`SendMessage`). Only reviewers are fresh, once per issue. When an agent has to be replaced (a new
-   session), it starts from the PR's **Handoff**, not from scratch.
+2. **Don't pay for context twice.** The agent that plans is the agent that builds and fixes: you
+   message the same builder again for each phase. Only reviewers are fresh, once per issue. When an
+   agent has to be replaced (a new session), it starts from the PR's **Handoff**, not from scratch.
 3. **Flag and continue.** When the maintainer must decide something, put the question on the PR, label
    it, and move on to other work. Never block the run waiting for an answer, unless nothing else can
    proceed.
@@ -43,23 +45,44 @@ Five principles shape everything below. All of them came out of real runs:
    queue. Findings inside a run keep their routes (step 7, doc-debt, PR questions). Problems in the
    factory template repo are `lesson` issues.
 
+## Claude Code and Copilot
+
+Both harnesses read this skill, `.claude/commands/` and `CLAUDE.md`, so the factory runs the same way in
+each. The steps below say what to do ("spawn the builder", "message the same builder", "ask the
+maintainer"); this table says how. Always pass the role's model from `CLAUDE.md` → "Models".
+
+| To | Claude Code | GitHub Copilot (CLI or app) |
+|---|---|---|
+| Spawn a role with its model | a subagent with `model:` set to the role's Claude Code model | the `task` tool with `agent_type: "general-purpose"` and `model:` set to the role's Copilot model; the builder with `mode: "background"`, so it stays available for the next phase |
+| Message the same builder again | `SendMessage` to its agent id | `write_agent` to its `agent_id` (it wakes an idle agent, or steers a running one) |
+| Read a subagent's result | its final message, returned to you | `read_agent` with its `agent_id` after Copilot says it finished (`wait: true` waits only up to a timeout and may return `running`: read again later) |
+| Ask the maintainer in the session | `AskUserQuestion` | `ask_user`; in autopilot and `-p` runs it answers "user not available": take the safe default (one lane, create nothing) or flag the question on the PR |
+| Wait on a long command | the shell tool's timeout, or a background run | `bash` in sync mode with a long `initial_wait`, or in async mode; you're told when it finishes |
+
+Never wait with `sleep` loops. Copilot's custom agents load `CLAUDE.md` only when their frontmatter asks
+for it, so roles run as general-purpose agents and every brief tells the subagent to read `CLAUDE.md`. A
+`CLAUDE.md` without a "Models" section (rendered before it existed) gets one from `copier update` or the
+`sync-root-factory` skill; until then, use the defaults: `opus` / `claude-opus-5.5` for the orchestrator
+and reviewers, `sonnet` / `claude-sonnet-5.5` for builders and issue writers.
+
 ## Where knowledge lives
 
 | What | Where | Why |
 |---|---|---|
 | Decisions, plans, handoffs, review threads, status, lessons | **GitHub and the repo**: issues, PRs, labels, `.factory/designs/issue-N.md`, `CLAUDE.md` | Shared, durable, visible to the maintainer and every agent. **The source of truth.** |
 | Progress and cost of a run | **The run log** (`.factory/runs/*.jsonl`, gitignored, local) | A cache and cost ledger. It **points** at GitHub (PR, commit, thread ids) and never copies content. Delete it and nothing breaks. |
-| The maintainer's preferences, where to look | **Claude's memory** (`~/.claude/projects/…/memory`) | Private, local. If a preference is really a project rule, it belongs in `CLAUDE.md`. |
+| The maintainer's preferences, where to look | **The harness's memory**: Claude Code's (`~/.claude/projects/…/memory`, local and private) or Copilot Memory (GitHub-hosted; repository memories are shared with everyone who uses it in the repo) | A pointer, not a record. If a preference is really a project rule, it belongs in `CLAUDE.md`. |
 
 When the run log or memory disagrees with GitHub, GitHub wins.
 
 ## Before you start
 
-1. **Model.** You should be on Opus. If not, tell the user before orchestrating.
+1. **Model.** You should be on the orchestrator model (`CLAUDE.md` → "Models", in your harness's
+   column; `/model` shows and changes it in both). If not, tell the user before orchestrating.
 2. **Repo state.** `gh auth status` is OK, `main` is clean and up to date, and the `CLAUDE.md` checks pass
    on `main`. If `main` is red, stop.
-3. **Read** `CLAUDE.md` (context, "Release phase", "Real data", "Definition of checks pass", hard rules, "Where
-   knowledge lives") and the stage prompts in `.claude/commands/`.
+3. **Read** `CLAUDE.md` (context, "Release phase", "Real data", "Models", "Definition of checks pass", hard
+   rules, "Where knowledge lives") and the stage prompts in `.claude/commands/`.
 4. **Repo slug.** `gh repo view --json nameWithOwner -q .nameWithOwner`. Paste that exact value into
    every brief; never type it from memory.
 5. **What's waiting.** Run `python3 .claude/skills/factory/scripts/queue.py`. It shows issues in progress,
@@ -79,7 +102,8 @@ When the run log or memory disagrees with GitHub, GitHub wins.
 
 ## Mode 1: Brainstorm → lanes → issues
 
-A two-level conversation with the maintainer (you, Opus, in the main session), then one confirmation.
+A two-level conversation with the maintainer (you, the orchestrator, in the main session), then one
+confirmation.
 
 1. **Ideate the lanes.** Goals, users, constraints, out of scope, how they'll know it works. Read the code it
    touches. Group the work into **lanes**: coherent features or swim lanes that one builder could carry
@@ -95,11 +119,12 @@ A two-level conversation with the maintainer (you, Opus, in the main session), t
 3. **Show the plan as a lane table:** lane, priority, lane dependencies, then its issues in order (slug,
    title, one-line goal, size S/M, risk tier, issue-level dependencies across lanes). Point out which lanes
    could run in parallel.
-4. **Get one confirmation** ("create these N lanes and M issues?"). Issues are visible to others, so ask in
-   the session here.
+4. **Get one confirmation** ("create these N lanes and M issues?"). Issues are visible to others, so ask
+   the maintainer in the session here.
 5. **Create, in this order:**
    - the lane issues (label `lane`, its `P` label, body: goal, scope, the ordered list, lane dependencies);
-   - the issue bodies (several: spawn Sonnet "Issue writers" in parallel; one or two: write them yourself),
+   - the issue bodies (several: spawn "Issue writers" on the builder model in parallel; one or two: write
+     them yourself),
      created in dependency order, replacing `{{slug}}` with real `#N`;
    - then wire it with `scripts/lanes.py`: `priority` on every issue, `sub-add <lane> <issues in order>`,
      `block <issue> --by <issue>` for every dependency (lane-level ones on the lane issue), and
@@ -120,8 +145,8 @@ Lanes are ranked by priority, and the table ends with **"Work now"** for the giv
 parallel (`--lanes`, default **1**). Issues not in any lane are listed separately.
 
 - **One lane at a time by default.** When `queue.py` says **"More lanes ready … ask the maintainer"**, ask
-  once per run (in the session, at the start): "Lanes #A and #B are both ready. Run them in parallel?"
-  Use their answer as `--lanes` for the rest of the run. Never raise it on your own.
+  the maintainer once per run (in the session, at the start): "Lanes #A and #B are both ready. Run them
+  in parallel?" Use their answer as `--lanes` for the rest of the run. Never raise it on your own.
 - **Within a lane, strictly in order.** Take the current issue; when it merges, the next sub-issue
   becomes current. Don't skip ahead inside a lane, even if a later issue looks ready. If the order seems
   wrong, raise it with the maintainer (`scripts/lanes.py order` fixes it).
@@ -135,8 +160,8 @@ parallel (`--lanes`, default **1**). Issues not in any lane are listed separatel
 
 | Tier | When | Subagents |
 |---|---|---|
-| **Standard** | most S/M issues | builder (plans, builds, fixes) + 1 Opus code reviewer = **2** |
-| **Critical** | privacy or security code; a new external dependency; a data contract other issues build on | + 1 Opus **design reviewer** between plan and build = **3** |
+| **Standard** | most S/M issues | builder (plans, builds, fixes) + 1 code reviewer = **2** |
+| **Critical** | privacy or security code; a new external dependency; a data contract other issues build on | + 1 **design reviewer** between plan and build = **3** |
 
 ### For each issue N
 
@@ -145,16 +170,17 @@ origin/main`. The `local/` prefix keeps the GitHub Actions factory (which review
 branches) from also reviewing skill PRs. Pass subagents **absolute paths**. Set `factory:designing`. Log
 each step with `runlog.py add`.
 
-**1. Plan (Sonnet builder, phase 1).** Run `lanes.py doc-debt list` and paste the open doc todos into the
-brief's ride-along slot. Spawn the builder with the "Builder" brief, phase 1: it writes
-`.factory/designs/issue-N.md`, commits on `local/issue-N`, pushes, opens a **draft PR** ("feat: … (#N)",
-`Closes #N`) and **stops**, returning the plan. Keep the agent's id: the same agent builds and fixes.
+**1. Plan (builder, phase 1).** Run `lanes.py doc-debt list` and paste the open doc todos into the
+brief's ride-along slot. Spawn the builder (in Copilot, in the background) with the "Builder" brief, phase
+1: it writes `.factory/designs/issue-N.md`, commits on `local/issue-N`, pushes, opens a **draft PR** ("feat:
+… (#N)", `Closes #N`) and **stops**, returning the plan. Keep the agent's id: the same agent builds and
+fixes.
 
 **2. Plan check.**
 - **Standard tier:** you skim the plan yourself. Does it meet the acceptance criteria and fit the code?
   Does it add scope the issue didn't ask for? Does it rest on an unverifiable assumption about real data
-  (see "Reality check")? Send corrections to the builder (`SendMessage`).
-- **Critical tier:** spawn a fresh Opus "Design reviewer". Send `REVISE` changes to the builder; you check
+  (see "Reality check")? Message any corrections to the same builder.
+- **Critical tier:** spawn a fresh "Design reviewer". Send `REVISE` changes to the builder; you check
   they landed (no second review). Reviewer `notes` go to the builder as guidance.
 - **If the plan needs a maintainer decision** (a product or priority call, or an unverifiable assumption):
   **flag and continue** (below), with the question anchored on the relevant line of the plan file in the
@@ -162,7 +188,7 @@ brief's ride-along slot. Spawn the builder with the "Builder" brief, phase 1: it
 - Otherwise record the approval as a PR comment. It replaces the human `design:approved` label; never add
   that label, because it starts the GitHub Actions build. Set `factory:building`.
 
-**3. Build (same builder, phase 2).** `SendMessage` the builder: "plan approved, build it" (plus notes). It
+**3. Build (same builder, phase 2).** Message the same builder: "plan approved, build it" (plus notes). It
 implements, **updates the docs the change affects** (new docs for new behaviour; any README, CHANGELOG,
 docstring or `.factory/designs/` text the change makes wrong or stale), runs every `CLAUDE.md` check until
 green, fills in the PR body (**Handoff** with its **Docs** line, "Checks run", "Deviations"), marks the PR
@@ -171,18 +197,18 @@ doc-debt sub-issue is about, the builder fixes that todo too and the PR body say
 never opens other files just for doc-debt. Verify all of that, especially that the Handoff section and
 its Docs line exist.
 
-**4. Review ∥ CI.** Start the fresh Opus "Code reviewer" **while CI runs**. It posts **one review with
+**4. Review ∥ CI.** Start a fresh "Code reviewer" **while CI runs**. It posts **one review with
 inline, line-anchored comments**, each tagged `blocker`, `improvement`, `doc-debt` or `question`. It also
 checks that **docs and code agree in the changed area**: a mismatch the PR causes (a doc it should have
 updated, or a doc it changed wrongly) is a `blocker`, because it breaks a hard rule; a mismatch that was
 already there before the PR is `doc-debt`. Wait on CI with a bounded run-level watch
 (`references/gates.md` → gate 1).
 
-**5. Fix blockers (same builder).** `SendMessage` the blocker list, with reproductions. The builder fixes
-them, adds a failing-without-the-fix test for each, re-runs the checks, pushes, **updates the Handoff**, and
-replies on each blocker thread saying what changed. You verify each blocker with its reproduction plus
-green CI (no re-review) and **resolve its thread**. Allow two fix rounds; if blockers persist, flag and
-continue.
+**5. Fix blockers (same builder).** Message the blocker list, with reproductions, to the same builder. It
+fixes them, adds a failing-without-the-fix test for each, re-runs the checks, pushes, **updates the
+Handoff**, and replies on each blocker thread saying what changed. You verify each blocker with its
+reproduction plus green CI (no re-review) and **resolve its thread**. Allow two fix rounds; if blockers
+persist, flag and continue.
 
 **6. Questions.** If the review raised `question`s, or you need the maintainer to decide anything: **flag
 and continue**. Otherwise go on.
@@ -216,8 +242,9 @@ When the maintainer has to decide something, don't wait in the session:
 4. **Move on.** This pauses only **this lane**: its later issues wait. Other lanes, and anything that
    doesn't depend on this issue, carry on.
 
-Ask in the session (`AskUserQuestion`) **only** if nothing else can proceed and the maintainer is clearly
-present. Even then, put the question and the answer on the PR too, so the record is complete.
+Ask the maintainer in the session (see "Claude Code and Copilot") **only** if nothing else can proceed and
+the maintainer is clearly present. Even then, put the question and the answer on the PR too, so the record
+is complete.
 
 These go to the maintainer this way:
 - a design reviewer's `ASK`, or a plan that needs a product or priority decision;
@@ -244,10 +271,13 @@ When every gate passes but the merge itself is refused, the maintainer merges it
    maintainer can merge them in one batch. Once the PR is merged the issue closes and the lane advances;
    a label left on a closed issue is cleared in "Before you start" (step 5).
 
-The maintainer can let the skill merge itself by opting in to a permission rule (README → "Letting the
-factory merge for you"). The template never ships it. That rule matches only commands that end in
-`--delete-branch`, which is how you run the merge (`references/gates.md` → "Merge"); variants with `-R` or
-other trailing flags aren't covered, so don't add any.
+The maintainer can let the skill merge itself by opting in (README → "Letting the factory merge for
+you"): a permission rule in Claude Code, or a personal hook that runs a copy of `scripts/merge_hook.py`
+in Copilot. The template ships neither. The Claude Code rule matches only commands that end in
+`--merge --admin --delete-branch`; the Copilot hook matches only
+`gh pr merge <N> --merge [--admin] --delete-branch`, typed exactly so. Run the merge exactly as
+`references/gates.md` → "Merge" shows; don't add `-R` or other flags. In Copilot, a "No" at the
+approval prompt, or a denial in autopilot or a `-p` run, is a refusal like any other: hand the PR off.
 
 ### Resume
 
@@ -265,13 +295,13 @@ the run log only speeds this up.
    - **A decision that changes the plan:** update `.factory/designs/issue-N.md` first, then as above.
    - **"Do it your way"** or an approved recommendation: apply the recommendation.
 3. **Check it.** CI is green, and each answered thread is addressed: you verify small edits yourself. For a
-   builder's changes, run a fresh Opus code reviewer **scoped to those threads and the diff since the
+   builder's changes, run a fresh code reviewer **scoped to those threads and the diff since the
    question** (the "Code reviewer" brief with the resume scope).
 4. Resolve the addressed threads, remove `factory:needs-maintainer`, set `factory:review`, log `resume`,
    and continue from step 7 (improvements, then merge).
 
-If the maintainer used `@claude` on the PR (the Actions `factory-chat` workflow), its commits are already
-there: treat them like a builder's changes and check them.
+If the repo has the Actions mode (`.github/workflows/factory-*.yml`) and the maintainer used `@claude` on the PR
+(the `factory-chat` workflow), its commits are already there: treat them like a builder's changes and check them.
 
 ### Parallel lanes
 
@@ -312,9 +342,10 @@ shapes only".
 
 ## Coexisting with the GitHub Actions factory
 
-The two modes never trigger each other by accident: skill branches are `local/issue-N` (the Actions review
-only matches `factory/issue-*`), and the skill never adds `factory:design` or `design:approved` or writes
-`@claude`. The maintainer **may** write `@claude` on a skill PR on purpose, to have `factory-chat` apply an
+Only repos with `.github/workflows/factory-*.yml` (Copier's `actions_agent: claude` or `copilot`) have it; with
+`actions_agent: none` this section doesn't apply. The two modes never trigger each other by accident:
+skill branches are `local/issue-N` (the Actions review only matches `factory/issue-*`), and the skill never adds `factory:design` or `design:approved` or writes
+`@claude`. In Claude mode, the maintainer **may** write `@claude` on a skill PR on purpose, to have `factory-chat` apply an
 answer right away; resume handles it.
 
 ## When you're done
@@ -347,3 +378,6 @@ keeps real data out of the body and asks the maintainer once); don't file it by 
 - `scripts/lanes.py`: create and maintain lanes with native GitHub features (`sub-add`, `order`, `block`,
   `priority`, `project-add`, `show`), and the documentation tech-debt issue (`doc-debt find|add|list`).
 - `scripts/runlog.py`: the run log (`add`, `status`, `summary`).
+- `scripts/merge_hook.py`: the Copilot opt-in that lets the skill merge, a `permissionRequest` hook that
+  approves only the merge command. Inert until the maintainer adds the hook (README → "Letting the factory
+  merge for you").

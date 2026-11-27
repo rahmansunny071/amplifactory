@@ -1,0 +1,172 @@
+name: factory-build
+# Actions mode with Copilot. Fires when the maintainer adds design:approved to a design/issue-N PR:
+# the build agent (the GitHub Copilot CLI) implements the design on factory/issue-N and opens a PR.
+on:
+  pull_request:
+    types: [labeled]
+
+jobs:
+  build:
+    if: >
+      github.event.label.name == 'design:approved' &&
+      github.event.sender.login == '[[ maintainer_github ]]' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      startsWith(github.event.pull_request.head.ref, 'design/issue-')
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    concurrency:
+      group: factory-${{ github.event.pull_request.head.ref }}
+      cancel-in-progress: false
+    # copilot-requests: the workflow's own token signs in the Copilot CLI; usage bills the repo owner's
+    # Copilot seat. No actions: write here: the approve-runs job below holds it, away from the agent.
+    permissions: { contents: write, pull-requests: write, issues: write, copilot-requests: write }
+    outputs:
+      issue: ${{ steps.issue.outputs.n }}
+    env:
+      FACTORY_COPILOT_VERSION: "1.0.116"
+      COPILOT_AUTO_UPDATE: "false"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+      - id: issue
+        run: echo "n=${HEAD_REF#design/issue-}" >> "$GITHUB_OUTPUT"
+        env: { HEAD_REF: "${{ github.event.pull_request.head.ref }}" }
+      # A design branch is written by the design agent, which may only add the design
+      # file. Refuse to run code from it if it touches anything else (for example a
+      # planted conftest.py from a prompt-injected issue). The base is read by its full ref, so a tag
+      # an agent pushed can't stand in for it.
+      - name: Design branch only changes .factory/designs/
+        run: |
+          git fetch --quiet --no-tags origin "+refs/heads/$BASE_REF:refs/remotes/origin/$BASE_REF"
+          outside=$(git diff --name-only "refs/remotes/origin/$BASE_REF...HEAD" | grep -v '^\.factory/designs/' || true)
+          if [ -n "$outside" ]; then
+            echo "::error::design branch changes files outside .factory/designs/:"
+            echo "$outside"
+            exit 1
+          fi
+        env: { BASE_REF: "${{ github.event.pull_request.base.ref }}" }
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --locked --extra dev
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      # Job-local and pinned, never a global install: on a self-hosted runner that would replace its
+      # own copilot.
+      - name: Install the Copilot CLI
+        run: |
+          npm install --no-save --no-audit --no-fund --prefix "$RUNNER_TEMP/copilot-cli" "@github/copilot@$FACTORY_COPILOT_VERSION"
+          echo "$RUNNER_TEMP/copilot-cli/node_modules/.bin" >> "$GITHUB_PATH"
+          echo "COPILOT_HOME=$RUNNER_TEMP/copilot-home" >> "$GITHUB_ENV"
+      - name: Commit as github-actions[bot]
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      # Each agent may run only what its Claude twin may: tool_rules.py, a preToolUse hook, denies the
+      # rest. It comes from the default branch, by its full ref so that a tag an agent pushed can't stand
+      # in, never from the checkout an agent can write. It loads from $COPILOT_HOME/hooks with the folder
+      # untrusted: trusting it would load the branch's hooks too.
+      - name: Tool rules (the default branch's)
+        env: { DEFAULT_BRANCH: "${{ github.event.repository.default_branch }}" }
+        run: |
+          git fetch --quiet --no-tags origin "+refs/heads/$DEFAULT_BRANCH:refs/remotes/origin/$DEFAULT_BRANCH"
+          mkdir -p "$COPILOT_HOME/hooks"
+          git show "refs/remotes/origin/$DEFAULT_BRANCH:.github/factory/tool_rules.py" > "$COPILOT_HOME/hooks/tool_rules.py"
+          printf '%s\n' '{"version": 1, "hooks": {"preToolUse": [{"type": "command", "timeoutSec": 30, "bash": "python3 \"$COPILOT_HOOK_DIR/tool_rules.py\" build"}]}}' > "$COPILOT_HOME/hooks/tool-rules.json"
+          echo '{"toolName": "bash", "toolArgs": {"command": "env"}}' | python3 "$COPILOT_HOME/hooks/tool_rules.py" build | grep -q '"deny"'
+      # shell(uv:*) allows every uv command and shell(gh pr) every gh pr command; the tool rules above
+      # narrow them to Claude's build allowlist.
+      - name: Build agent
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          N: ${{ steps.issue.outputs.n }}
+        run: >-
+          copilot -p "/build-from-design $N" --model [[ copilot_model ]] --no-ask-user --disable-builtin-mcps
+          --allow-tool write --allow-tool 'shell(git:*)' --allow-tool 'shell(uv:*)'
+          --allow-tool 'shell(uvx:*)' --allow-tool 'shell(gh pr)' --allow-tool 'shell(gh issue)'
+          --allow-tool 'shell(gh label)'
+
+  # GitHub holds the pull_request runs (CI, the review) of a PR the workflow token opens until someone
+  # approves them, and only those runs count as the PR's required checks. This job, which runs no
+  # agent and checks nothing out, approves them; it is the only one with actions: write.
+  approve-runs:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions: { actions: write, pull-requests: read, issues: read }
+    steps:
+      # A denied command doesn't fail the agent, so check its artifact: a run without one is red,
+      # unless the agent marked the issue factory:blocked (it commented why). Only the same-repo
+      # factory/issue-N PR into the default branch counts, and only its own held runs are approved.
+      - name: Approve the build PR's CI and review runs
+        env:
+          GH_TOKEN: ${{ github.token }}
+          N: ${{ needs.build.outputs.issue }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          if [ -z "$N" ] || [ -z "$DEFAULT_BRANCH" ]; then
+            echo "::error::no issue number or default branch: nothing to look up"; exit 1
+          fi
+          export BRANCH="factory/issue-$N"
+          # The held runs below are matched by branch and commit, which every open PR from the branch shares
+          # (a closed PR's held runs end at once). So the build PR must be the only one, into the default branch.
+          prs=$(gh pr list -R "$GITHUB_REPOSITORY" --head "$BRANCH" --state open --json number,isCrossRepository,baseRefName \
+                  --jq '.[] | select(.isCrossRepository | not) | "\(.number) \(.baseRefName)"')
+          if [ "$(printf '%s\n' "$prs" | grep -c .)" -gt 1 ]; then
+            echo "::error::more than one open PR from $BRANCH ($(echo $prs)); approve the build PR's runs by hand"
+            exit 1
+          fi
+          pr=; base=
+          [ -z "$prs" ] || read -r pr base <<< "$prs"
+          if [ -n "$pr" ] && [ "$base" != "$DEFAULT_BRANCH" ]; then
+            echo "::error::the build PR from $BRANCH targets $base, not $DEFAULT_BRANCH; approve its runs by hand if you meant it"
+            exit 1
+          fi
+          if [ -z "$pr" ]; then
+            if gh issue view "$N" -R "$GITHUB_REPOSITORY" --json labels --jq '.labels[].name' | grep -x 'factory:blocked' >/dev/null; then
+              echo "::notice::no build PR: the agent marked #$N factory:blocked; its comment on the design PR says why"
+              exit 0
+            fi
+            echo "::error::the build agent opened no PR from $BRANCH; see the build job's log and the design PR's comments"
+            exit 1
+          fi
+          sha=$(gh pr view "$pr" -R "$GITHUB_REPOSITORY" --json headRefOid --jq .headRefOid)
+          # GitHub creates the held runs a moment after the PR's last push, and not all at once: wait up
+          # to 60 s for the first, then approve each new one until three lists in a row (30 s) add none.
+          # $approved keeps a run that still shows action_required just after approval from a second try.
+          approved=" "; quiet=0; start=$SECONDS
+          while :; do
+            runs=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs?event=pull_request&head_sha=$sha&status=action_required&per_page=100" \
+                     --jq '.workflow_runs[] | select(.head_repository.full_name == env.GITHUB_REPOSITORY and .head_branch == env.BRANCH) | "\(.id) \(.name)"')
+            new=0
+            while read -r id name; do
+              [ -n "$id" ] || continue
+              case "$approved" in *" $id "*) continue ;; esac
+              if gh api -X POST "repos/$GITHUB_REPOSITORY/actions/runs/$id/approve" >/dev/null; then
+                echo "approved run $id ($name)"
+              else
+                # someone may have approved it meanwhile
+                status=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$id" --jq .status) || status=action_required
+                if [ "$status" = action_required ]; then
+                  echo "::error::could not approve run $id ($name): on PR #$pr, click \"Approve workflows to run\""
+                  exit 1
+                fi
+                echo "::notice::run $id ($name) was approved meanwhile; it is $status"
+              fi
+              approved="$approved$id "; new=1
+            done <<EOF
+          $runs
+          EOF
+            if [ "$new" = 1 ]; then quiet=0; else quiet=$((quiet + 1)); fi
+            if [ "$approved" = " " ] && [ $((SECONDS - start)) -ge 60 ]; then
+              echo "::notice::PR #$pr has no runs waiting for approval: GitHub started them already"
+              exit 0
+            fi
+            if [ "$approved" != " " ] && [ "$quiet" -ge 3 ]; then break; fi
+            if [ $((SECONDS - start)) -ge 180 ]; then
+              echo "::warning::runs were still appearing after 3 minutes; approved:$approved. On PR #$pr, approve any run still held (\"Approve workflows to run\")"
+              break
+            fi
+            sleep 10
+          done
+          echo "build PR: #$pr; approved its runs:$approved"
