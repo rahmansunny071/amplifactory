@@ -2,8 +2,11 @@ name: CI
 
 # Tests and lint on every pull request and every push to main.
 # All tests run offline on synthetic fixtures (no network, model or real traces).
+# Draft PRs skip CI; marking one ready for review runs it. One job per Python version, not a
+# matrix: a matrix job skipped by `if:` never posts the "Tests (Python X)" names required on main.
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
   push:
     branches: [main]
   workflow_dispatch:
@@ -20,26 +23,25 @@ env:
   RUFF_VERSION: "[[ ruff_version ]]"
 
 jobs:
-  test:
-    name: Tests (Python ${{ matrix.python }})
+[%- for v in python_versions %]
+  test-py[[ v | replace('.', '-') ]]:
+    name: Tests (Python [[ v ]])
+    if: ${{ !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        python: [[ python_versions | tojson ]]
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
-        with:
-          enable-cache: true
       - name: Install (locked)
-        run: uv sync --locked --extra dev --python ${{ matrix.python }}
+        run: uv sync --locked --extra dev --python [[ v ]]
       - name: Run tests
         run: uv run --no-sync pytest -q
-
+[% endfor %]
   lint:
     name: Lint
+    if: ${{ !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6

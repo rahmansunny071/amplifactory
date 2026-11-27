@@ -32,13 +32,15 @@ it, and never quote values from it in issues, PRs or commits. Tests use syntheti
 - `docs/`: the MkDocs Material site (`mkdocs.yml` at the root). `hooks/` (`changelog.py` builds the
   changelog page from `CHANGELOG.md`) and `overrides/` are part of that site.
 - `.github/workflows/template-ci.yml`: renders the variants and checks the generated project.
-- `scripts/check.sh`: runs the same checks locally.
+- `scripts/check.sh`: runs the same checks locally. `scripts/test-check.sh` tests it against fake repos
+  (Template CI's `check-sh` job); run it when you change `check.sh`.
 - `template/.claude/skills/factory/VERSION`: the released version.
 
 ## Definition of "checks pass"
 Commit first: the render uses `--vcs-ref HEAD`. Then run all of these:
-1. `scripts/check.sh`: renders every Template CI variant (read from `template-ci.yml`), runs every
-   render step on each, then `mkdocs build --strict` and the `version` check.
+1. `scripts/check.sh`: renders every Template CI variant (read from `template-ci.yml`) in parallel,
+   runs every render step on each, then `mkdocs build --strict` and the `version` check. `-j N` (or
+   `CHECK_JOBS=N`) limits the parallel jobs; `-j 1` runs the variants one at a time.
 2. Each skill script's `--self-test`, under Python 3.9 and 3.12:
    ```
    for py in 3.9 3.12; do

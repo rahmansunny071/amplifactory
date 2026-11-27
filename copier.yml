@@ -7,7 +7,7 @@
 # Copier variables use [[ ... ]] (and [% ... %] for blocks), so GitHub Actions
 # expressions like ${{ github.event.issue.number }} pass through untouched.
 
-_min_copier_version: "9.0"
+_min_copier_version: "9.5"  # _folder_name (project_name's default)
 _subdirectory: template
 _answers_file: .copier-answers.yml
 _templates_suffix: .jinja
@@ -24,6 +24,7 @@ _envops:
 project_name:
   type: str
   help: Repository and distribution name (kebab-case, e.g. pensieve-traces)
+  default: "[[ (_folder_name or 'project')|lower|regex_replace('[^a-z0-9]+', '-')|trim('-') ]]"
   validator: >-
     [% if not project_name or project_name != project_name|lower or ' ' in project_name or '_' in project_name %]
     Use kebab-case: lowercase letters, digits and hyphens
@@ -140,6 +141,10 @@ _message_after_copy: |
     ./scripts/bootstrap.sh --public     # or --private (rulesets need public or GitHub Pro)
     claude                              # on Opus; then say "brainstorm X into issues" or "run the factory"
   The factory skill works from there and needs no secret.
+  [%- if (_folder_name or 'project')|lower|regex_replace('[^a-z0-9]+', '-')|trim('-') != project_name %]
+  The folder is named [[ _folder_name ]], but bootstrap creates the GitHub repo
+  [[ maintainer_github ]]/[[ project_name ]].
+  [%- endif %]
 
   Optional, last, only for Actions mode (agents on GitHub runners):
     in Claude Code, /install-github-app → pick [[ maintainer_github ]]/[[ project_name ]]
