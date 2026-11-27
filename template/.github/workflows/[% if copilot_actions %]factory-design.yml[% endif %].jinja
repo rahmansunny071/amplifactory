@@ -69,7 +69,7 @@ jobs:
           pr=$(gh pr list -R "$GITHUB_REPOSITORY" --head "design/issue-$N" --state open \
                  --json number,isCrossRepository --jq '[.[] | select(.isCrossRepository | not)][0].number // empty')
           if [ -z "$pr" ]; then
-            if gh issue view "$N" -R "$GITHUB_REPOSITORY" --json labels --jq '.labels[].name' | grep -qx 'factory:blocked'; then
+            if gh issue view "$N" -R "$GITHUB_REPOSITORY" --json labels --jq '.labels[].name' | grep -x 'factory:blocked' >/dev/null; then
               echo "::notice::no design PR: the agent marked #$N factory:blocked; its comment on the issue says why"
               exit 0
             fi

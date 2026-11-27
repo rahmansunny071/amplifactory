@@ -123,7 +123,7 @@ jobs:
             exit 1
           fi
           if [ -z "$pr" ]; then
-            if gh issue view "$N" -R "$GITHUB_REPOSITORY" --json labels --jq '.labels[].name' | grep -qx 'factory:blocked'; then
+            if gh issue view "$N" -R "$GITHUB_REPOSITORY" --json labels --jq '.labels[].name' | grep -x 'factory:blocked' >/dev/null; then
               echo "::notice::no build PR: the agent marked #$N factory:blocked; its comment on the design PR says why"
               exit 0
             fi

@@ -398,6 +398,11 @@ jobs:
                 .github/workflows/factory-design.yml .github/workflows/factory-build.yml .github/workflows/factory-review.yml; then
               echo "::error::the Copilot workflows must not widen the agents' permissions or install the CLI globally (#40)"; fail=1
             fi
+            # Actions runs steps under pipefail, so a label check piped into grep -q can read as false
+            # when gh gets SIGPIPE (#99). The tool rules checks pipe a finished echo, which is safe.
+            if grep -nE '^[^#]*\|[[:space:]]*grep[^|]* -[a-zA-Z]*q' .github/workflows/factory-*.yml | grep -vF "'\"deny\"'"; then
+              echo "::error::a Copilot workflow ends a pipe in grep -q, which breaks under pipefail (#99)"; fail=1
+            fi
             if grep -rnE '@claude|install-github-app|CLAUDE_CODE_OAUTH_TOKEN|claude-code-action' README.md CLAUDE.md scripts/bootstrap.sh .github; then
               echo "::error::actions_agent=copilot, but the lines above mention the Claude Actions mode (#40)"; fail=1
             fi
