@@ -75,7 +75,7 @@ def _self_test() -> None:
     }
     assert decide(claude_style) == ALLOW
 
-    # #29: the payload Copilot CLI 1.0.116 sends a permissionRequest hook (synthetic values)
+    # #95: the payload Copilot CLI 1.0.116 sends a permissionRequest hook (synthetic values)
     def copilot(command: str) -> dict:
         return {
             "hookName": "permissionRequest",

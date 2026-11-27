@@ -12,7 +12,7 @@ at most what Claude's may:
   (Claude's `Bash(...)` rules); anything the small bash reader below doesn't model is denied;
 - `powershell`, `write_bash` and `write_powershell` are denied;
 - file writes: the design agent only under `.factory/designs/`, the review agent none;
-- a little more than Claude's rules (#69): no `gh pr merge` or `gh pr review` in build, no review that
+- a little more than Claude's rules (#97): no `gh pr merge` or `gh pr review` in build, no review that
   approves or requests changes, and no `gh pr` flag before the subcommand.
 
 It prints {"permissionDecision": "deny", ...} to deny, or nothing, so the workflow's `--allow-tool`
@@ -48,7 +48,7 @@ PREFIXES: dict[str, Prefixes] = {
         ("gh", "pr", "comment"),
     ),
 }
-# Denied even where a prefix above allows them (#69): no agent merges or reviews a PR, but the review
+# Denied even where a prefix above allows them (#97): no agent merges or reviews a PR, but the review
 # agent comments with `gh pr review N --comment`, so its review must not approve or request changes.
 DENIED: dict[str, Prefixes] = {
     "design": (),
@@ -141,7 +141,7 @@ def split_commands(command: str) -> list[Words]:
                 word = word if word is not None else []
                 word.append(command[i + 1])
             # bash drops a backslash-newline before it reads words: it neither starts nor ends one, so a
-            # "#" right after it still starts a comment (#62's code review)
+            # "#" right after it still starts a comment (found in a code review)
             i += 2
         elif c in " \t":
             end_word()

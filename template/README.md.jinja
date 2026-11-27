@@ -95,7 +95,7 @@ The same pipeline can run from labels on GitHub Actions, with a click from you a
 [%- elif copilot_actions -%]
 ## Actions mode with Copilot (optional)
 
-The same pipeline can run from labels on GitHub Actions, with a click from you at every step. Its agents are the GitHub Copilot CLI, signed in with each workflow's own token (`copilot-requests: write`): there is no secret and no Claude subscription. Their requests bill your Copilot seat, on the model in `.copier-answers.yml` → `copilot_model`.
+The same pipeline can run from labels on GitHub Actions, with a click from you at every step. Its agents are the GitHub Copilot CLI, signed in with each workflow's own token (`copilot-requests: write`): there is no secret and no Claude subscription. Their requests bill your Copilot seat, on the model in `.copier-answers.yml` → `copilot_model`. With `FACTORY_RUNNER=local` (see [CI](#ci)) and a private repo, they run on your Mac's runner pool, like CI.
 
 1. Open an issue with the **Factory task** template.
 2. Add `factory:design`. The design agent writes `.factory/designs/issue-N.md` and opens a draft design PR.
@@ -104,7 +104,7 @@ The same pipeline can run from labels on GitHub Actions, with a click from you a
 5. The review agent checks the PR against the design and `CLAUDE.md`.
 6. Merge. Releases stay manual.
 
-The agents open their PRs with the workflow token, which needs **Allow GitHub Actions to create and approve pull requests** (Settings → Actions → General → Workflow permissions). Bootstrap turns it on; if you added this mode with `copier update`, turn it on yourself: `gh api -X PUT repos/[[ maintainer_github ]]/[[ project_name ]]/actions/permissions/workflow -F can_approve_pull_request_reviews=true`. Each agent may do only what Claude's may at the same stage: a hook, `.github/factory/tool_rules.py`, which every agent job copies from the default branch, denies the rest (other commands, `$`, redirections, and writes outside `.factory/designs/` for the design agent or at all for the review agent). Change it only in a reviewed PR. No agent may merge, and the review agent only comments. The token could still approve a PR it didn't open, so `.github/CODEOWNERS` makes you the owner of every file: with the "Protect main" ruleset, which requires a code owner's review, only your approval (or your `--admin` bypass) merges a PR. `approve-runs` approves the held runs of the build PR's branch and commit, until GitHub stops adding them, and only when the build PR, into the default branch, is the one open PR from that branch. The agents act on text in issues and comments, so keep yourself the only one who can write that text.
+The agents open their PRs with the workflow token, which needs **Allow GitHub Actions to create and approve pull requests** (Settings → Actions → General → Workflow permissions). Bootstrap turns it on; if you added this mode with `copier update`, turn it on yourself: `gh api -X PUT repos/[[ maintainer_github ]]/[[ project_name ]]/actions/permissions/workflow -F can_approve_pull_request_reviews=true`. Each agent may do only what Claude's may at the same stage: a hook, `.github/factory/tool_rules.py`, which every agent job copies from the default branch, denies the rest (other commands, `$`, redirections, and writes outside `.factory/designs/` for the design agent or at all for the review agent). Change it only in a reviewed PR. No agent may merge, and the review agent only comments. The token could still approve a PR it didn't open, so `.github/CODEOWNERS` makes you the owner of every file: with the "Protect main" ruleset, which requires a code owner's review, only your approval (or your `--admin` bypass) merges a PR. `approve-runs` approves the held runs of the build PR's branch and commit, until GitHub stops adding them, and only when the build PR, into the default branch, is the one open PR from that branch. The agents act on text in issues and comments, and on the runner pool their shell commands run as you and could read your files. So their jobs use the pool only while this repo is private (an internal repo doesn't count), and you should keep yourself the only one who can write that text.
 [%- else -%]
 ## Actions mode (off)
 
@@ -129,7 +129,12 @@ This repo was generated with Copier's `actions_agent: none`, so it has no agent 
 [% endif %]
 ## CI
 
-`.github/workflows/ci.yml` runs the tests (one job per Python version) and lint on pull requests and on pushes to `main`, on GitHub's `ubuntu-latest`. Draft pull requests skip CI; marking one ready for review runs it. Tests stop after 20 minutes and lint after 10.
+`.github/workflows/ci.yml` runs the tests (one job per Python version) and lint on pull requests and on pushes to `main`. Two repository variables steer it, with no workflow edit:
+
+- **`FACTORY_RUNNER`**: `local` runs the jobs on your Mac, in its runner pool (`.claude/skills/factory-ci/`). Unset or anything else: GitHub's `ubuntu-latest`. Pull requests from forks always use `ubuntu-latest`.
+- **`FACTORY_CI`**: `off` skips every job. A skipped job counts as passing, so pull requests can still merge; gate on the checks in `CLAUDE.md` instead.
+
+The pool is opt-in, for accounts whose GitHub-hosted runners are off: tell the agent "set up CI runners", and its setup ends by setting `FACTORY_RUNNER=local`. `gh variable set FACTORY_RUNNER --body github` keeps GitHub's runners, like unset. Draft pull requests skip CI; marking one ready for review runs it. Tests stop after 20 minutes and lint after 10.
 
 ## Development
 

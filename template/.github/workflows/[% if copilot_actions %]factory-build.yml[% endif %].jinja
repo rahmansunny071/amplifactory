@@ -12,7 +12,10 @@ jobs:
       github.event.sender.login == '[[ maintainer_github ]]' &&
       github.event.pull_request.head.repo.full_name == github.repository &&
       startsWith(github.event.pull_request.head.ref, 'design/issue-')
-    runs-on: ubuntu-latest
+    # The runner pool on your Mac when FACTORY_RUNNER is local and the repo is private (not internal:
+    # every member of an enterprise can write its issues); otherwise GitHub's.
+    # Anyone can comment in a public repo, and an agent on your Mac could read your files.
+    runs-on: ${{ vars.FACTORY_RUNNER == 'local' && github.event.repository.visibility == 'private' && (!github.event.pull_request || github.event.pull_request.head.repo.full_name == github.repository) && fromJSON(format('["self-hosted","factory-run-{0}"]', github.run_id)) || 'ubuntu-latest' }}
     timeout-minutes: 60
     concurrency:
       group: factory-${{ github.event.pull_request.head.ref }}
@@ -51,8 +54,8 @@ jobs:
       - run: uv sync --locked --extra dev
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
-      # Job-local and pinned, never a global install: on a self-hosted runner that would replace its
-      # own copilot.
+      # Job-local and pinned, never a global install: on the runner pool that would replace your own
+      # copilot.
       - name: Install the Copilot CLI
         run: |
           npm install --no-save --no-audit --no-fund --prefix "$RUNNER_TEMP/copilot-cli" "@github/copilot@$FACTORY_COPILOT_VERSION"
@@ -91,7 +94,9 @@ jobs:
   # agent and checks nothing out, approves them; it is the only one with actions: write.
   approve-runs:
     needs: build
-    runs-on: ubuntu-latest
+    # The runner pool on your Mac when FACTORY_RUNNER is local and the repo is private (not internal:
+    # every member of an enterprise can write its issues); otherwise GitHub's.
+    runs-on: ${{ vars.FACTORY_RUNNER == 'local' && github.event.repository.visibility == 'private' && (!github.event.pull_request || github.event.pull_request.head.repo.full_name == github.repository) && fromJSON(format('["self-hosted","factory-run-{0}"]', github.run_id)) || 'ubuntu-latest' }}
     timeout-minutes: 10
     permissions: { actions: write, pull-requests: read, issues: read }
     steps:

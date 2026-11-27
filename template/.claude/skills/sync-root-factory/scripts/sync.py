@@ -914,7 +914,7 @@ def _tpl(
 
 
 def from_self_test() -> None:
-    # #24: run as a Copilot session does, with safe.bareRepository=explicit appended to the
+    # #89: run as a Copilot session does, with safe.bareRepository=explicit appended to the
     # GIT_CONFIG_COUNT list: it beats earlier entries there (a parent `git -c` would still win), so a
     # bare repo reached through -C fails the test.
     n = int(os.environ.get("GIT_CONFIG_COUNT") or 0)

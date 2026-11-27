@@ -194,6 +194,8 @@ _message_after_copy: |
     copilot                             # GitHub Copilot CLI (or the Copilot app), or claude for
                                         # Claude Code; on the orchestrator model in CLAUDE.md →
                                         # Models, say "brainstorm X into issues" or "run the factory"
+                                        # (CI runs on GitHub-hosted runners; where they're off, as
+                                        # for EMU, say "set up CI runners" for this Mac's pool)
   The factory skill works from there and needs no secret.
   [%- if (_folder_name or 'project')|lower|regex_replace('[^a-z0-9]+', '-')|trim('-') != project_name %]
   The folder is named [[ _folder_name ]], but bootstrap creates the GitHub repo
@@ -207,8 +209,9 @@ _message_after_copy: |
     dry run: open an issue with the Factory task template and add factory:design
   [%- elif actions_agent == 'copilot' %]
 
-  Actions mode with Copilot (optional, last; agents on GitHub runners, no secret):
+  Actions mode with Copilot (optional, last; agents on your runners, no secret):
     bootstrap lets workflows open PRs; the agents bill your Copilot seat
+    where GitHub-hosted runners are off, set up the runner pool first ("set up CI runners")
     dry run: open an issue with the Factory task template and add factory:design
   [%- else %]
 

@@ -73,7 +73,9 @@ for size S, ~500 for M. Name functions, classes, CLI flags and every dependency 
 docs the change will update under "Files & interfaces touched", plus any doc-debt todos riding along.
 Don't add scope; put anything you can't verify from the code, the issue or a cited spec under Open questions.
 Commit ("plan: <title> (#<N>)"), `git push -u origin local/issue-<N>`, and open a DRAFT PR titled
-"feat: <title> (#<N>)" whose body starts with "Closes #<N>" and has a "## Handoff" section (see the
+"feat: <title> (#<N>)" with the issue's P label if it has one (`--label P<k>`; the local CI pool orders
+jobs by it, and counts a PR without one as P2),
+whose body starts with "Closes #<N>" and has a "## Handoff" section (see the
 Handoff format: for now, "Plan only; nothing built yet"). Then STOP and return. Don't write code yet.
 You'll get a message to build.
 

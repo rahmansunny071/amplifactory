@@ -189,7 +189,9 @@ Done: https://github.com/$REPO
 Remaining (manual):
   1. Start GitHub Copilot in this repo (copilot, or the Copilot app), or Claude Code (claude), on the
      orchestrator model in CLAUDE.md → Models. Then say "brainstorm X into issues" or "run the factory".
-     The factory skill works from here and needs no secret.
+     The factory skill works from here and needs no secret. CI runs on GitHub-hosted runners.
+     Where they're off (EMU accounts), say "set up CI runners": the factory-ci skill sets up CI on
+     this Mac (a runner pool, opt-in).
   2. Keep yourself the only collaborator with Triage access or higher.
 [% if claude_actions %]  3. Actions mode with Claude (optional, last): in Claude Code, run /install-github-app, pick $REPO
      and choose your subscription. That saves the CLAUDE_CODE_OAUTH_TOKEN secret. If it needs the
@@ -199,7 +201,9 @@ Remaining (manual):
      factory-chat.yml and factory-review.yml already cover those, with sender and fork checks.
      Dry run: open an issue with the Factory task template and add factory:design.
 [% elif copilot_actions %]  3. Actions mode with Copilot (optional, last): its agents run the GitHub Copilot CLI, signed in
-     with each workflow's own token, and bill your Copilot seat; there is no secret to add.
+     with each workflow's own token, and bill your Copilot seat; there is no secret to add. Where
+     GitHub-hosted runners are off (EMU accounts), set up the runner pool first ("set up CI runners"),
+     so FACTORY_RUNNER is local; in a private repo the agents then run there.
      Dry run: open an issue with the Factory task template and add factory:design.
 [% else %]  3. The GitHub Actions mode is off (actions_agent: none). To add it, in a PR of its own:
        uvx copier update --data actions_agent=copilot    # or actions_agent=claude
