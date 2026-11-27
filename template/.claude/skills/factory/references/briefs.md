@@ -145,7 +145,7 @@ names as approved, with a link to the approval, and never treat your own judgeme
 
 Read, in this order: the PR body's "## Handoff" (`gh pr view <PR> -R <owner/repo>`), the maintainer's
 answers on these threads: <thread/comment ids with one-line summaries>, the diff (`gh pr diff <PR> -R
-<owner/repo>`), and only the files the Handoff and those threads name. Read more only if a change needs it.
+<owner/repo>`), CLAUDE.md, and only the files the Handoff and those threads name. Read more only if a change needs it.
 
 Apply the maintainer's answers, exactly as given:
 <numbered: thread → the decision to implement>

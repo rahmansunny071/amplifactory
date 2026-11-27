@@ -1,13 +1,15 @@
 #!/usr/bin/env bash
 # One-time setup for a repo generated from amplifactory. Safe to re-run.
 #
-#   ./scripts/bootstrap.sh --public    # recommended: rulesets work and Actions minutes are free
-#   ./scripts/bootstrap.sh --private   # rulesets need GitHub Pro on private repos
+#   ./scripts/bootstrap.sh --public    # recommended where allowed: rulesets work, Actions minutes are free
+#   ./scripts/bootstrap.sh --private   # EMU (enterprise-managed) accounts: the only choice. Rulesets on
+#                                      # private repos need a plan that supports them (GitHub Pro or up)
 #
 # Does: uv lock, first commit, create + push the GitHub repo, factory labels, the
 # "Documentation tech-debt" tracking issue, a ruleset protecting main (when the
 # plan allows it), a Project board, and fork-PR approval.
-# Does NOT: add the Claude token. That's only for Actions mode (/install-github-app in Claude Code).
+# Does NOT: set up an agent or a secret. The factory skill runs in GitHub Copilot or Claude Code;
+# only the optional Actions mode with Claude needs a token (README → "Actions mode with Claude").
 set -euo pipefail
 # Under pipefail, never end a pipe in grep -q: it exits at the first match, the writer gets SIGPIPE and
 # the pipeline reads as a failure. Send grep's output to /dev/null so it reads all its input.
@@ -24,7 +26,7 @@ for arg in "$@"; do
   case "$arg" in
     --public) visibility=public ;;
     --private) visibility=private ;;
-    -h|--help) sed -n '2,11p' "$0"; exit 0 ;;
+    -h|--help) sed -n '2,12p' "$0"; exit 0 ;;
     *) echo "unknown argument: $arg" >&2; exit 2 ;;
   esac
 done
@@ -127,7 +129,7 @@ JSON
   if echo "$ruleset" | gh api -X POST "repos/$REPO/rulesets" --input - >/dev/null 2>&1; then
     echo "created: no deletion or force push; PR + 1 approval; all conversations resolved; checks: ${CHECKS[*]}"
   else
-    echo "WARNING: could not create the ruleset (private repos need GitHub Pro). main is NOT protected." >&2
+    echo "WARNING: could not create the ruleset (private repos need a plan with rulesets, such as GitHub Pro). main is NOT protected." >&2
   fi
 fi
 
@@ -167,10 +169,11 @@ cat <<EOF
 Done: https://github.com/$REPO
 
 Remaining (manual):
-  1. Run claude in this repo, on Opus, then say "brainstorm X into issues" or "run the factory".
-     The factory skill works from here and needs no secret.
+  1. Start GitHub Copilot in this repo (copilot, or the Copilot app), or Claude Code (claude), on the
+     orchestrator model in CLAUDE.md → Models. Then say "brainstorm X into issues" or "run the factory".
+     The factory skill works from here and needs no secret and no Claude subscription.
   2. Keep yourself the only collaborator with Triage access or higher.
-  3. Optional, last, only for Actions mode: in Claude Code, run /install-github-app, pick $REPO
+  3. Actions mode with Claude (optional, last): in Claude Code, run /install-github-app, pick $REPO
      and choose your subscription. That saves the CLAUDE_CODE_OAUTH_TOKEN secret. If it needs the
      workflow scope first:
        gh auth refresh -h github.com -s repo,workflow

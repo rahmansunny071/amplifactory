@@ -8,7 +8,7 @@
 
 This repo is built by an issue-driven agent factory. Only the maintainer (@[[ maintainer_github ]]) can start or advance work, merge to `main`, or publish anything. The quickest way in is the **`factory` skill** (`.claude/skills/factory/`), which runs the whole pipeline from a GitHub Copilot or Claude Code session:
 
-1. Run `./scripts/bootstrap.sh` once, if you haven't (it creates the GitHub repo, labels and board). The skill does **not** need `/install-github-app`.
+1. Run `./scripts/bootstrap.sh` once, if you haven't (it creates the GitHub repo, labels and board; EMU accounts use `--private`). The skill needs no secret and no Claude subscription.
 2. Start GitHub Copilot (`copilot`, or the Copilot app) or Claude Code (`claude`) in this repo, on the orchestrator model from [`CLAUDE.md`](CLAUDE.md) → "Models" (`/model` checks it).
 3. Say **"brainstorm X into issues"** or **"run the factory"**. It never adds `factory:design` or `design:approved`, so the Actions workflows don't duplicate the work.
 
@@ -58,9 +58,9 @@ Bootstrap creates these. Meanings in short; the docs site has the detail.
 | Priority | `P1`, `P2` | In between |
 | Priority | `P3` | Least urgent |
 
-## Actions mode (optional)
+## Actions mode with Claude (optional)
 
-The same pipeline can run from labels on GitHub Actions, with a click from you at every step. It needs `/install-github-app` (run in Claude Code, pick this repo) and the `CLAUDE_CODE_OAUTH_TOKEN` secret that saves.
+The same pipeline can run from labels on GitHub Actions, with a click from you at every step. Its agents are Claude Code GitHub Actions, so it needs a Claude subscription: run `/install-github-app` in Claude Code, pick this repo, and it saves the `CLAUDE_CODE_OAUTH_TOKEN` secret.
 
 1. Open an issue with the **Factory task** template.
 2. Add `factory:design`. The design agent writes `.factory/designs/issue-N.md` and opens a draft design PR.

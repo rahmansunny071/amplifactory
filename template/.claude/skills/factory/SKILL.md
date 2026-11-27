@@ -55,7 +55,7 @@ maintainer"); this table says how. Always pass the role's model from `CLAUDE.md`
 |---|---|---|
 | Spawn a role with its model | a subagent with `model:` set to the role's Claude Code model | the `task` tool with `agent_type: "general-purpose"` and `model:` set to the role's Copilot model; the builder with `mode: "background"`, so it stays available for the next phase |
 | Message the same builder again | `SendMessage` to its agent id | `write_agent` to its `agent_id` (it wakes an idle agent, or steers a running one) |
-| Read a subagent's result | its final message, returned to you | `read_agent` with its `agent_id` once it reports done (`wait: true` blocks until then) |
+| Read a subagent's result | its final message, returned to you | `read_agent` with its `agent_id` after Copilot says it finished (`wait: true` waits only up to a timeout and may return `running`: read again later) |
 | Ask the maintainer in the session | `AskUserQuestion` | `ask_user`; in autopilot and `-p` runs it answers "user not available": take the safe default (one lane, create nothing) or flag the question on the PR |
 | Wait on a long command | the shell tool's timeout, or a background run | `bash` in sync mode with a long `initial_wait`, or in async mode; you're told when it finishes |
 
@@ -71,7 +71,7 @@ and reviewers, `sonnet` / `claude-sonnet-5.5` for builders and issue writers.
 |---|---|---|
 | Decisions, plans, handoffs, review threads, status, lessons | **GitHub and the repo**: issues, PRs, labels, `.factory/designs/issue-N.md`, `CLAUDE.md` | Shared, durable, visible to the maintainer and every agent. **The source of truth.** |
 | Progress and cost of a run | **The run log** (`.factory/runs/*.jsonl`, gitignored, local) | A cache and cost ledger. It **points** at GitHub (PR, commit, thread ids) and never copies content. Delete it and nothing breaks. |
-| The maintainer's preferences, where to look | **Claude's memory** (`~/.claude/projects/…/memory`) | Private, local. If a preference is really a project rule, it belongs in `CLAUDE.md`. |
+| The maintainer's preferences, where to look | **The harness's memory**: Claude Code's (`~/.claude/projects/…/memory`, local and private) or Copilot Memory (GitHub-hosted; repository memories are shared with everyone who uses it in the repo) | A pointer, not a record. If a preference is really a project rule, it belongs in `CLAUDE.md`. |
 
 When the run log or memory disagrees with GitHub, GitHub wins.
 
@@ -271,10 +271,13 @@ When every gate passes but the merge itself is refused, the maintainer merges it
    maintainer can merge them in one batch. Once the PR is merged the issue closes and the lane advances;
    a label left on a closed issue is cleared in "Before you start" (step 5).
 
-The maintainer can let the skill merge itself by opting in to a permission rule (README → "Letting the
-factory merge for you"). The template never ships it. That rule matches only commands that end in
-`--delete-branch`, which is how you run the merge (`references/gates.md` → "Merge"); variants with `-R` or
-other trailing flags aren't covered, so don't add any.
+The maintainer can let the skill merge itself by opting in (README → "Letting the factory merge for
+you"): a permission rule in Claude Code, or a personal hook that runs a copy of `scripts/merge_hook.py`
+in Copilot. The template ships neither. The Claude Code rule matches only commands that end in
+`--merge --admin --delete-branch`; the Copilot hook matches only
+`gh pr merge <N> --merge [--admin] --delete-branch`, typed exactly so. Run the merge exactly as
+`references/gates.md` → "Merge" shows; don't add `-R` or other flags. In Copilot, a "No" at the
+approval prompt, or a denial in autopilot or a `-p` run, is a refusal like any other: hand the PR off.
 
 ### Resume
 
@@ -374,3 +377,6 @@ keeps real data out of the body and asks the maintainer once); don't file it by 
 - `scripts/lanes.py`: create and maintain lanes with native GitHub features (`sub-add`, `order`, `block`,
   `priority`, `project-add`, `show`), and the documentation tech-debt issue (`doc-debt find|add|list`).
 - `scripts/runlog.py`: the run log (`add`, `status`, `summary`).
+- `scripts/merge_hook.py`: the Copilot opt-in that lets the skill merge, a `permissionRequest` hook that
+  approves only the merge command. Inert until the maintainer adds the hook (README → "Letting the factory
+  merge for you").

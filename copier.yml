@@ -1,4 +1,5 @@
-# amplifactory: a Copier template for an issue-driven agent factory on
+# amplifactory: a Copier template for an issue-driven agent factory. The factory
+# skill runs in GitHub Copilot or Claude Code; an optional Actions mode runs it on
 # Claude Code GitHub Actions (design → maintainer approval → build → review).
 #
 #   copier copy gh:rahmansunny071/amplifactory my-project
@@ -126,7 +127,9 @@ real_data_access:
 
 agent_model:
   type: str
-  help: Model the factory agents use (sonnet is the sensible default on Pro)
+  help: >-
+    Model for the Actions-mode agents (Claude Code GitHub Actions; sonnet is the sensible
+    default on Pro). The factory skill's models are in the generated CLAUDE.md → Models.
   choices: [sonnet, opus, haiku]
   default: sonnet
 
@@ -138,15 +141,19 @@ _message_after_copy: |
     gh auth refresh -h github.com -s repo,workflow,project
         # repo: create and push the repo; workflow: push the Actions workflows;
         # project: the Project board (bootstrap and lanes.py project-add)
-    ./scripts/bootstrap.sh --public     # or --private (rulesets need public or GitHub Pro)
-    claude                              # on Opus; then say "brainstorm X into issues" or "run the factory"
+    ./scripts/bootstrap.sh --public     # or --private: EMU (enterprise-managed) accounts can only
+                                        # create private repos; rulesets on private repos need a
+                                        # plan that supports them
+    copilot                             # GitHub Copilot CLI (or the Copilot app), or claude for
+                                        # Claude Code; on the orchestrator model in CLAUDE.md →
+                                        # Models, say "brainstorm X into issues" or "run the factory"
   The factory skill works from there and needs no secret.
   [%- if (_folder_name or 'project')|lower|regex_replace('[^a-z0-9]+', '-')|trim('-') != project_name %]
   The folder is named [[ _folder_name ]], but bootstrap creates the GitHub repo
   [[ maintainer_github ]]/[[ project_name ]].
   [%- endif %]
 
-  Optional, last, only for Actions mode (agents on GitHub runners):
+  Actions mode with Claude (optional, last; agents on GitHub runners):
     in Claude Code, /install-github-app → pick [[ maintainer_github ]]/[[ project_name ]]
     → choose your subscription; decline the installer's own claude.yml workflows
     dry run: open an issue with the Factory task template and add factory:design
